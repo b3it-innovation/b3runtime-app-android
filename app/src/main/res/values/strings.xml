@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">b3Runtime</string>
+    <string name="title_activity_maps">b3Runtime</string>
+    <string name="goToSettingsButtonText">OK, go to settings</string>
+    <string name="negativeButtonText">NO, exit app</string>
+    <string name="changePermissionsInSettingsMessage">To change this please go to App Settings >
+        Permissions and grant Location permissions</string>
+    <string name="deniedPermissionsDialogTitle">You have permanently denied needed permissions</string>
+    <string name="permissionsDialogTitle">Location Permission Needed</string>
+    <string name="permissionsDialogMessage">This app needs the Location permission, please accept to be able to use app</string>
+    <string name="okButton">OK</string>
+    <string name="somethingWentWrong">Something went wrong... Please try again</string>
+    <string name="question">QUESTION</string>
+    <string name="confirm">Confirm</string>
+    <string name="correctAnswer">Your answer is correct! Continue on your Quest</string>
+    <string name="continueButtonText">Continue</string>
+    <string name="wrongAnswer">Wisdom comes with experience. Take an extra route to clear your Мind.</string>
+    <string name="intent_failed">settings intent failed</string>
+</resources>

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "792814669342",
+    "firebase_url": "https://b3runtimedev-cc9d4.firebaseio.com",
+    "project_id": "b3runtimedev-cc9d4",
+    "storage_bucket": "b3runtimedev-cc9d4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:792814669342:android:f2926ee30ab93c7a",
+        "android_client_info": {
+          "package_name": "com.b3.development.b3runtime"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "792814669342-hos0412rpbn5nq2711a2mniq4ih75oli.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.b3.development.b3runtime",
+            "certificate_hash": "44df71b1283eec625b9ac769877b86433be94259"
+          }
+        },
+        {
+          "client_id": "792814669342-3heh4ttclsoh65sh96q9p440mlgieai8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSeOT7VpxUocITZpFl56TVa-yVVUyql0g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "792814669342-3heh4ttclsoh65sh96q9p440mlgieai8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
