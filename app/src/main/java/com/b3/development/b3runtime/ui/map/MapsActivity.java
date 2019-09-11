@@ -102,6 +102,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         initializeMap();
         //observes for change in the nextPin data and calls showPin()
         viewModel.nextPin.observe(this, MapsActivity.this::showPin);
+        map.setOnMapClickListener(latLng -> Toast.makeText(MapsActivity.this,
+                "Lat: " + latLng.latitude +
+                "\r\nLong: " + latLng.longitude, Toast.LENGTH_LONG).show());
     }
 
     private void initializeMap() {
