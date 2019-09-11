@@ -4,8 +4,12 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
@@ -45,6 +49,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     private MapsViewModel viewModel = get(MapsViewModel.class);
     private GoogleMap map;
     private AlertDialog permissionDeniedDialog;
+    private LocationManager locationManager;
 
     /**
      * Contains the main logic of the {@link MapsActivity}
@@ -79,6 +84,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                 "",
                 null,
                 false);
+        locationManager = (LocationManager)this.getSystemService(LOCATION_SERVICE);
     }
 
     /**
@@ -102,9 +108,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         initializeMap();
         //observes for change in the nextPin data and calls showPin()
         viewModel.nextPin.observe(this, MapsActivity.this::showPin);
-        map.setOnMapClickListener(latLng -> Toast.makeText(MapsActivity.this,
-                "Lat: " + latLng.latitude +
-                "\r\nLong: " + latLng.longitude, Toast.LENGTH_LONG).show());
+        map.setOnMapClickListener(latLng -> {
+            setMockLocation(latLng.latitude, latLng.longitude, 10);
+
+            Toast.makeText(MapsActivity.this,
+                    "Lat: " + latLng.latitude +
+                            "\r\nLong: " + latLng.longitude, Toast.LENGTH_LONG).show();
+        });
     }
 
     private void initializeMap() {
@@ -117,6 +127,36 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         } else {
             map.setMyLocationEnabled(true);
         }
+    }
+
+
+    private void setMockLocation(double lat, double lng, float accuracy) {
+        if(locationManager.getProvider(LocationManager.GPS_PROVIDER) != null) {
+            locationManager.removeTestProvider(LocationManager.GPS_PROVIDER);
+        }
+
+        locationManager.addTestProvider(LocationManager.GPS_PROVIDER,
+                "requiresNetwork" == "",
+                "requiresSatellite" == "",
+                "requiresCell" == "",
+                "hasMonetaryCost" == "",
+                "supportsAltitude" == "",
+                "supportsSpeed" == "",
+                "supportsBearing" == "",
+                android.location.Criteria.POWER_LOW,
+                android.location.Criteria.ACCURACY_FINE);
+
+        Location newLocation = new Location(LocationManager.GPS_PROVIDER);
+        newLocation.setAccuracy(accuracy);
+        newLocation.setLatitude(lat);
+        newLocation.setLongitude(lng);
+        newLocation.setAltitude(0);
+        newLocation.setTime(System.currentTimeMillis());
+        newLocation.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+        locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true);
+        locationManager.setTestProviderStatus(LocationManager.GPS_PROVIDER,
+                LocationProvider.AVAILABLE, null, System.currentTimeMillis());
+        locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, newLocation);
     }
 
     private void showPin(Pin pin) {
