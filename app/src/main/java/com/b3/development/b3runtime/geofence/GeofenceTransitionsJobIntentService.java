@@ -24,9 +24,6 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
         //todo handle work
         Log.d("GEOFENCE", "SERVICE STARTED");
         Intent newIntent = new Intent("newQuestion");
-        Bundle extras = new Bundle();
-        extras.putString("newQuestionExtra", "test");
-        newIntent.putExtras(extras);
         this.sendBroadcast(newIntent);
     }
 }

@@ -119,7 +119,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String stringFromIntent = intent.getStringExtra("newQuestionExtra");
                 showQuestion();
             }
         };
