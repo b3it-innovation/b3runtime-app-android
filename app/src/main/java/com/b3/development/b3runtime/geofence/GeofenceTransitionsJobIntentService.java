@@ -22,5 +22,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
     protected void onHandleWork(@NonNull Intent intent) {
         //todo handle work
         Log.d("GEOFENCE", "SERVICE STARTED");
+        Intent newIntent = new Intent("newQuestion");
+        this.sendBroadcast(newIntent);
     }
 }

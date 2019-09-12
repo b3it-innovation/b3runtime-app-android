@@ -1,8 +1,11 @@
 package com.b3.development.b3runtime.ui.map;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -53,6 +56,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     private GoogleMap map;
     private AlertDialog permissionDeniedDialog;
     private LocationManager locationManager;
+    private BroadcastReceiver broadcastReceiver;
 
     private Circle currentCircle;
 
@@ -91,6 +95,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                 false);
         //Create a LocationManager for setting a mock location (todo: Remove before release)
         locationManager = (LocationManager)this.getSystemService(LOCATION_SERVICE);
+        registerReceiver();
     }
 
     /**
@@ -100,6 +105,24 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     public void onStart() {
         super.onStart();
         requestLocationPermissions();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (broadcastReceiver != null)  {
+            unregisterReceiver(broadcastReceiver);
+        }
+    }
+
+    private void registerReceiver() {
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                showQuestion();
+            }
+        };
+        registerReceiver(broadcastReceiver, new IntentFilter("newQuestion"));
     }
 
     /**
