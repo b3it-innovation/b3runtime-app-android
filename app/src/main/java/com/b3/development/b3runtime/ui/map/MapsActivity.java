@@ -135,8 +135,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         });
         //adds a geofence on the recieved pi
         //viewModel.addGeofence(pin);
-        // draw geofence around pin
-        drawGeoFenceAroundPin();
+
+        // draw geofence circle around pin
+        drawGeofenceCircleAroundPin();
     }
 
     //calls QuestionFragment to display a question for the user
@@ -227,20 +228,21 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         }
     }
 
-    private void drawGeoFenceAroundPin() {
-        // remove the last circle from the map
-        if(currentCircle != null){
-            currentCircle.remove();
-        }
-        double lat = viewModel.nextPin.getValue().latitude;
-        double lng = viewModel.nextPin.getValue().longitude;
-
+    private void drawGeofenceCircleAroundPin() {
+        removeGeofenceCircleAroundPin();
         CircleOptions circleOptions = new CircleOptions()
-                .center(new LatLng(lat, lng))
-                .radius(100)
+                .center(new LatLng(viewModel.nextPin.getValue().latitude,
+                        viewModel.nextPin.getValue().longitude))
+                .radius(150)
                 .fillColor(0x40ff0000)
                 .strokeColor(Color.TRANSPARENT)
                 .strokeWidth(2);
         currentCircle = map.addCircle(circleOptions);
+    }
+
+    private void removeGeofenceCircleAroundPin(){
+        if(currentCircle != null){
+            currentCircle.remove();
+        }
     }
 }
