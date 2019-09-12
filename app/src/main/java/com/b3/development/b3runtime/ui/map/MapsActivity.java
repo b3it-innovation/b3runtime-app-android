@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
@@ -23,6 +24,7 @@ import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
 import com.b3.development.b3runtime.data.local.model.pin.Pin;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -84,6 +86,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                 "",
                 null,
                 false);
+        //Create a LocationManager for setting a mock location (todo: Remove before release)
         locationManager = (LocationManager)this.getSystemService(LOCATION_SERVICE);
     }
 
@@ -129,23 +132,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         }
     }
 
-
+    //todo: Remove before release
     private void setMockLocation(double lat, double lng, float accuracy) {
-        if(locationManager.getProvider(LocationManager.GPS_PROVIDER) != null) {
-            locationManager.removeTestProvider(LocationManager.GPS_PROVIDER);
-        }
-
-        locationManager.addTestProvider(LocationManager.GPS_PROVIDER,
-                "requiresNetwork" == "",
-                "requiresSatellite" == "",
-                "requiresCell" == "",
-                "hasMonetaryCost" == "",
-                "supportsAltitude" == "",
-                "supportsSpeed" == "",
-                "supportsBearing" == "",
-                android.location.Criteria.POWER_LOW,
-                android.location.Criteria.ACCURACY_FINE);
-
+        //Create a new location
         Location newLocation = new Location(LocationManager.GPS_PROVIDER);
         newLocation.setAccuracy(accuracy);
         newLocation.setLatitude(lat);
@@ -153,10 +142,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         newLocation.setAltitude(0);
         newLocation.setTime(System.currentTimeMillis());
         newLocation.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
-        locationManager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true);
-        locationManager.setTestProviderStatus(LocationManager.GPS_PROVIDER,
-                LocationProvider.AVAILABLE, null, System.currentTimeMillis());
-        locationManager.setTestProviderLocation(LocationManager.GPS_PROVIDER, newLocation);
+
+        //Set the new mock location on the device
+        LocationServices.getFusedLocationProviderClient(this).setMockMode(true);
+        LocationServices.getFusedLocationProviderClient(this).setMockLocation(newLocation);
     }
 
     private void showPin(Pin pin) {
@@ -167,12 +156,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(pin.latitude, pin.longitude), 15f));
         map.setOnMarkerClickListener(marker -> {
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-            pin.completed = true;
-            showQuestion();
-            return false;
+//            pin.completed = true;
+//            showQuestion();
+            return true;
         });
         //adds a geofence on the recieved pin
-        //viewModel.addGeofence(pin);
+        viewModel.addGeofence(pin);
     }
 
     //calls QuestionFragment to display a question for the user
