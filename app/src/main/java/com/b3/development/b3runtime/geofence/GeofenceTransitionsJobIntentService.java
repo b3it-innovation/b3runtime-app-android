@@ -2,7 +2,6 @@ package com.b3.development.b3runtime.geofence;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
