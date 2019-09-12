@@ -2,6 +2,7 @@ package com.b3.development.b3runtime.geofence;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -22,5 +23,10 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
     protected void onHandleWork(@NonNull Intent intent) {
         //todo handle work
         Log.d("GEOFENCE", "SERVICE STARTED");
+        Intent newIntent = new Intent("newQuestion");
+        Bundle extras = new Bundle();
+        extras.putString("newQuestionExtra", "test");
+        newIntent.putExtras(extras);
+        this.sendBroadcast(newIntent);
     }
 }
