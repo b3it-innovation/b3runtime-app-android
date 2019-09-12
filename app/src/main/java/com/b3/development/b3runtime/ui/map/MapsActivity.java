@@ -4,10 +4,9 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.location.LocationProvider;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -30,6 +29,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -52,6 +53,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     private GoogleMap map;
     private AlertDialog permissionDeniedDialog;
     private LocationManager locationManager;
+
+    private Circle currentCircle;
 
     /**
      * Contains the main logic of the {@link MapsActivity}
@@ -160,8 +163,12 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
 //            showQuestion();
             return true;
         });
+      
         //adds a geofence on the recieved pin
         viewModel.addGeofence(pin);
+
+        // draw geofence circle around pin
+        drawGeofenceCircleAroundPin();
     }
 
     //calls QuestionFragment to display a question for the user
@@ -249,6 +256,24 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     private void showPermissionDeniedDialog() {
         if (!permissionDeniedDialog.isShowing()) {
             permissionDeniedDialog.show();
+        }
+    }
+
+    private void drawGeofenceCircleAroundPin() {
+        removeGeofenceCircleAroundPin();
+        CircleOptions circleOptions = new CircleOptions()
+                .center(new LatLng(viewModel.nextPin.getValue().latitude,
+                        viewModel.nextPin.getValue().longitude))
+                .radius(150)
+                .fillColor(0x40ff0000)
+                .strokeColor(Color.TRANSPARENT)
+                .strokeWidth(2);
+        currentCircle = map.addCircle(circleOptions);
+    }
+
+    private void removeGeofenceCircleAroundPin(){
+        if(currentCircle != null){
+            currentCircle.remove();
         }
     }
 }
