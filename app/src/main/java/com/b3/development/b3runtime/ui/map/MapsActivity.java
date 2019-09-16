@@ -124,6 +124,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                // Remove geofence otherwise it is still there and triggers questions
+                viewModel.removeGeofence();
+
                 // Check if last pin is reached
                 if(intent.getStringExtra("id").equals(finalPinID)){
                     System.out.println("Last Pin");
