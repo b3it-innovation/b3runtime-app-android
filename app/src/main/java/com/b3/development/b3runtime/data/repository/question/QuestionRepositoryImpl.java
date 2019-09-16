@@ -101,4 +101,9 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         }
         return convertedQuestions;
     }
+
+    @Override
+    public void resetQuestionIsAnswered(){
+        AsyncTask.execute(() -> questionDao.updateQuestionIsAnswered(false));
+    }
 }

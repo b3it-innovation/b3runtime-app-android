@@ -32,4 +32,7 @@ public interface QuestionDao {
 
 //    @Delete
 //    void removeQuestion(Question question);
+
+    @Query("UPDATE question SET isAnswered = :bool")
+    int updateQuestionIsAnswered(boolean bool);
 }

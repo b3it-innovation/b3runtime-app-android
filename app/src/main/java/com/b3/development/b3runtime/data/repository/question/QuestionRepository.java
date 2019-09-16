@@ -17,4 +17,6 @@ public interface QuestionRepository {
     void fetch();
 
     void updateQuestion(Question q);
+
+    void resetQuestionIsAnswered();
 }

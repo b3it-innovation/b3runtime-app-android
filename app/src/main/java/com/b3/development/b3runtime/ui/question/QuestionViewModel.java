@@ -68,4 +68,8 @@ public class QuestionViewModel extends BaseViewModel {
         }
         return selectedAnswer;
     }
+
+    public void resetQuestionsIsAnswered(){
+        repository.resetQuestionIsAnswered();
+    }
 }

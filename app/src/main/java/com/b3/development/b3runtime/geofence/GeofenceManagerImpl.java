@@ -5,10 +5,14 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 /**
  * Contains logic for adding and removing geofences
@@ -30,7 +34,20 @@ public class GeofenceManagerImpl implements GeofenceManager {
         builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
         builder.addGeofence(geofence);
 
-        client.addGeofences(builder.build(), geofencePendingIntent);
+        client.addGeofences(builder.build(), geofencePendingIntent)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        System.out.println("Succeeded to add geofence to the Google map");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        System.out.println("Failed to add geofence to the Google map");
+                        e.printStackTrace();
+                    }
+                });
     }
 
     @Override

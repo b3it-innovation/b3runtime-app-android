@@ -60,6 +60,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     private LocalBroadcastManager localBroadcastManager;
 
     private Circle currentCircle;
+    private String finalPinID;
 
     /**
      * Contains the main logic of the {@link MapsActivity}
@@ -95,6 +96,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                 null,
                 false);
         registerReceiver();
+
+        // Get all pins and save ID of the last pin
+        viewModel.allPins.observe(this,
+                pins -> {finalPinID = pins.get(5).id;
+                    System.out.println("Final Pin ID: " + finalPinID);});
     }
 
     /**
@@ -118,7 +124,15 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                showQuestion();
+                // Check if last pin is reached
+                if(intent.getStringExtra("id").equals(finalPinID)){
+                    System.out.println("Last Pin");
+                    Toast.makeText(MapsActivity.this, "Last Pin", Toast.LENGTH_LONG).show();
+                    // todo: reset pins if all pins are completed (delete this in release version)
+                    viewModel.resetPins();
+                } else { // Otherwise shoe new question
+                    showQuestion();
+                }
             }
         };
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
