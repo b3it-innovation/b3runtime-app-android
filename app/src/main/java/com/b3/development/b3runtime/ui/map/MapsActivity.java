@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
@@ -55,8 +56,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     private MapsViewModel viewModel = get(MapsViewModel.class);
     private GoogleMap map;
     private AlertDialog permissionDeniedDialog;
-    private LocationManager locationManager;
     private BroadcastReceiver broadcastReceiver;
+    private LocalBroadcastManager localBroadcastManager;
 
     private Circle currentCircle;
 
@@ -93,8 +94,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                 "",
                 null,
                 false);
-        //Create a LocationManager for setting a mock location (todo: Remove before release)
-        locationManager = (LocationManager)this.getSystemService(LOCATION_SERVICE);
         registerReceiver();
     }
 
@@ -108,10 +107,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         if (broadcastReceiver != null)  {
-            unregisterReceiver(broadcastReceiver);
+            localBroadcastManager.unregisterReceiver(broadcastReceiver);
         }
     }
 
@@ -122,7 +121,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                 showQuestion();
             }
         };
-        registerReceiver(broadcastReceiver, new IntentFilter("newQuestion"));
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter("newQuestion"));
     }
 
     /**

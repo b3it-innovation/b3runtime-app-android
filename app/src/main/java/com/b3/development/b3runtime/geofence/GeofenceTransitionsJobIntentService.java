@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.JobIntentService;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 /**
  * A service that handles the Jobs related to geofences
@@ -23,6 +24,6 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
         //todo handle work
         Log.d("GEOFENCE", "SERVICE STARTED");
         Intent newIntent = new Intent("newQuestion");
-        this.sendBroadcast(newIntent);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(newIntent);
     }
 }
