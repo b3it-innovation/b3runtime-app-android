@@ -33,4 +33,7 @@ public interface PinDao {
 
     @Delete
     void removePin(Pin pin);
+
+    @Query("UPDATE pin SET completed = :bool")
+    int updatePinsCompleted(boolean bool);
 }

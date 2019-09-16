@@ -117,8 +117,10 @@ public class QuestionFragment extends BaseQuestionFragment {
     }
 
     private void handleQuestion(Question question) {
-        System.out.println("Question in fragment is nul: " + (question == null));
+        System.out.println("Question in fragment is null: " + (question == null));
         if (question == null) {
+            // todo: reset questions if all question are answered (delete this in release version)
+            viewModel.resetQuestionsIsAnswered();
             return;
         }
         questionTextView.setText(question.question);

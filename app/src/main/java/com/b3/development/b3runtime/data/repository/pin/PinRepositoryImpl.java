@@ -44,6 +44,11 @@ public class PinRepositoryImpl implements PinRepository {
         return nextPin;
     }
 
+    @Override
+    public LiveData<List<Pin>> getAllPins() {
+        return pinDao.getAll();
+    }
+
     /**
      * @return error <code>LiveData</code> of <code>Failure></code>
      */
@@ -61,6 +66,11 @@ public class PinRepositoryImpl implements PinRepository {
     @Override
     public void skipPin(long pinOrder) {
 
+    }
+
+    @Override
+    public void resetPinsCompleted(){
+        AsyncTask.execute(() -> pinDao.updatePinsCompleted(false));
     }
 
     /**

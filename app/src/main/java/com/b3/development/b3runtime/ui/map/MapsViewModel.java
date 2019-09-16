@@ -8,6 +8,8 @@ import com.b3.development.b3runtime.data.repository.pin.PinRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.google.android.gms.location.Geofence;
 
+import java.util.List;
+
 /**
  * A ViewModel for the {@link MapsActivity}
  * Contains data to be displayed in the {@link MapsActivity} and handles its lifecycle securely
@@ -15,6 +17,7 @@ import com.google.android.gms.location.Geofence;
 public class MapsViewModel extends BaseViewModel {
 
     LiveData<Pin> nextPin;
+    LiveData<List<Pin>> allPins;
     private PinRepository pinRepository;
     private GeofenceManager geofenceManager;
 
@@ -22,6 +25,7 @@ public class MapsViewModel extends BaseViewModel {
         this.pinRepository = repository;
         pinRepository.fetch();
         nextPin = pinRepository.getPin();
+        allPins = pinRepository.getAllPins();
         errors = pinRepository.getError();
         this.geofenceManager = geofenceManager;
     }
@@ -59,5 +63,9 @@ public class MapsViewModel extends BaseViewModel {
         System.out.println("pin completed before second update: " + nextPin.getValue().completed);
         pinRepository.updatePin(pin);
         System.out.println("Second update pin order: " + pin.order);
+    }
+
+    public void resetPins(){
+        pinRepository.resetPinsCompleted();
     }
 }
