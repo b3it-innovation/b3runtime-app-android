@@ -36,13 +36,20 @@ public class QuestionFragment extends BaseQuestionFragment {
     private ProgressBar pb;
 
 
-    public QuestionFragment(int layoutId) {
-        this.layoutId = layoutId;
+    public QuestionFragment() {}
+
+    public static final QuestionFragment newInstance(int layoutId) {
+        QuestionFragment fragment = new QuestionFragment();
+        Bundle bundle = new Bundle(1);
+        bundle.putInt("layoutId", layoutId);
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.layoutId = getArguments().getInt("layoutId");
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
     }
 

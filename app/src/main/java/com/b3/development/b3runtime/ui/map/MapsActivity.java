@@ -196,7 +196,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
 
     //calls QuestionFragment to display a question for the user
     private void showQuestion() {
-        QuestionFragment questionFragment = new QuestionFragment(R.layout.fragment_question_dialog);
+        QuestionFragment questionFragment = QuestionFragment.newInstance(R.layout.fragment_question_dialog);
         questionFragment.show(getSupportFragmentManager(), "question");
     }
 
