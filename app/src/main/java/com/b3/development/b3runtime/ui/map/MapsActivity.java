@@ -153,8 +153,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         map = googleMap;
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15f));
         initializeMap();
-        //observes for change in the nextPin data and calls showPin()
-        viewModel.nextPin.observe(this, MapsActivity.this::showPin);
         // Get all pins and draw / save ID of the last pin
         viewModel.allPins.observe(this,
                 pins -> {
@@ -182,6 +180,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
             return;
         } else {
             map.setMyLocationEnabled(true);
+            //observes for change in the nextPin data and calls showPin()
+            viewModel.nextPin.observe(this, MapsActivity.this::showPin);
         }
     }
 
