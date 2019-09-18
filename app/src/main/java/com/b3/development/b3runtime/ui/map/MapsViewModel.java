@@ -50,6 +50,10 @@ public class MapsViewModel extends BaseViewModel {
                 .build());
     }
 
+    public void removeGeofence(){
+        geofenceManager.removeGeofences();
+    }
+
     public void updatePin() {
         Pin pin = nextPin.getValue();
         pinRepository.updatePin(pin);
