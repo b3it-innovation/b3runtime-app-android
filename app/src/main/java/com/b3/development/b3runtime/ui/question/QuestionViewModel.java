@@ -28,6 +28,10 @@ public class QuestionViewModel extends BaseViewModel {
         errors = repository.getError();
     }
 
+    public QuestionViewModel() {
+        System.out.println("Constructor QVM");
+    }
+
     public void validateAnswer(int selectedOption) {
         showLoading.postValue(true);
         Question q = quest.getValue();

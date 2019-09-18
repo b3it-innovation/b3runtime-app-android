@@ -21,12 +21,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
 import com.b3.development.b3runtime.data.local.model.pin.Pin;
+import com.b3.development.b3runtime.data.repository.pin.PinRepository;
+import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
+import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
+import com.b3.development.b3runtime.ui.question.QuestionViewModel;
+import com.b3.development.b3runtime.ui.question.QuestionViewModelFactory;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -53,7 +59,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     public static final LatLng DEFAULT_LOCATION = new LatLng(59.33, 18.05);
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
 
-    private MapsViewModel viewModel = get(MapsViewModel.class);
+    private MapsViewModel viewModel;
     private GoogleMap map;
     private AlertDialog permissionDeniedDialog;
     private BroadcastReceiver broadcastReceiver;
@@ -70,6 +76,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        viewModel = ViewModelProviders.of(this,
+                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class)))
+                .get(MapsViewModel.class);
+
         //observe for errors and inform user if an error occurs
         viewModel.errors.observe(this, error -> {
             Toast.makeText(this, getString(R.string.somethingWentWrong), Toast.LENGTH_SHORT)

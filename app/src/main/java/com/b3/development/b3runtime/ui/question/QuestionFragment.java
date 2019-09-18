@@ -11,10 +11,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseQuestionFragment;
 import com.b3.development.b3runtime.data.local.model.question.Question;
+import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -62,7 +64,9 @@ public class QuestionFragment extends BaseQuestionFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //sets data as in ViewModel
-        viewModel = get(QuestionViewModel.class);
+        viewModel = ViewModelProviders.of(this,
+                new QuestionViewModelFactory(get(QuestionRepository.class)))
+                .get(QuestionViewModel.class);
         questionTextView = view.findViewById(R.id.textQuestion);
         buttonA = view.findViewById(R.id.optionA);
         buttonB = view.findViewById(R.id.optionB);
