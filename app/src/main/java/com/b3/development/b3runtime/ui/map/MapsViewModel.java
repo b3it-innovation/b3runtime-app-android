@@ -56,13 +56,16 @@ public class MapsViewModel extends BaseViewModel {
 
     public void updatePin() {
         Pin pin = nextPin.getValue();
+        pin.completed = true;
         pinRepository.updatePin(pin);
     }
 
     public void skipPin() {
         System.out.println("First update, pin order: " + nextPin.getValue().order);
-        updatePin();
         Pin pin = nextPin.getValue();
+        pin.answeredCorrect = true;
+        updatePin();
+        pin = nextPin.getValue();
         pin.completed = true;
         System.out.println("pin completed before second update: " + nextPin.getValue().completed);
         pinRepository.updatePin(pin);

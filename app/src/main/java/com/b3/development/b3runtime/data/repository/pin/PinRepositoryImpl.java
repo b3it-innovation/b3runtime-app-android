@@ -119,6 +119,7 @@ public class PinRepositoryImpl implements PinRepository {
             convertedPin.longitude = pin.getPin().getLongitude();
             convertedPin.completed = false;
             convertedPin.order = i;
+            convertedPin.answeredCorrect = false;
             convertedPins.add(convertedPin);
             i++;
         }
