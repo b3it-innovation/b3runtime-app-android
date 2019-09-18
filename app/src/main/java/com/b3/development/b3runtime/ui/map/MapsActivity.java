@@ -158,9 +158,11 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         // Get all pins and draw / save ID of the last pin
         viewModel.allPins.observe(this,
                 pins -> {
-                    finalPinID = pins.get(pins.size() - 1).id;
-                    System.out.println("Final Pin ID: " + finalPinID);
-                    showAllPins(pins);
+                    if (!pins.isEmpty()) {
+                        finalPinID = pins.get(pins.size() - 1).id;
+                        System.out.println("Final Pin ID: " + finalPinID);
+                        showAllPins(pins);
+                    }
                 });
         map.setOnMapClickListener(latLng -> {
             setMockLocation(latLng.latitude, latLng.longitude, 10);
