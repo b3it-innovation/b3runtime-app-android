@@ -35,6 +35,8 @@ public class QuestionViewModel extends BaseViewModel {
             System.out.println("question in view model null");
         } else {
             System.out.println("question order: " + q.order);
+            q.isAnswered = true;
+            question.postValue(q);
             showLoading.postValue(false);
             String correctAnswer = q.correctAnswer;
             System.out.println("correct answer: " + correctAnswer);
@@ -46,7 +48,7 @@ public class QuestionViewModel extends BaseViewModel {
     }
 
     public void updateQuestion(Question q) {
-        q.isAnswered = true;
+        //q.isAnswered = true;
         repository.updateQuestion(q);
     }
 
