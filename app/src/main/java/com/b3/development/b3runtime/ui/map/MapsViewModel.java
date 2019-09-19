@@ -30,6 +30,10 @@ public class MapsViewModel extends BaseViewModel {
         this.geofenceManager = geofenceManager;
     }
 
+    public MapsViewModel() {
+
+    }
+
     @Override
     protected void onCleared() {
         super.onCleared();
@@ -56,6 +60,7 @@ public class MapsViewModel extends BaseViewModel {
 
     public void updatePin() {
         Pin pin = nextPin.getValue();
+        pin.completed = true;
         pinRepository.updatePin(pin);
     }
 
