@@ -110,8 +110,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
 
         // Get all pins and save ID of the last pin
         viewModel.allPins.observe(this,
-                pins -> {finalPinID = pins.get(5).id;
-                    System.out.println("Final Pin ID: " + finalPinID);});
+                pins -> {
+                    finalPinID = pins.get(5).id;
+                    System.out.println("Final Pin ID: " + finalPinID);
+                });
     }
 
     /**
@@ -126,9 +128,21 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (broadcastReceiver != null)  {
+        if (broadcastReceiver != null) {
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        if (getSupportFragmentManager() != null &&
+                getSupportFragmentManager().findFragmentByTag("question") != null) {
+                    getSupportFragmentManager()
+                    .beginTransaction()
+                    .remove(getSupportFragmentManager().findFragmentByTag("question"))
+                    .commitAllowingStateLoss();
+        }
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     private void registerReceiver() {
@@ -139,7 +153,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                 viewModel.removeGeofence();
 
                 // Check if last pin is reached
-                if(intent.getStringExtra("id").equals(finalPinID)){
+                if (intent.getStringExtra("id").equals(finalPinID)) {
                     System.out.println("Last Pin");
                     Toast.makeText(MapsActivity.this, "Last Pin", Toast.LENGTH_LONG).show();
                     // todo: reset pins if all pins are completed (delete this in release version)
@@ -214,7 +228,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
 //            showQuestion();
             return true;
         });
-      
+
         //adds a geofence on the recieved pin
         viewModel.addGeofence(pin);
 
@@ -322,8 +336,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         currentCircle = map.addCircle(circleOptions);
     }
 
-    private void removeGeofenceCircleAroundPin(){
-        if(currentCircle != null){
+    private void removeGeofenceCircleAroundPin() {
+        if (currentCircle != null) {
             currentCircle.remove();
         }
     }

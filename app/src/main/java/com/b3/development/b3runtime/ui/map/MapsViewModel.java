@@ -60,6 +60,7 @@ public class MapsViewModel extends BaseViewModel {
 
     public void updatePin() {
         Pin pin = nextPin.getValue();
+        pin.completed = true;
         pinRepository.updatePin(pin);
     }
 

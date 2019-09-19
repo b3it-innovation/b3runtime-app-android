@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
@@ -51,6 +52,9 @@ public class QuestionFragment extends BaseQuestionFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity(),
+                new QuestionViewModelFactory(get(QuestionRepository.class)))
+                .get(QuestionViewModel.class);
         this.layoutId = getArguments().getInt("layoutId");
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
     }
@@ -64,9 +68,6 @@ public class QuestionFragment extends BaseQuestionFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //sets data as in ViewModel
-        viewModel = ViewModelProviders.of(this,
-                new QuestionViewModelFactory(get(QuestionRepository.class)))
-                .get(QuestionViewModel.class);
         questionTextView = view.findViewById(R.id.textQuestion);
         buttonA = view.findViewById(R.id.optionA);
         buttonB = view.findViewById(R.id.optionB);
@@ -118,6 +119,8 @@ public class QuestionFragment extends BaseQuestionFragment {
 
     private void showResponse(Boolean isCorrect) {
         ResponseFragment.build(isCorrect).show(getFragmentManager(), null);
+        viewModel.validated.removeObservers(this);
+        viewModel.validated = new MutableLiveData<>();
     }
 
     private void handleQuestion(Question question) {
