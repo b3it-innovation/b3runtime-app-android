@@ -22,6 +22,7 @@ public class PinRepositoryImpl implements PinRepository {
     private PinDao pinDao;
     private BackendInteractor backend;
     private LiveData<Pin> nextPin;
+    private LiveData<List<Pin>> allPins;
     private MutableLiveData<Failure> error = new MutableLiveData<>();
 
     /**
@@ -33,6 +34,7 @@ public class PinRepositoryImpl implements PinRepository {
     public PinRepositoryImpl(PinDao pd, BackendInteractor bi) {
         this.pinDao = pd;
         this.backend = bi;
+        allPins = pinDao.getAll();
         nextPin = pinDao.getNextPin(false);
     }
 
@@ -46,7 +48,7 @@ public class PinRepositoryImpl implements PinRepository {
 
     @Override
     public LiveData<List<Pin>> getAllPins() {
-        return pinDao.getAll();
+        return allPins;
     }
 
     /**
