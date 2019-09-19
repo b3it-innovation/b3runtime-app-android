@@ -36,7 +36,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -61,6 +64,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
 
     private Circle currentCircle;
     private String finalPinID;
+    private Marker lastMarker;
 
     /**
      * Contains the main logic of the {@link MapsActivity}
@@ -97,10 +101,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                 false);
         registerReceiver();
 
-        // Get all pins and save ID of the last pin
-        viewModel.allPins.observe(this,
-                pins -> {finalPinID = pins.get(5).id;
-                    System.out.println("Final Pin ID: " + finalPinID);});
     }
 
     /**
@@ -115,9 +115,10 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (broadcastReceiver != null)  {
+        if (broadcastReceiver != null) {
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
         }
+        System.out.println(this.getClass() + " : onDestroy()");
     }
 
     private void registerReceiver() {
@@ -128,7 +129,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                 viewModel.removeGeofence();
 
                 // Check if last pin is reached
-                if(intent.getStringExtra("id").equals(finalPinID)){
+                if (intent.getStringExtra("id").equals(finalPinID)) {
                     System.out.println("Last Pin");
                     Toast.makeText(MapsActivity.this, "Last Pin", Toast.LENGTH_LONG).show();
                     // todo: reset pins if all pins are completed (delete this in release version)
@@ -152,8 +153,15 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         map = googleMap;
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15f));
         initializeMap();
-        //observes for change in the nextPin data and calls showPin()
-        viewModel.nextPin.observe(this, MapsActivity.this::showPin);
+        // Get all pins and draw / save ID of the last pin
+        viewModel.allPins.observe(this,
+                pins -> {
+                    if (!pins.isEmpty()) {
+                        finalPinID = pins.get(pins.size() - 1).id;
+                        System.out.println("Final Pin ID: " + finalPinID);
+                        showAllPins(pins);
+                    }
+                });
         map.setOnMapClickListener(latLng -> {
             setMockLocation(latLng.latitude, latLng.longitude, 10);
 
@@ -172,6 +180,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
             return;
         } else {
             map.setMyLocationEnabled(true);
+            //observes for change in the nextPin data and calls showPin()
+            viewModel.nextPin.observe(this, MapsActivity.this::showPin);
         }
     }
 
@@ -193,9 +203,14 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
 
     private void showPin(Pin pin) {
         if (pin == null) return;
-        map.addMarker(new MarkerOptions()
+        // Change color of the completed pin
+        if (lastMarker != null) {
+            lastMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+        }
+        lastMarker = map.addMarker(new MarkerOptions()
                 .position(new LatLng(pin.latitude, pin.longitude))
-                .title(pin.name));
+                .title(pin.name)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(pin.latitude, pin.longitude), 15f));
         map.setOnMarkerClickListener(marker -> {
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
@@ -203,12 +218,42 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
 //            showQuestion();
             return true;
         });
-      
+
         //adds a geofence on the recieved pin
         viewModel.addGeofence(pin);
 
         // draw geofence circle around pin
         drawGeofenceCircleAroundPin();
+    }
+
+    // Draw all pins except for the current pin
+    private void showAllPins(List<Pin> allPins) {
+        if (allPins == null || allPins.isEmpty()) return;
+        for (int i = 0; i < allPins.size(); i++) {
+            Pin pin = allPins.get(i);
+            Pin nextPin = viewModel.nextPin.getValue();
+            if (nextPin == null) {
+                Marker marker = map.addMarker(new MarkerOptions()
+                        .position(new LatLng(pin.latitude, pin.longitude))
+                        .title(pin.name));
+                if (pin.completed) {
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                }
+            } else {
+                if (nextPin != null && (!pin.id.equals(viewModel.nextPin.getValue().id))) {
+                    Marker marker = map.addMarker(new MarkerOptions()
+                            .position(new LatLng(pin.latitude, pin.longitude))
+                            .title(pin.name));
+                    if (pin.completed) {
+                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    }
+                }
+            }
+        }
+        // remove Livedata observation to call this method only once
+        if (viewModel.allPins.hasActiveObservers()) {
+            viewModel.allPins.removeObservers(this);
+        }
     }
 
     //calls QuestionFragment to display a question for the user
@@ -311,8 +356,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         currentCircle = map.addCircle(circleOptions);
     }
 
-    private void removeGeofenceCircleAroundPin(){
-        if(currentCircle != null){
+    private void removeGeofenceCircleAroundPin() {
+        if (currentCircle != null) {
             currentCircle.remove();
         }
     }
