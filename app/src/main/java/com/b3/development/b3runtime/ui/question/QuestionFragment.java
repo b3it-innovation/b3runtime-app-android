@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -18,6 +19,7 @@ import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseQuestionFragment;
 import com.b3.development.b3runtime.data.local.model.question.Question;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
+import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -38,21 +40,25 @@ public class QuestionFragment extends BaseQuestionFragment {
     private Button confirmButton;
     private ProgressBar pb;
 
+    private FragmentShowHideCallback callback;
 
-    public QuestionFragment() {}
+
+    public QuestionFragment() {
+    }
 
     public static final QuestionFragment newInstance(int layoutId) {
         QuestionFragment fragment = new QuestionFragment();
         Bundle bundle = new Bundle(1);
         bundle.putInt("layoutId", layoutId);
         fragment.setArguments(bundle);
+        fragment.setRetainInstance(true);
         return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = ViewModelProviders.of(getActivity(),
+        viewModel = ViewModelProviders.of(this,
                 new QuestionViewModelFactory(get(QuestionRepository.class)))
                 .get(QuestionViewModel.class);
         this.layoutId = getArguments().getInt("layoutId");
@@ -68,6 +74,7 @@ public class QuestionFragment extends BaseQuestionFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //sets data as in ViewModel
+        callback = (FragmentShowHideCallback) getActivity();
         questionTextView = view.findViewById(R.id.textQuestion);
         buttonA = view.findViewById(R.id.optionA);
         buttonB = view.findViewById(R.id.optionB);
@@ -77,7 +84,7 @@ public class QuestionFragment extends BaseQuestionFragment {
         pb.setVisibility(View.INVISIBLE);
         confirmButton = view.findViewById(R.id.buttonConfirmAnswer);
         confirmButton.setEnabled(false);
-
+        Fragment fragment = this;
         //gets and forwards answer for validation
         answers = view.findViewById(R.id.radioGroupAnswers);
         answers.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -93,7 +100,7 @@ public class QuestionFragment extends BaseQuestionFragment {
             public void onClick(View v) {
                 System.out.println("Calling viewModel to validate answer");
                 viewModel.validateAnswer(selectedOption);
-                dismiss();
+                callback.switchFragmentVisible(fragment);
             }
         });
         setCancelable(false);
