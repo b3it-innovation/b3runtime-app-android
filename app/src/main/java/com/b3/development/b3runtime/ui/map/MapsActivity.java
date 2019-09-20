@@ -240,8 +240,6 @@ public class MapsActivity extends BaseActivity
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(pin.latitude, pin.longitude), 15f));
         map.setOnMarkerClickListener(marker -> {
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-//            pin.completed = true;
-//            showQuestion();
             return true;
         });
 
@@ -284,8 +282,6 @@ public class MapsActivity extends BaseActivity
 
     //calls QuestionFragment to display a question for the user
     private void showQuestion() {
-//        QuestionFragment questionFragment = QuestionFragment.newInstance(R.layout.fragment_question_dialog);
-//        questionFragment.show(getSupportFragmentManager(), "question");
         if (getSupportFragmentManager().findFragmentByTag("question") == null) {
             questionFragment = QuestionFragment.newInstance(R.layout.fragment_question_dialog);
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();

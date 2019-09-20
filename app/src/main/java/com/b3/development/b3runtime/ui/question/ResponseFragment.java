@@ -8,11 +8,16 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseQuestionFragment;
+import com.b3.development.b3runtime.data.repository.pin.PinRepository;
+import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.ui.map.MapsViewModel;
+import com.b3.development.b3runtime.ui.map.MapsViewModelFactory;
 import com.github.abdularis.civ.CircleImageView;
 
 import static com.b3.development.b3runtime.R.color.b3Purple;
@@ -44,7 +49,7 @@ public class ResponseFragment extends BaseQuestionFragment {
      * @param isCorrect a boolean to decide on which response to show depending whether the
      * @return responseFragment
      */
-    public static ResponseFragment build(boolean isCorrect) {
+    public static ResponseFragment newInstance(boolean isCorrect) {
         Bundle arguments = new Bundle();
         arguments.putBoolean(ResponseFragment.EXTRA_IS_CORRECT, isCorrect);
         ResponseFragment responseFragment = new ResponseFragment(R.layout.fragment_result_dialog);
@@ -61,7 +66,11 @@ public class ResponseFragment extends BaseQuestionFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
-        viewModel = get(MapsViewModel.class);
+        viewModel = ViewModelProviders.of(getActivity(),
+                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class)))
+                .get(MapsViewModel.class);
+        System.out.println("Hej");
+        ;
     }
 
     @Override
@@ -93,14 +102,14 @@ public class ResponseFragment extends BaseQuestionFragment {
     private void showResponse(Boolean isCorrect) {
         if (isCorrect) {
             response.setText(R.string.correctAnswer);
-            colorBase.setBackgroundColor(getResources().getColor(b3Yellow));
+            colorBase.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
             colorLogo.setImageResource(R.drawable.b3logo_yellow);
-            confirm.setBackgroundColor(getResources().getColor(b3Yellow));
+            confirm.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
         } else {
             response.setText(R.string.wrongAnswer);
-            colorBase.setBackgroundColor(getResources().getColor(b3Purple));
+            colorBase.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Purple));
             colorLogo.setImageResource(R.drawable.b3logo_purple);
-            confirm.setBackgroundColor(getResources().getColor(b3Purple));
+            confirm.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Purple));
         }
     }
 }

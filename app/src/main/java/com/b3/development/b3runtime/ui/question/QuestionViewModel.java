@@ -28,10 +28,6 @@ public class QuestionViewModel extends BaseViewModel {
         errors = repository.getError();
     }
 
-    public QuestionViewModel() {
-        System.out.println("Constructor QVM");
-    }
-
     public void validateAnswer(int selectedOption) {
         showLoading.postValue(true);
         Question q = quest.getValue();
@@ -52,7 +48,6 @@ public class QuestionViewModel extends BaseViewModel {
     }
 
     public void updateQuestion(Question q) {
-        //q.isAnswered = true;
         repository.updateQuestion(q);
     }
 
@@ -75,7 +70,7 @@ public class QuestionViewModel extends BaseViewModel {
         return selectedAnswer;
     }
 
-    public void resetQuestionsIsAnswered(){
+    public void resetQuestionsIsAnswered() {
         repository.resetQuestionIsAnswered();
     }
 }

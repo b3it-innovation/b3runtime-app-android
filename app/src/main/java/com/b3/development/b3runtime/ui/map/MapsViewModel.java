@@ -30,10 +30,6 @@ public class MapsViewModel extends BaseViewModel {
         this.geofenceManager = geofenceManager;
     }
 
-    public MapsViewModel() {
-
-    }
-
     @Override
     protected void onCleared() {
         super.onCleared();
@@ -54,7 +50,7 @@ public class MapsViewModel extends BaseViewModel {
                 .build());
     }
 
-    public void removeGeofence(){
+    public void removeGeofence() {
         geofenceManager.removeGeofences();
     }
 
@@ -74,7 +70,7 @@ public class MapsViewModel extends BaseViewModel {
         System.out.println("Second update pin order: " + pin.order);
     }
 
-    public void resetPins(){
+    public void resetPins() {
         pinRepository.resetPinsCompleted();
     }
 }

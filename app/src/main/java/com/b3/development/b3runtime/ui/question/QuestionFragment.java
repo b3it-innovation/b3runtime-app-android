@@ -125,7 +125,7 @@ public class QuestionFragment extends BaseQuestionFragment {
     }
 
     private void showResponse(Boolean isCorrect) {
-        ResponseFragment.build(isCorrect).show(getFragmentManager(), null);
+        ResponseFragment.newInstance(isCorrect).show(getFragmentManager(), null);
         viewModel.validated.removeObservers(this);
         viewModel.validated = new MutableLiveData<>();
     }
