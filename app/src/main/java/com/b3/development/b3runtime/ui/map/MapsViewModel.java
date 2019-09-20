@@ -30,10 +30,6 @@ public class MapsViewModel extends BaseViewModel {
         this.geofenceManager = geofenceManager;
     }
 
-    public MapsViewModel() {
-
-    }
-
     @Override
     protected void onCleared() {
         super.onCleared();
@@ -54,27 +50,27 @@ public class MapsViewModel extends BaseViewModel {
                 .build());
     }
 
-    public void removeGeofence(){
+    public void removeGeofence() {
         geofenceManager.removeGeofences();
     }
 
-    public void updatePin() {
+    //set pin to completed and update in local database
+    public void updatePinCompleted() {
         Pin pin = nextPin.getValue();
         pin.completed = true;
         pinRepository.updatePin(pin);
     }
 
     public void skipPin() {
-        System.out.println("First update, pin order: " + nextPin.getValue().order);
-        updatePin();
-        Pin pin = nextPin.getValue();
-        pin.completed = true;
+        System.out.println("Before update, pin order: " + nextPin.getValue().order);
+        updatePinCompleted();
         System.out.println("pin completed before second update: " + nextPin.getValue().completed);
-        pinRepository.updatePin(pin);
-        System.out.println("Second update pin order: " + pin.order);
+        updatePinCompleted();
+        System.out.println("Second update pin order: " + nextPin.getValue().order);
     }
 
-    public void resetPins(){
+    //sets all pin to not completed
+    public void resetPins() {
         pinRepository.resetPinsCompleted();
     }
 }
