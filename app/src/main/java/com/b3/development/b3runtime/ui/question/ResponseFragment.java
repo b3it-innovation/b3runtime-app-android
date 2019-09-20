@@ -66,11 +66,10 @@ public class ResponseFragment extends BaseQuestionFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
+        //create or connect viewmodel to fragment
         viewModel = ViewModelProviders.of(getActivity(),
                 new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class)))
                 .get(MapsViewModel.class);
-        System.out.println("Hej");
-        ;
     }
 
     @Override
@@ -82,6 +81,7 @@ public class ResponseFragment extends BaseQuestionFragment {
         colorLogo = view.findViewById(R.id.imageLogoResult);
         setCancelable(false);
         confirm = view.findViewById(R.id.confirmResult);
+        //sets pin to completed and skips to next if correct answer on question
         confirm.setOnClickListener(v -> {
             if (getArguments().getBoolean(EXTRA_IS_CORRECT)) {
                 //todo update pin here
@@ -90,7 +90,7 @@ public class ResponseFragment extends BaseQuestionFragment {
             } else {
                 //todo implement extra route
                 System.out.println("UPDATE PIN CALLED IN RESPONSE FRAGMENT");
-                viewModel.updatePin();
+                viewModel.updatePinCompleted();
             }
             dismiss();
         });
@@ -99,6 +99,7 @@ public class ResponseFragment extends BaseQuestionFragment {
         }
     }
 
+    //changes look of responsefragment depending if answered correctly
     private void showResponse(Boolean isCorrect) {
         if (isCorrect) {
             response.setText(R.string.correctAnswer);

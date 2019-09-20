@@ -40,7 +40,7 @@ public class QuestionViewModel extends BaseViewModel {
             showLoading.postValue(false);
             String correctAnswer = q.correctAnswer;
             System.out.println("correct answer: " + correctAnswer);
-            String selectedAnswer = convertAnswer(selectedOption);
+            String selectedAnswer = convertSelectedAnswer(selectedOption);
             System.out.println("selected answer: " + selectedAnswer);
             validated.postValue(correctAnswer.equalsIgnoreCase(selectedAnswer));
 
@@ -51,7 +51,7 @@ public class QuestionViewModel extends BaseViewModel {
         repository.updateQuestion(q);
     }
 
-    private String convertAnswer(int selectedOption) {
+    private String convertSelectedAnswer(int selectedOption) {
         String selectedAnswer = "selected";
         switch (selectedOption) {
             case R.id.optionA:
@@ -70,6 +70,7 @@ public class QuestionViewModel extends BaseViewModel {
         return selectedAnswer;
     }
 
+    //sets all question to not answered
     public void resetQuestionsIsAnswered() {
         repository.resetQuestionIsAnswered();
     }

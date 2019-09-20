@@ -8,6 +8,9 @@ import androidx.lifecycle.ViewModelProvider;
 import com.b3.development.b3runtime.data.repository.pin.PinRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 
+/**
+ * A factory class for creating {@link MapsViewModel} for {@link MapsActivity}
+ */
 public class MapsViewModelFactory implements ViewModelProvider.Factory {
 
     private PinRepository pinRepository;

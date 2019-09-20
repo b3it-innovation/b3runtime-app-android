@@ -28,6 +28,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
         Log.d("GEOFENCE", "SERVICE STARTED");
+        //Get triggered geofence id and add it to new intent and broadcast to mapsactivity
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         List<Geofence> list = geofencingEvent.getTriggeringGeofences();
         Intent newIntent = new Intent("newQuestion");

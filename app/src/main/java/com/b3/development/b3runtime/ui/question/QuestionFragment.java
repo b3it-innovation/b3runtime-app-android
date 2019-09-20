@@ -58,6 +58,7 @@ public class QuestionFragment extends BaseQuestionFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //create or connect viewmodel to fragment
         viewModel = ViewModelProviders.of(this,
                 new QuestionViewModelFactory(get(QuestionRepository.class)))
                 .get(QuestionViewModel.class);
@@ -73,8 +74,10 @@ public class QuestionFragment extends BaseQuestionFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //sets data as in ViewModel
+        //enables attaching/detaching of fragment from inside fragment
+        // needs to be here due to recreation of activity on screen rotation
         callback = (FragmentShowHideCallback) getActivity();
+        //sets data as in ViewModel
         questionTextView = view.findViewById(R.id.textQuestion);
         buttonA = view.findViewById(R.id.optionA);
         buttonB = view.findViewById(R.id.optionB);
@@ -126,14 +129,16 @@ public class QuestionFragment extends BaseQuestionFragment {
 
     private void showResponse(Boolean isCorrect) {
         ResponseFragment.newInstance(isCorrect).show(getFragmentManager(), null);
+        //remove observer and recreate MutableLiveData to prevent showing of response more than once
         viewModel.validated.removeObservers(this);
         viewModel.validated = new MutableLiveData<>();
     }
 
+    //changes text in questionfragment to current question
     private void handleQuestion(Question question) {
         System.out.println("Question in fragment is null: " + (question == null));
         if (question == null) {
-            // todo: reset questions if all question are answered (delete this in release version)
+            //reset questions if all question are answered todo: (delete this in release version)
             viewModel.resetQuestionsIsAnswered();
             return;
         }

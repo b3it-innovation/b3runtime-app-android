@@ -82,6 +82,7 @@ public class MapsActivity extends BaseActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //check if questionfragment is created and retained, if it is then detach from screen
         if (savedInstanceState != null) {
             if (savedInstanceState.getBoolean("questionAdded")) {
                 questionFragment =
@@ -90,6 +91,7 @@ public class MapsActivity extends BaseActivity
             }
         }
 
+        //create or connect already existing viewmodel to activity
         viewModel = ViewModelProviders.of(this,
                 new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class)))
                 .get(MapsViewModel.class);
@@ -142,16 +144,18 @@ public class MapsActivity extends BaseActivity
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        //save state if questionfragment is created, to retain it during screen rotation
         savedInstanceState
                 .putBoolean("questionAdded", getSupportFragmentManager().findFragmentByTag("question") != null);
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    //todo: move to manifest to receive broadcasts when activity in background
     private void registerReceiver() {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                // Remove geofence otherwise it is still there and triggers questions
+                // Remove geofence otherwise it is still there and triggers questions on screen rotation
                 viewModel.removeGeofence();
 
                 // Check if last pin is reached
@@ -160,7 +164,7 @@ public class MapsActivity extends BaseActivity
                     Toast.makeText(MapsActivity.this, "Last Pin", Toast.LENGTH_LONG).show();
                     // todo: reset pins if all pins are completed (delete this in release version)
                     viewModel.resetPins();
-                } else { // Otherwise shoe new question
+                } else { // Otherwise show new question
                     showQuestion();
                 }
             }
@@ -188,12 +192,13 @@ public class MapsActivity extends BaseActivity
                         showAllPins(pins);
                     }
                 });
+        //sets mocklocation of device when clicking on map todo: remove before release
         map.setOnMapClickListener(latLng -> {
             setMockLocation(latLng.latitude, latLng.longitude, 10);
 
             Toast.makeText(MapsActivity.this,
                     "Lat: " + latLng.latitude +
-                            "\r\nLong: " + latLng.longitude, Toast.LENGTH_LONG).show();
+                            "\r\nLong: " + latLng.longitude, Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -206,8 +211,9 @@ public class MapsActivity extends BaseActivity
             return;
         } else {
             map.setMyLocationEnabled(true);
-            //observes for change in the nextPin data and calls showPin()
-            viewModel.nextPin.observe(this, MapsActivity.this::showPin);
+            //observes for change in the nextPin data and calls showNextPin(),
+            // needs to be here to get permission before adding geofence
+            viewModel.nextPin.observe(this, MapsActivity.this::showNextPin);
         }
     }
 
@@ -227,30 +233,30 @@ public class MapsActivity extends BaseActivity
         LocationServices.getFusedLocationProviderClient(this).setMockLocation(newLocation);
     }
 
-    private void showPin(Pin pin) {
-        if (pin == null) return;
-        // Change color of the completed pin
+    private void showNextPin(Pin nextPin) {
+        if (nextPin == null) return;
+        // Change color of the completed nextPin
         if (lastMarker != null) {
             lastMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
         }
         lastMarker = map.addMarker(new MarkerOptions()
-                .position(new LatLng(pin.latitude, pin.longitude))
-                .title(pin.name)
+                .position(new LatLng(nextPin.latitude, nextPin.longitude))
+                .title(nextPin.name)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(pin.latitude, pin.longitude), 15f));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextPin.latitude, nextPin.longitude), 15f));
         map.setOnMarkerClickListener(marker -> {
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
             return true;
         });
 
-        //adds a geofence on the recieved pin
-        viewModel.addGeofence(pin);
+        //adds a geofence on the recieved nextPin
+        viewModel.addGeofence(nextPin);
 
-        // draw geofence circle around pin
+        // draw geofence circle around nextPin
         drawGeofenceCircleAroundPin();
     }
 
-    // Draw all pins except for the current pin
+    // Draw all pins except for the current pin if possible
     private void showAllPins(List<Pin> allPins) {
         if (allPins == null || allPins.isEmpty()) return;
         for (int i = 0; i < allPins.size(); i++) {
@@ -274,7 +280,7 @@ public class MapsActivity extends BaseActivity
                 }
             }
         }
-        // remove Livedata observation to call this method only once
+        //remove Livedata observation to call this method only once
         if (viewModel.allPins.hasActiveObservers()) {
             viewModel.allPins.removeObservers(this);
         }
