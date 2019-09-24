@@ -389,7 +389,7 @@ public class MapsActivity extends BaseActivity
         CircleOptions circleOptions = new CircleOptions()
                 .center(new LatLng(viewModel.nextPin.getValue().latitude,
                         viewModel.nextPin.getValue().longitude))
-                .radius(80)
+                .radius(70)
                 .fillColor(0x40ff0000)
                 .strokeColor(Color.TRANSPARENT)
                 .strokeWidth(2);
