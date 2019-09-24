@@ -58,6 +58,7 @@ public class MapsViewModel extends BaseViewModel {
     public void updatePinCompleted() {
         Pin pin = nextPin.getValue();
         pin.completed = true;
+        pin.completedTime = System.currentTimeMillis();
         pinRepository.updatePin(pin);
     }
 
