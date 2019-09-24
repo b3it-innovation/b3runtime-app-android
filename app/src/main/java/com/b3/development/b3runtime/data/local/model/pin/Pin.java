@@ -29,4 +29,7 @@ public class Pin {
     @ColumnInfo(name = "completed")
     public boolean completed;
 
+    @ColumnInfo(name = "answeredCorrect")
+    public boolean answeredCorrect;
+
 }
