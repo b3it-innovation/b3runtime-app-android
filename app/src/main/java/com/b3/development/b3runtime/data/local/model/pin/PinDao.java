@@ -21,7 +21,7 @@ public interface PinDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertPins(List<Pin> pins);
 
-    @Query("SELECT * FROM pin")
+    @Query("SELECT * FROM pin ORDER BY `order`")
     LiveData<List<Pin>> getAll();
 
     //gets the next pin that is not completed

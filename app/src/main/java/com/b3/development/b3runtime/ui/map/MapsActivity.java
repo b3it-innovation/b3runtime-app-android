@@ -32,6 +32,7 @@ import com.b3.development.b3runtime.data.local.model.pin.Pin;
 import com.b3.development.b3runtime.data.repository.pin.PinRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
+import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
 import com.b3.development.b3runtime.ui.question.ResultFragment;
 import com.google.android.gms.location.LocationServices;
@@ -71,6 +72,7 @@ public class MapsActivity extends BaseActivity
     private LocalBroadcastManager localBroadcastManager;
 
     private Circle currentCircle;
+    private String firstPinID;
     private String finalPinID;
     private QuestionFragment questionFragment;
     private Marker lastMarker;
@@ -159,8 +161,12 @@ public class MapsActivity extends BaseActivity
                 // Remove geofence otherwise it is still there and triggers questions on screen rotation
                 viewModel.removeGeofence();
 
+                // Check if first pin is reached
+                if (intent.getStringExtra("id").equals(firstPinID)) {
+                    CheckinFragment.newInstance().show(getSupportFragmentManager(), null);
+                }
                 // Check if last pin is reached
-                if (intent.getStringExtra("id").equals(finalPinID)) {
+                else if (intent.getStringExtra("id").equals(finalPinID)) {
                     // Show result
                     ResultFragment.newInstance().show(getSupportFragmentManager(), null);
                 } else { // Otherwise show new question
@@ -186,6 +192,7 @@ public class MapsActivity extends BaseActivity
         viewModel.allPins.observe(this,
                 pins -> {
                     if (!pins.isEmpty()) {
+                        firstPinID = pins.get(0).id;
                         finalPinID = pins.get(pins.size() - 1).id;
                         System.out.println("Final Pin ID: " + finalPinID);
                         showAllPins(pins);
