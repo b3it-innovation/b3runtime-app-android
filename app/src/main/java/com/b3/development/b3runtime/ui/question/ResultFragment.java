@@ -35,6 +35,7 @@ public class ResultFragment extends BaseQuestionFragment {
     private ImageView colorBase;
     private CircleImageView colorLogo;
     private Button confirm;
+    private String responseString;
 
     public ResultFragment(int layoutId) {
         this.layoutId = layoutId;
@@ -65,6 +66,7 @@ public class ResultFragment extends BaseQuestionFragment {
         viewModel = ViewModelProviders.of(getActivity(),
                 new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class)))
                 .get(MapsViewModel.class);
+        viewModel.allPins.observe(this, pins -> responseString = viewModel.getResult());
     }
 
     @Override
@@ -77,7 +79,7 @@ public class ResultFragment extends BaseQuestionFragment {
         setCancelable(false);
         confirm = view.findViewById(R.id.confirmResult);
 
-        response.setText("Thank you for testing this app!");
+        response.setText(viewModel.getResult());
         colorBase.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
         colorLogo.setImageResource(R.drawable.b3logo_yellow);
         confirm.setText("Close App");
