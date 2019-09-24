@@ -21,11 +21,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
 import com.b3.development.b3runtime.data.local.model.pin.Pin;
+import com.b3.development.b3runtime.data.repository.pin.PinRepository;
+import com.b3.development.b3runtime.geofence.GeofenceManager;
+import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,7 +42,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -47,13 +56,14 @@ import static org.koin.java.KoinJavaComponent.get;
  * <p>
  * Contains basic logic of the app
  */
-public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
+public class MapsActivity extends BaseActivity
+        implements OnMapReadyCallback, FragmentShowHideCallback {
 
     public static final String TAG = MapsActivity.class.getSimpleName();
     public static final LatLng DEFAULT_LOCATION = new LatLng(59.33, 18.05);
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
 
-    private MapsViewModel viewModel = get(MapsViewModel.class);
+    private MapsViewModel viewModel;
     private GoogleMap map;
     private AlertDialog permissionDeniedDialog;
     private BroadcastReceiver broadcastReceiver;
@@ -61,6 +71,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
 
     private Circle currentCircle;
     private String finalPinID;
+    private QuestionFragment questionFragment;
+    private Marker lastMarker;
 
     /**
      * Contains the main logic of the {@link MapsActivity}
@@ -70,6 +82,20 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //check if questionfragment is created and retained, if it is then detach from screen
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getBoolean("questionAdded")) {
+                questionFragment =
+                        (QuestionFragment) getSupportFragmentManager().findFragmentByTag("question");
+                getSupportFragmentManager().beginTransaction().detach(questionFragment).commit();
+            }
+        }
+
+        //create or connect already existing viewmodel to activity
+        viewModel = ViewModelProviders.of(this,
+                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class)))
+                .get(MapsViewModel.class);
+
         //observe for errors and inform user if an error occurs
         viewModel.errors.observe(this, error -> {
             Toast.makeText(this, getString(R.string.somethingWentWrong), Toast.LENGTH_SHORT)
@@ -96,11 +122,6 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                 null,
                 false);
         registerReceiver();
-
-        // Get all pins and save ID of the last pin
-        viewModel.allPins.observe(this,
-                pins -> {finalPinID = pins.get(5).id;
-                    System.out.println("Final Pin ID: " + finalPinID);});
     }
 
     /**
@@ -115,25 +136,35 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (broadcastReceiver != null)  {
+        if (broadcastReceiver != null) {
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
         }
+        System.out.println(this.getClass() + " : onDestroy()");
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        //save state if questionfragment is created, to retain it during screen rotation
+        savedInstanceState
+                .putBoolean("questionAdded", getSupportFragmentManager().findFragmentByTag("question") != null);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    //todo: move to manifest to receive broadcasts when activity in background
     private void registerReceiver() {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                // Remove geofence otherwise it is still there and triggers questions
+                // Remove geofence otherwise it is still there and triggers questions on screen rotation
                 viewModel.removeGeofence();
 
                 // Check if last pin is reached
-                if(intent.getStringExtra("id").equals(finalPinID)){
+                if (intent.getStringExtra("id").equals(finalPinID)) {
                     System.out.println("Last Pin");
                     Toast.makeText(MapsActivity.this, "Last Pin", Toast.LENGTH_LONG).show();
                     // todo: reset pins if all pins are completed (delete this in release version)
                     viewModel.resetPins();
-                } else { // Otherwise shoe new question
+                } else { // Otherwise show new question
                     showQuestion();
                 }
             }
@@ -152,14 +183,22 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         map = googleMap;
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15f));
         initializeMap();
-        //observes for change in the nextPin data and calls showPin()
-        viewModel.nextPin.observe(this, MapsActivity.this::showPin);
+        // Get all pins and draw / save ID of the last pin
+        viewModel.allPins.observe(this,
+                pins -> {
+                    if (!pins.isEmpty()) {
+                        finalPinID = pins.get(pins.size() - 1).id;
+                        System.out.println("Final Pin ID: " + finalPinID);
+                        showAllPins(pins);
+                    }
+                });
+        //sets mocklocation of device when clicking on map todo: remove before release
         map.setOnMapClickListener(latLng -> {
             setMockLocation(latLng.latitude, latLng.longitude, 10);
 
             Toast.makeText(MapsActivity.this,
                     "Lat: " + latLng.latitude +
-                            "\r\nLong: " + latLng.longitude, Toast.LENGTH_LONG).show();
+                            "\r\nLong: " + latLng.longitude, Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -172,6 +211,9 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
             return;
         } else {
             map.setMyLocationEnabled(true);
+            //observes for change in the nextPin data and calls showNextPin(),
+            // needs to be here to get permission before adding geofence
+            viewModel.nextPin.observe(this, MapsActivity.this::showNextPin);
         }
     }
 
@@ -191,30 +233,70 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         LocationServices.getFusedLocationProviderClient(this).setMockLocation(newLocation);
     }
 
-    private void showPin(Pin pin) {
-        if (pin == null) return;
-        map.addMarker(new MarkerOptions()
-                .position(new LatLng(pin.latitude, pin.longitude))
-                .title(pin.name));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(pin.latitude, pin.longitude), 15f));
+    private void showNextPin(Pin nextPin) {
+        if (nextPin == null) return;
+        // Change color of the completed nextPin
+        if (lastMarker != null) {
+            lastMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+        }
+        lastMarker = map.addMarker(new MarkerOptions()
+                .position(new LatLng(nextPin.latitude, nextPin.longitude))
+                .title(nextPin.name)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextPin.latitude, nextPin.longitude), 15f));
         map.setOnMarkerClickListener(marker -> {
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-//            pin.completed = true;
-//            showQuestion();
             return true;
         });
-      
-        //adds a geofence on the recieved pin
-        viewModel.addGeofence(pin);
 
-        // draw geofence circle around pin
+        //adds a geofence on the recieved nextPin
+        viewModel.addGeofence(nextPin);
+
+        // draw geofence circle around nextPin
         drawGeofenceCircleAroundPin();
+    }
+
+    // Draw all pins except for the current pin if possible
+    private void showAllPins(List<Pin> allPins) {
+        if (allPins == null || allPins.isEmpty()) return;
+        for (int i = 0; i < allPins.size(); i++) {
+            Pin pin = allPins.get(i);
+            Pin nextPin = viewModel.nextPin.getValue();
+            if (nextPin == null) {
+                Marker marker = map.addMarker(new MarkerOptions()
+                        .position(new LatLng(pin.latitude, pin.longitude))
+                        .title(pin.name));
+                if (pin.completed) {
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                }
+            } else {
+                if (nextPin != null && (!pin.id.equals(viewModel.nextPin.getValue().id))) {
+                    Marker marker = map.addMarker(new MarkerOptions()
+                            .position(new LatLng(pin.latitude, pin.longitude))
+                            .title(pin.name));
+                    if (pin.completed) {
+                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    }
+                }
+            }
+        }
+        //remove Livedata observation to call this method only once
+        if (viewModel.allPins.hasActiveObservers()) {
+            viewModel.allPins.removeObservers(this);
+        }
     }
 
     //calls QuestionFragment to display a question for the user
     private void showQuestion() {
-        QuestionFragment questionFragment = QuestionFragment.newInstance(R.layout.fragment_question_dialog);
-        questionFragment.show(getSupportFragmentManager(), "question");
+        if (getSupportFragmentManager().findFragmentByTag("question") == null) {
+            questionFragment = QuestionFragment.newInstance(R.layout.fragment_question_dialog);
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(questionFragment, "question").show(questionFragment).commit();
+        } else {
+            if (questionFragment != null) {
+                switchFragmentVisible(questionFragment);
+            }
+        }
     }
 
     private void requestLocationPermissions() {
@@ -311,9 +393,19 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         currentCircle = map.addCircle(circleOptions);
     }
 
-    private void removeGeofenceCircleAroundPin(){
-        if(currentCircle != null){
+    private void removeGeofenceCircleAroundPin() {
+        if (currentCircle != null) {
             currentCircle.remove();
         }
+    }
+
+    public void switchFragmentVisible(Fragment fragment) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        if (fragment.isDetached()) {
+            ft.attach(fragment);
+        } else {
+            ft.detach(fragment);
+        }
+        ft.commit();
     }
 }
