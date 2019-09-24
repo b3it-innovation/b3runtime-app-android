@@ -30,15 +30,16 @@ public class CheckinFragment extends BaseQuestionFragment {
 
     private MapsViewModel viewModel;
 
-    private int layoutId;
+    private static final int layoutId = R.layout.fragment_result_dialog;
     private TextView response;
     private ImageView colorBase;
     private CircleImageView colorLogo;
     private Button confirm;
 
-    public CheckinFragment(int layoutId) {
-        this.layoutId = layoutId;
-    }
+    public CheckinFragment(){}
+//    public CheckinFragment(int layoutId) {
+//        this.layoutId = layoutId;
+//    }
 
     /**
      * Builds the {@link CheckinFragment}
@@ -47,8 +48,10 @@ public class CheckinFragment extends BaseQuestionFragment {
      */
     public static CheckinFragment newInstance() {
         Bundle arguments = new Bundle();
-        CheckinFragment resultFragment = new CheckinFragment(R.layout.fragment_result_dialog);
+        //CheckinFragment resultFragment = new CheckinFragment(R.layout.fragment_result_dialog);
+        CheckinFragment resultFragment = new CheckinFragment();
         resultFragment.setArguments(arguments);
+        //resultFragment.setRetainInstance(true);
         return resultFragment;
     }
 
