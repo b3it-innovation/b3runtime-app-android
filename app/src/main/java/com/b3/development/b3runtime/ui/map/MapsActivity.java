@@ -33,6 +33,8 @@ import com.b3.development.b3runtime.data.repository.pin.PinRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
+import com.b3.development.b3runtime.ui.question.ResponseFragment;
+import com.b3.development.b3runtime.ui.question.ResultFragment;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -163,7 +165,8 @@ public class MapsActivity extends BaseActivity
                     System.out.println("Last Pin");
                     Toast.makeText(MapsActivity.this, "Last Pin", Toast.LENGTH_LONG).show();
                     // todo: reset pins if all pins are completed (delete this in release version)
-                    viewModel.resetPins();
+                    //viewModel.resetPins();
+                    ResultFragment.newInstance().show(getSupportFragmentManager(), null);
                 } else { // Otherwise show new question
                     showQuestion();
                 }
@@ -386,7 +389,7 @@ public class MapsActivity extends BaseActivity
         CircleOptions circleOptions = new CircleOptions()
                 .center(new LatLng(viewModel.nextPin.getValue().latitude,
                         viewModel.nextPin.getValue().longitude))
-                .radius(150)
+                .radius(80)
                 .fillColor(0x40ff0000)
                 .strokeColor(Color.TRANSPARENT)
                 .strokeWidth(2);
