@@ -30,16 +30,17 @@ public class ResultFragment extends BaseQuestionFragment {
 
     private MapsViewModel viewModel;
 
-    private int layoutId;
+    private static final int layoutId = R.layout.fragment_result_dialog;
     private TextView response;
     private ImageView colorBase;
     private CircleImageView colorLogo;
     private Button confirm;
     private String responseString;
 
-    public ResultFragment(int layoutId) {
-        this.layoutId = layoutId;
-    }
+    public ResultFragment(){}
+//    public ResultFragment(int layoutId) {
+//        this.layoutId = layoutId;
+//    }
 
     /**
      * Builds the {@link ResultFragment}
@@ -48,7 +49,8 @@ public class ResultFragment extends BaseQuestionFragment {
      */
     public static ResultFragment newInstance() {
         Bundle arguments = new Bundle();
-        ResultFragment resultFragment = new ResultFragment(R.layout.fragment_result_dialog);
+        //ResultFragment resultFragment = new ResultFragment(R.layout.fragment_result_dialog);
+        ResultFragment resultFragment = new ResultFragment();
         resultFragment.setArguments(arguments);
         return resultFragment;
     }
