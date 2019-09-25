@@ -15,10 +15,12 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Menu;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -122,6 +124,12 @@ public class MapsActivity extends BaseActivity
                 null,
                 false);
         registerReceiver();
+
+        // Find the toolbar view inside the activity layout
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        // Sets the Toolbar to act as the ActionBar for this Activity window.
+        // Make sure the toolbar exists in the activity and is not null
+        setSupportActionBar(toolbar);
     }
 
     /**
@@ -131,6 +139,14 @@ public class MapsActivity extends BaseActivity
     public void onStart() {
         super.onStart();
         requestLocationPermissions();
+    }
+
+    // Menu icons are inflated just as they were with actionbar
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu_main; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 
     @Override
