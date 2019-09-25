@@ -104,6 +104,10 @@ public class QuestionFragment extends BaseQuestionFragment {
                 System.out.println("Calling viewModel to validate answer");
                 viewModel.validateAnswer(selectedOption);
                 callback.switchFragmentVisible(fragment);
+                buttonA.setChecked(false);
+                buttonB.setChecked(false);
+                buttonC.setChecked(false);
+                buttonD.setChecked(false);
             }
         });
         setCancelable(false);

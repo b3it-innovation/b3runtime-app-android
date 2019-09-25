@@ -163,7 +163,6 @@ public class MapsActivity extends BaseActivity
                 // Check if last pin is reached
                 if (intent.getStringExtra("id").equals(finalPinID)) {
                     System.out.println("Last Pin");
-                    Toast.makeText(MapsActivity.this, "Last Pin", Toast.LENGTH_LONG).show();
                     // todo: reset pins if all pins are completed (delete this in release version)
                     //viewModel.resetPins();
                     ResultFragment.newInstance().show(getSupportFragmentManager(), null);

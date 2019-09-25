@@ -29,6 +29,8 @@ import static org.koin.java.KoinJavaComponent.get;
  */
 public class ResultFragment extends BaseQuestionFragment {
 
+    private MapsViewModel viewModel;
+
     private int layoutId;
     private TextView response;
     private ImageView colorBase;
@@ -60,6 +62,10 @@ public class ResultFragment extends BaseQuestionFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
+        //create or connect already existing viewmodel to activity
+        viewModel = ViewModelProviders.of(getActivity(),
+                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class)))
+                .get(MapsViewModel.class);
     }
 
     @Override
@@ -75,12 +81,12 @@ public class ResultFragment extends BaseQuestionFragment {
         response.setText("Thank you for testing this app!");
         colorBase.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
         colorLogo.setImageResource(R.drawable.b3logo_yellow);
-        confirm.setText("Close App");
+        confirm.setText("Start Again");
         confirm.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
 
         //sets pin to completed and skips to next if correct answer on question
         confirm.setOnClickListener(v -> {
-            //todo close app
+            viewModel.resetPins();
             dismiss();
         });
     }
