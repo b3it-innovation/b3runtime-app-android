@@ -32,7 +32,9 @@ import com.b3.development.b3runtime.data.local.model.pin.Pin;
 import com.b3.development.b3runtime.data.repository.pin.PinRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
+import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
+import com.b3.development.b3runtime.ui.question.ResultFragment;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -70,9 +72,11 @@ public class MapsActivity extends BaseActivity
     private LocalBroadcastManager localBroadcastManager;
 
     private Circle currentCircle;
+    private String firstPinID;
     private String finalPinID;
     private QuestionFragment questionFragment;
     private Marker lastMarker;
+    private boolean pinsDrawn = false;
 
     /**
      * Contains the main logic of the {@link MapsActivity}
@@ -144,6 +148,15 @@ public class MapsActivity extends BaseActivity
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        // remove all fragment except for SupoprtMapFragment and QuestionFragment
+        List<Fragment> list = getSupportFragmentManager().getFragments();
+        System.out.println(list.size());
+        for (Fragment f : getSupportFragmentManager().getFragments()) {
+            if (f.getTag() != null && !f.getTag().equals("question")) {
+                getSupportFragmentManager().beginTransaction().remove(f).commitAllowingStateLoss();
+            }
+        }
+
         //save state if questionfragment is created, to retain it during screen rotation
         savedInstanceState
                 .putBoolean("questionAdded", getSupportFragmentManager().findFragmentByTag("question") != null);
@@ -158,13 +171,16 @@ public class MapsActivity extends BaseActivity
                 // Remove geofence otherwise it is still there and triggers questions on screen rotation
                 viewModel.removeGeofence();
 
+                // Check if first pin is reached
+                if (intent.getStringExtra("id").equals(firstPinID)) {
+                    CheckinFragment.newInstance().show(getSupportFragmentManager(), "checkin");
+                }
                 // Check if last pin is reached
-                if (intent.getStringExtra("id").equals(finalPinID)) {
-                    System.out.println("Last Pin");
-                    Toast.makeText(MapsActivity.this, "Last Pin", Toast.LENGTH_LONG).show();
-                    // todo: reset pins if all pins are completed (delete this in release version)
-                    viewModel.resetPins();
+                else if (intent.getStringExtra("id").equals(finalPinID)) {
+                    // Show result
+                    ResultFragment.newInstance().show(getSupportFragmentManager(), "result");
                 } else { // Otherwise show new question
+
                     showQuestion();
                 }
             }
@@ -186,10 +202,13 @@ public class MapsActivity extends BaseActivity
         // Get all pins and draw / save ID of the last pin
         viewModel.allPins.observe(this,
                 pins -> {
-                    if (!pins.isEmpty()) {
+                    if (!pins.isEmpty() && !pinsDrawn) {
+                        firstPinID = pins.get(0).id;
                         finalPinID = pins.get(pins.size() - 1).id;
                         System.out.println("Final Pin ID: " + finalPinID);
                         showAllPins(pins);
+                        //set pinsDrawn to true to prevent redrawing of pins when data is changed
+                        pinsDrawn = true;
                     }
                 });
         //sets mocklocation of device when clicking on map todo: remove before release
@@ -279,10 +298,6 @@ public class MapsActivity extends BaseActivity
                     }
                 }
             }
-        }
-        //remove Livedata observation to call this method only once
-        if (viewModel.allPins.hasActiveObservers()) {
-            viewModel.allPins.removeObservers(this);
         }
     }
 

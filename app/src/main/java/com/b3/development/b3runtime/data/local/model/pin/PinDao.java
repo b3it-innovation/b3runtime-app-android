@@ -21,7 +21,7 @@ public interface PinDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertPins(List<Pin> pins);
 
-    @Query("SELECT * FROM pin")
+    @Query("SELECT * FROM pin ORDER BY `order`")
     LiveData<List<Pin>> getAll();
 
     //gets the next pin that is not completed
@@ -34,6 +34,6 @@ public interface PinDao {
     @Delete
     void removePin(Pin pin);
 
-    @Query("UPDATE pin SET completed = :bool")
+    @Query("UPDATE pin SET completed = :bool, answeredCorrect = :bool, skipped = :bool")
     int updatePinsCompleted(boolean bool);
 }

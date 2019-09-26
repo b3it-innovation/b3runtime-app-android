@@ -17,7 +17,7 @@ import java.util.List;
 public class MapsViewModel extends BaseViewModel {
 
     LiveData<Pin> nextPin;
-    LiveData<List<Pin>> allPins;
+    public LiveData<List<Pin>> allPins;
     private PinRepository pinRepository;
     private GeofenceManager geofenceManager;
 
@@ -34,6 +34,36 @@ public class MapsViewModel extends BaseViewModel {
     protected void onCleared() {
         super.onCleared();
         geofenceManager.removeGeofences();
+    }
+
+    //creates a response string that contains the result of the race
+    public String getResult() {
+        String response = "";
+        int correctAnswers = 0;
+        int totalNumberOfPins = allPins.getValue().size() - 2;
+
+        if(allPins.getValue().get(0).completedTime != null) {
+            if (allPins.getValue().get(allPins.getValue().size()-1).completedTime == null) {
+                allPins.getValue().get(allPins.getValue().size()-1).completedTime = System.currentTimeMillis();
+            }
+            Long endTime = allPins.getValue().get(allPins.getValue().size()-1).completedTime;
+            Long startTime = allPins.getValue().get(0).completedTime;
+            Long totalTime = endTime - startTime;
+
+            Long minutes = (totalTime / 1000) / 60;
+            Long seconds = (totalTime / 1000) % 60;
+
+            for (Pin pin : allPins.getValue()) {
+                if (pin.answeredCorrect)
+                    correctAnswers++;
+            }
+
+            response = "You answered " + correctAnswers + " out of " + totalNumberOfPins +
+                    " pins correctly.\n" + "Your total time was " + minutes + " minutes and " +
+                    seconds + " seconds.";
+        }
+
+        return response;
     }
 
     public void addGeofence(Pin pin) {
@@ -58,6 +88,7 @@ public class MapsViewModel extends BaseViewModel {
     public void updatePinCompleted() {
         Pin pin = nextPin.getValue();
         pin.completed = true;
+        pin.completedTime = System.currentTimeMillis();
         pinRepository.updatePin(pin);
     }
 

@@ -29,6 +29,12 @@ public class Pin {
     @ColumnInfo(name = "completed")
     public boolean completed;
 
+    @ColumnInfo(name = "skipped")
+    public boolean skipped;
+
+    @ColumnInfo(name = "completedTime")
+    public Long completedTime;
+
     @ColumnInfo(name = "answeredCorrect")
     public boolean answeredCorrect;
 
