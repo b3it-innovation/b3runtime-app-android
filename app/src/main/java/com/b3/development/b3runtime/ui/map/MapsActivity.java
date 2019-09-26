@@ -76,6 +76,7 @@ public class MapsActivity extends BaseActivity
     private String finalPinID;
     private QuestionFragment questionFragment;
     private Marker lastMarker;
+    private boolean pinsDrawn = false;
 
     /**
      * Contains the main logic of the {@link MapsActivity}
@@ -201,11 +202,13 @@ public class MapsActivity extends BaseActivity
         // Get all pins and draw / save ID of the last pin
         viewModel.allPins.observe(this,
                 pins -> {
-                    if (!pins.isEmpty()) {
+                    if (!pins.isEmpty() && !pinsDrawn) {
                         firstPinID = pins.get(0).id;
                         finalPinID = pins.get(pins.size() - 1).id;
                         System.out.println("Final Pin ID: " + finalPinID);
                         showAllPins(pins);
+                        //set pinsDrawn to true to prevent redrawing of pins when data is changed
+                        pinsDrawn = true;
                     }
                 });
         //sets mocklocation of device when clicking on map todo: remove before release
@@ -295,10 +298,6 @@ public class MapsActivity extends BaseActivity
                     }
                 }
             }
-        }
-        //remove Livedata observation to call this method only once
-        if (viewModel.allPins.hasActiveObservers()) {
-            viewModel.allPins.removeObservers(this);
         }
     }
 

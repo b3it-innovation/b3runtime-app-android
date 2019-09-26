@@ -35,12 +35,8 @@ public class ResultFragment extends BaseQuestionFragment {
     private ImageView colorBase;
     private CircleImageView colorLogo;
     private Button confirm;
-    private String responseString;
 
     public ResultFragment(){}
-//    public ResultFragment(int layoutId) {
-//        this.layoutId = layoutId;
-//    }
 
     /**
      * Builds the {@link ResultFragment}
@@ -49,7 +45,6 @@ public class ResultFragment extends BaseQuestionFragment {
      */
     public static ResultFragment newInstance() {
         Bundle arguments = new Bundle();
-        //ResultFragment resultFragment = new ResultFragment(R.layout.fragment_result_dialog);
         ResultFragment resultFragment = new ResultFragment();
         resultFragment.setArguments(arguments);
         return resultFragment;
@@ -68,7 +63,8 @@ public class ResultFragment extends BaseQuestionFragment {
         viewModel = ViewModelProviders.of(getActivity(),
                 new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class)))
                 .get(MapsViewModel.class);
-        viewModel.allPins.observe(this, pins -> responseString = viewModel.getResult());
+        //observe allPins and set response with the result
+        viewModel.allPins.observe(this, pins -> response.setText(viewModel.getResult()));
     }
 
     @Override
@@ -81,7 +77,6 @@ public class ResultFragment extends BaseQuestionFragment {
         setCancelable(false);
         confirm = view.findViewById(R.id.confirmResult);
 
-        response.setText(viewModel.getResult());
         colorBase.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
         colorLogo.setImageResource(R.drawable.b3logo_yellow);
         confirm.setText("Close App");

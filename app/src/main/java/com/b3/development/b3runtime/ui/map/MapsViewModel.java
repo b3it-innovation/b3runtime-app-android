@@ -36,14 +36,18 @@ public class MapsViewModel extends BaseViewModel {
         geofenceManager.removeGeofences();
     }
 
+    //creates a response string that contains the result of the race
     public String getResult() {
         String response = "";
         int correctAnswers = 0;
-        int totalNumberOfPins = allPins.getValue().size();
+        int totalNumberOfPins = allPins.getValue().size() - 2;
 
         if(allPins.getValue().get(0).completedTime != null) {
+            if (allPins.getValue().get(allPins.getValue().size()-1).completedTime == null) {
+                allPins.getValue().get(allPins.getValue().size()-1).completedTime = System.currentTimeMillis();
+            }
+            Long endTime = allPins.getValue().get(allPins.getValue().size()-1).completedTime;
             Long startTime = allPins.getValue().get(0).completedTime;
-            Long endTime = System.currentTimeMillis();
             Long totalTime = endTime - startTime;
 
             Long minutes = (totalTime / 1000) / 60;

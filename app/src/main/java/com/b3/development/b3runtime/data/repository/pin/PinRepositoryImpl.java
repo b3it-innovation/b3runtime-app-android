@@ -122,6 +122,7 @@ public class PinRepositoryImpl implements PinRepository {
             convertedPin.completed = false;
             convertedPin.order = i;
             convertedPin.answeredCorrect = false;
+            convertedPin.skipped = false;
             convertedPins.add(convertedPin);
             i++;
         }
