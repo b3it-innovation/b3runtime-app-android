@@ -37,9 +37,6 @@ public class CheckinFragment extends BaseQuestionFragment {
     private Button confirm;
 
     public CheckinFragment(){}
-//    public CheckinFragment(int layoutId) {
-//        this.layoutId = layoutId;
-//    }
 
     /**
      * Builds the {@link CheckinFragment}
@@ -48,10 +45,8 @@ public class CheckinFragment extends BaseQuestionFragment {
      */
     public static CheckinFragment newInstance() {
         Bundle arguments = new Bundle();
-        //CheckinFragment resultFragment = new CheckinFragment(R.layout.fragment_result_dialog);
         CheckinFragment resultFragment = new CheckinFragment();
         resultFragment.setArguments(arguments);
-        //resultFragment.setRetainInstance(true);
         return resultFragment;
     }
 
