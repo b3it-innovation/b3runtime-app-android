@@ -1,6 +1,9 @@
 package com.b3.development.b3runtime.ui.map;
 
 import android.Manifest;
+import android.animation.IntEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +20,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -431,8 +435,22 @@ public class MapsActivity extends BaseActivity
                 .radius(150)
                 .fillColor(0x40ff0000)
                 .strokeColor(Color.TRANSPARENT)
-                .strokeWidth(2);
+                .strokeWidth(0);
         currentCircle = map.addCircle(circleOptions);
+
+        ValueAnimator valueAnimator = new ValueAnimator();
+        valueAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        valueAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        valueAnimator.setIntValues(0, 100);
+        valueAnimator.setDuration(2000);
+        valueAnimator.setEvaluator(new IntEvaluator());
+        valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        valueAnimator.addUpdateListener(valueAnimator1 -> {
+            float animatedFraction = valueAnimator1.getAnimatedFraction();
+            currentCircle.setRadius((animatedFraction * 40)+60);
+        });
+
+        valueAnimator.start();
     }
 
     private void removeGeofenceCircleAroundPin() {
