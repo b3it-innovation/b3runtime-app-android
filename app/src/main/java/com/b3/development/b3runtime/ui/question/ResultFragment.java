@@ -83,8 +83,6 @@ public class ResultFragment extends BaseQuestionFragment {
         confirm.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
 
         confirm.setOnClickListener(v -> {
-            // reset pins if all pins are completed todo:(delete this in release version)
-            viewModel.resetPins();
             dismiss();
         });
     }
