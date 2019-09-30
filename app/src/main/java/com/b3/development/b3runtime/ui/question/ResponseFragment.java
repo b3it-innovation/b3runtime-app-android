@@ -86,7 +86,7 @@ public class ResponseFragment extends BaseQuestionFragment {
             if (getArguments().getBoolean(EXTRA_IS_CORRECT)) {
                 //todo update pin here
                 System.out.println("SKIP PIN CALLED IN RESPONSE FRAGMENT");
-                viewModel.skipPin();
+                viewModel.updatePinCorrectAnswer();
             } else {
                 //todo implement extra route
                 System.out.println("UPDATE PIN CALLED IN RESPONSE FRAGMENT");

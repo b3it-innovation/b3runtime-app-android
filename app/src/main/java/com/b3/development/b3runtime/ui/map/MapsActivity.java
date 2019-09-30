@@ -289,17 +289,22 @@ public class MapsActivity extends BaseActivity
                 .position(new LatLng(nextPin.latitude, nextPin.longitude))
                 .title(nextPin.name)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextPin.latitude, nextPin.longitude), 15f));
         map.setOnMarkerClickListener(marker -> {
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
             return true;
         });
 
-        //adds a geofence on the recieved nextPin
-        viewModel.addGeofence(nextPin);
+        if(viewModel.lastQuestionAnsweredCorrect) {
+            viewModel.skipPin();
+            viewModel.lastQuestionAnsweredCorrect = false;
+        }else {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextPin.latitude, nextPin.longitude), 15f));
+            //adds a geofence on the recieved nextPin
+            viewModel.addGeofence(nextPin);
+            // draw geofence circle around nextPin
+            drawGeofenceCircleAroundPin();
+        }
 
-        // draw geofence circle around nextPin
-        drawGeofenceCircleAroundPin();
     }
 
     // Draw all pins except for the current pin if possible
