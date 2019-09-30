@@ -72,7 +72,7 @@ public class MapsViewModel extends BaseViewModel {
                 .setCircularRegion(
                         pin.latitude,
                         pin.longitude,
-                        150
+                        100
                 )
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                 //todo set a constant with adequate time for expiration duration
