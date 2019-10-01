@@ -294,9 +294,12 @@ public class MapsActivity extends BaseActivity
             return true;
         });
 
-        if(viewModel.lastQuestionAnsweredCorrect) {
+        if(viewModel.isResponseOnScreen){
+            return;
+        }
+        else if(viewModel.isLatestAnsweredCorrect) {
             viewModel.skipPin();
-            viewModel.lastQuestionAnsweredCorrect = false;
+            viewModel.isLatestAnsweredCorrect = false;
         }else {
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextPin.latitude, nextPin.longitude), 15f));
             //adds a geofence on the recieved nextPin

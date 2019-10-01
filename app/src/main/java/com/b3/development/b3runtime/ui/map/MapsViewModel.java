@@ -20,7 +20,8 @@ public class MapsViewModel extends BaseViewModel {
     public LiveData<List<Pin>> allPins;
     private PinRepository pinRepository;
     private GeofenceManager geofenceManager;
-    public boolean lastQuestionAnsweredCorrect = false;
+    public boolean isLatestAnsweredCorrect = false;
+    public boolean isResponseOnScreen = false;
 
     public MapsViewModel(PinRepository repository, GeofenceManager geofenceManager) {
         this.pinRepository = repository;
@@ -97,7 +98,7 @@ public class MapsViewModel extends BaseViewModel {
         System.out.println("Before update, pin order: " + nextPin.getValue().order);
         Pin pin = nextPin.getValue();
         pin.answeredCorrect = true;
-        lastQuestionAnsweredCorrect = true;
+        isLatestAnsweredCorrect = true;
         updatePinCompleted();
     }
 
