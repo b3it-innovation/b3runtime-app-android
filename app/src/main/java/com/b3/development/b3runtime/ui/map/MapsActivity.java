@@ -175,15 +175,6 @@ public class MapsActivity extends BaseActivity
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        // remove all fragment except for SupoprtMapFragment and QuestionFragment
-        List<Fragment> list = getSupportFragmentManager().getFragments();
-        System.out.println(list.size());
-        for (Fragment f : getSupportFragmentManager().getFragments()) {
-            if (f.getTag() != null && !f.getTag().equals("question")) {
-                getSupportFragmentManager().beginTransaction().remove(f).commitAllowingStateLoss();
-            }
-        }
-
         //save state if questionfragment is created, to retain it during screen rotation
         savedInstanceState
                 .putBoolean("questionAdded", getSupportFragmentManager().findFragmentByTag("question") != null);
@@ -200,12 +191,16 @@ public class MapsActivity extends BaseActivity
 
                 // Check if first pin is reached
                 if (intent.getStringExtra("id").equals(firstPinID)) {
-                    CheckinFragment.newInstance().show(getSupportFragmentManager(), "checkin");
+                    if(getSupportFragmentManager().findFragmentByTag("checkin") == null) {
+                        CheckinFragment.newInstance().show(getSupportFragmentManager(), "checkin");
+                    }
                 }
                 // Check if last pin is reached
                 else if (intent.getStringExtra("id").equals(finalPinID)) {
                     // Show result
-                    ResultFragment.newInstance().show(getSupportFragmentManager(), "result");
+                    if(getSupportFragmentManager().findFragmentByTag("result") == null) {
+                        ResultFragment.newInstance().show(getSupportFragmentManager(), "result");
+                    }
                 } else { // Otherwise show new question
 
                     showQuestion();

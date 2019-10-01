@@ -133,7 +133,7 @@ public class QuestionFragment extends BaseQuestionFragment {
     }
 
     private void showResponse(Boolean isCorrect) {
-        ResponseFragment.newInstance(isCorrect).show(getFragmentManager(), null);
+        ResponseFragment.newInstance(isCorrect).show(getFragmentManager(), "response");
         //remove observer and recreate MutableLiveData to prevent showing of response more than once
         viewModel.validated.removeObservers(this);
         viewModel.validated = new MutableLiveData<>();
