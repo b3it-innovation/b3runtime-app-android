@@ -247,7 +247,7 @@ public class MapsActivity extends BaseActivity
                 });
         //sets mocklocation of device when clicking on map todo: remove before release
         map.setOnMapClickListener(latLng -> {
-            setMockLocation(latLng.latitude, latLng.longitude, 10);
+            setMockLocation(latLng.latitude, latLng.longitude, R.integer.mocklockationAccuracy);
 
             Toast.makeText(MapsActivity.this,
                     "Lat: " + latLng.latitude +

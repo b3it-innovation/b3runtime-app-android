@@ -2,6 +2,7 @@ package com.b3.development.b3runtime.ui.map;
 
 import androidx.lifecycle.LiveData;
 
+import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseViewModel;
 import com.b3.development.b3runtime.data.local.model.pin.Pin;
 import com.b3.development.b3runtime.data.repository.pin.PinRepository;
@@ -74,11 +75,11 @@ public class MapsViewModel extends BaseViewModel {
                 .setCircularRegion(
                         pin.latitude,
                         pin.longitude,
-                        100
+                        R.integer.geofenceRadius
                 )
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                 //todo set a constant with adequate time for expiration duration
-                .setExpirationDuration(1500000)
+                .setExpirationDuration(R.integer.geofenceExpirationDuration)
                 .build());
     }
 
