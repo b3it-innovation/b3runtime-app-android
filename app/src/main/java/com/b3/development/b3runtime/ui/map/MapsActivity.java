@@ -465,8 +465,8 @@ public class MapsActivity extends BaseActivity
         }
         valueAnimator.setRepeatCount(ValueAnimator.INFINITE);
         valueAnimator.setRepeatMode(ValueAnimator.REVERSE);
-        valueAnimator.setIntValues(50, 100);
-        valueAnimator.setDuration(2500);
+        valueAnimator.setIntValues(0, 100);
+        valueAnimator.setDuration(getResources().getInteger(R.integer.groundOverlayPulseDuration));
         valueAnimator.setEvaluator(new IntEvaluator());
         valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
         valueAnimator.addUpdateListener(valueAnimator1 -> {

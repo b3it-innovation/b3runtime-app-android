@@ -5,5 +5,6 @@
     <integer name="geofenceExpirationDuration">1500000</integer>
     <integer name="circleStroke">2</integer>
     <integer name="circleColor">0x40ff0000</integer>
+    <integer name="groundOverlayPulseDuration">2500</integer>
 
 </resources>
