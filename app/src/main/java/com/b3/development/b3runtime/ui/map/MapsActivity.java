@@ -175,15 +175,6 @@ public class MapsActivity extends BaseActivity
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        // remove all fragment except for SupoprtMapFragment and QuestionFragment
-        List<Fragment> list = getSupportFragmentManager().getFragments();
-        System.out.println(list.size());
-        for (Fragment f : getSupportFragmentManager().getFragments()) {
-            if (f.getTag() != null && !f.getTag().equals("question")) {
-                getSupportFragmentManager().beginTransaction().remove(f).commitAllowingStateLoss();
-            }
-        }
-
         //save state if questionfragment is created, to retain it during screen rotation
         savedInstanceState
                 .putBoolean("questionAdded", getSupportFragmentManager().findFragmentByTag("question") != null);
@@ -200,12 +191,16 @@ public class MapsActivity extends BaseActivity
 
                 // Check if first pin is reached
                 if (intent.getStringExtra("id").equals(firstPinID)) {
-                    CheckinFragment.newInstance().show(getSupportFragmentManager(), "checkin");
+                    if(getSupportFragmentManager().findFragmentByTag("checkin") == null) {
+                        CheckinFragment.newInstance().show(getSupportFragmentManager(), "checkin");
+                    }
                 }
                 // Check if last pin is reached
                 else if (intent.getStringExtra("id").equals(finalPinID)) {
                     // Show result
-                    ResultFragment.newInstance().show(getSupportFragmentManager(), "result");
+                    if(getSupportFragmentManager().findFragmentByTag("result") == null) {
+                        ResultFragment.newInstance().show(getSupportFragmentManager(), "result");
+                    }
                 } else { // Otherwise show new question
 
                     showQuestion();
@@ -289,17 +284,25 @@ public class MapsActivity extends BaseActivity
                 .position(new LatLng(nextPin.latitude, nextPin.longitude))
                 .title(nextPin.name)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextPin.latitude, nextPin.longitude), 15f));
         map.setOnMarkerClickListener(marker -> {
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
             return true;
         });
 
-        //adds a geofence on the recieved nextPin
-        viewModel.addGeofence(nextPin);
+        if(viewModel.isResponseOnScreen){
+            return;
+        }
+        else if(viewModel.isLatestAnsweredCorrect) {
+            viewModel.skipPin();
+            viewModel.isLatestAnsweredCorrect = false;
+        }else {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextPin.latitude, nextPin.longitude), 15f));
+            //adds a geofence on the recieved nextPin
+            viewModel.addGeofence(nextPin);
+            // draw geofence circle around nextPin
+            drawGeofenceCircleAroundPin();
+        }
 
-        // draw geofence circle around nextPin
-        drawGeofenceCircleAroundPin();
     }
 
     // Draw all pins except for the current pin if possible

@@ -33,14 +33,13 @@ public class ResponseFragment extends BaseQuestionFragment {
 
     private MapsViewModel viewModel;
 
-    private int layoutId;
+    private static final int layoutId = R.layout.fragment_result_dialog;
     private TextView response;
     private ImageView colorBase;
     private CircleImageView colorLogo;
     private Button confirm;
 
-    public ResponseFragment(int layoutId) {
-        this.layoutId = layoutId;
+    public ResponseFragment() {
     }
 
     /**
@@ -52,7 +51,7 @@ public class ResponseFragment extends BaseQuestionFragment {
     public static ResponseFragment newInstance(boolean isCorrect) {
         Bundle arguments = new Bundle();
         arguments.putBoolean(ResponseFragment.EXTRA_IS_CORRECT, isCorrect);
-        ResponseFragment responseFragment = new ResponseFragment(R.layout.fragment_result_dialog);
+        ResponseFragment responseFragment = new ResponseFragment();
         responseFragment.setArguments(arguments);
         return responseFragment;
     }
@@ -75,7 +74,7 @@ public class ResponseFragment extends BaseQuestionFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        viewModel.isResponseOnScreen = true;
         response = view.findViewById(R.id.textResult);
         colorBase = view.findViewById(R.id.imageBackgroundResult);
         colorLogo = view.findViewById(R.id.imageLogoResult);
@@ -86,12 +85,13 @@ public class ResponseFragment extends BaseQuestionFragment {
             if (getArguments().getBoolean(EXTRA_IS_CORRECT)) {
                 //todo update pin here
                 System.out.println("SKIP PIN CALLED IN RESPONSE FRAGMENT");
-                viewModel.skipPin();
+                viewModel.updatePinCorrectAnswer();
             } else {
                 //todo implement extra route
                 System.out.println("UPDATE PIN CALLED IN RESPONSE FRAGMENT");
                 viewModel.updatePinCompleted();
             }
+            viewModel.isResponseOnScreen = false;
             dismiss();
         });
         if (getArguments() != null) {

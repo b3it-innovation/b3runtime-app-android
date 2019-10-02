@@ -20,6 +20,8 @@ public class MapsViewModel extends BaseViewModel {
     public LiveData<List<Pin>> allPins;
     private PinRepository pinRepository;
     private GeofenceManager geofenceManager;
+    public boolean isLatestAnsweredCorrect = false;
+    public boolean isResponseOnScreen = false;
 
     public MapsViewModel(PinRepository repository, GeofenceManager geofenceManager) {
         this.pinRepository = repository;
@@ -44,7 +46,7 @@ public class MapsViewModel extends BaseViewModel {
 
         if(allPins.getValue().get(0).completedTime != null) {
             if (allPins.getValue().get(allPins.getValue().size()-1).completedTime == null) {
-                allPins.getValue().get(allPins.getValue().size()-1).completedTime = System.currentTimeMillis();
+                    allPins.getValue().get(allPins.getValue().size()-1).completedTime = System.currentTimeMillis();
             }
             Long endTime = allPins.getValue().get(allPins.getValue().size()-1).completedTime;
             Long startTime = allPins.getValue().get(0).completedTime;
@@ -92,14 +94,19 @@ public class MapsViewModel extends BaseViewModel {
         pinRepository.updatePin(pin);
     }
 
-    public void skipPin() {
+    public void updatePinCorrectAnswer() {
         System.out.println("Before update, pin order: " + nextPin.getValue().order);
         Pin pin = nextPin.getValue();
         pin.answeredCorrect = true;
+        isLatestAnsweredCorrect = true;
         updatePinCompleted();
-        System.out.println("pin completed before second update: " + nextPin.getValue().completed);
+    }
+
+    public void skipPin(){
+        System.out.println("Skips pin order: " + nextPin.getValue().order);
+        Pin pin = nextPin.getValue();
+        pin.skipped = true;
         updatePinCompleted();
-        System.out.println("Second update pin order: " + nextPin.getValue().order);
     }
 
     //sets all pin to not completed
