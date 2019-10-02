@@ -16,4 +16,6 @@
     <string name="continueButtonText">Continue</string>
     <string name="wrongAnswer">Wisdom comes with experience. Take an extra route to clear your Мind.</string>
     <string name="intent_failed">settings intent failed</string>
+    <string name="channel_name">channel_name</string>
+    <string name="channel_description">channel_description</string>
 </resources>
