@@ -168,6 +168,8 @@ public class MapsActivity extends BaseActivity
         switch (item.getItemId()) {
             case R.id.action_reset:
                 System.out.println("action reset");
+                // reset pins if all pins are completed todo:(delete this in release version)
+                viewModel.resetPins();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
