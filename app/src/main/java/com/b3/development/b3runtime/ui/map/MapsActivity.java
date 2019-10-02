@@ -110,7 +110,7 @@ public class MapsActivity extends BaseActivity
 
         //create or connect already existing viewmodel to activity
         viewModel = ViewModelProviders.of(this,
-                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class)))
+                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class), getApplicationContext()))
                 .get(MapsViewModel.class);
 
         //observe for errors and inform user if an error occurs
@@ -247,7 +247,7 @@ public class MapsActivity extends BaseActivity
                 });
         //sets mocklocation of device when clicking on map todo: remove before release
         map.setOnMapClickListener(latLng -> {
-            setMockLocation(latLng.latitude, latLng.longitude, R.integer.mocklockationAccuracy);
+            setMockLocation(latLng.latitude, latLng.longitude, getResources().getInteger(R.integer.mocklockationAccuracy));
 
             Toast.makeText(MapsActivity.this,
                     "Lat: " + latLng.latitude +
@@ -443,9 +443,9 @@ public class MapsActivity extends BaseActivity
 
         GradientDrawable gd = new GradientDrawable();
         gd.setShape(GradientDrawable.OVAL);
-        gd.setSize(500,500);
-        gd.setColor(0x40ff0000);
-        gd.setStroke(2, Color.TRANSPARENT);
+        gd.setSize(500, 500);
+        gd.setColor(getResources().getInteger(R.integer.circleColor));
+        gd.setStroke(getResources().getInteger(R.integer.circleStroke), Color.TRANSPARENT);
 
         Bitmap bitmap = Bitmap.createBitmap(
                 gd.getIntrinsicWidth(),
@@ -458,7 +458,7 @@ public class MapsActivity extends BaseActivity
 
         currentCircle = map.addGroundOverlay(new GroundOverlayOptions().position(
                 new LatLng(viewModel.nextPin.getValue().latitude,
-                viewModel.nextPin.getValue().longitude), 100).image(BitmapDescriptorFactory.fromBitmap(bitmap)));
+                        viewModel.nextPin.getValue().longitude), getResources().getInteger(R.integer.geofenceRadius)).image(BitmapDescriptorFactory.fromBitmap(bitmap)));
 
         if (valueAnimator == null) {
             valueAnimator = new ValueAnimator();
@@ -471,7 +471,7 @@ public class MapsActivity extends BaseActivity
         valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
         valueAnimator.addUpdateListener(valueAnimator1 -> {
             float animatedFraction = valueAnimator1.getAnimatedFraction();
-            currentCircle.setDimensions((animatedFraction * 50)+50);
+            currentCircle.setDimensions((animatedFraction * 50) + 50);
         });
 
         valueAnimator.start();
