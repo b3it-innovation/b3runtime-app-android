@@ -1,12 +1,18 @@
 package com.b3.development.b3runtime.ui.map;
 
 import android.Manifest;
+import android.animation.IntEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.graphics.Color;
@@ -17,6 +23,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -46,6 +53,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
+import com.google.android.gms.maps.model.GroundOverlay;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -73,8 +82,9 @@ public class MapsActivity extends BaseActivity
     private AlertDialog permissionDeniedDialog;
     private BroadcastReceiver broadcastReceiver;
     private LocalBroadcastManager localBroadcastManager;
+    private ValueAnimator valueAnimator;
 
-    private Circle currentCircle;
+    private GroundOverlay currentCircle;
     private String firstPinID;
     private String finalPinID;
     private QuestionFragment questionFragment;
@@ -428,18 +438,46 @@ public class MapsActivity extends BaseActivity
 
     private void drawGeofenceCircleAroundPin() {
         removeGeofenceCircleAroundPin();
-        CircleOptions circleOptions = new CircleOptions()
-                .center(new LatLng(viewModel.nextPin.getValue().latitude,
-                        viewModel.nextPin.getValue().longitude))
-                .radius(150)
-                .fillColor(0x40ff0000)
-                .strokeColor(Color.TRANSPARENT)
-                .strokeWidth(2);
-        currentCircle = map.addCircle(circleOptions);
+
+        GradientDrawable gd = new GradientDrawable();
+        gd.setShape(GradientDrawable.OVAL);
+        gd.setSize(500,500);
+        gd.setColor(0x40ff0000);
+        gd.setStroke(2, Color.TRANSPARENT);
+
+        Bitmap bitmap = Bitmap.createBitmap(
+                gd.getIntrinsicWidth(),
+                gd.getIntrinsicHeight(),
+                Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        gd.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        gd.draw(canvas);
+
+        currentCircle = map.addGroundOverlay(new GroundOverlayOptions().position(
+                new LatLng(viewModel.nextPin.getValue().latitude,
+                viewModel.nextPin.getValue().longitude), 100).image(BitmapDescriptorFactory.fromBitmap(bitmap)));
+
+        if (valueAnimator == null) {
+            valueAnimator = new ValueAnimator();
+        }
+        valueAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        valueAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        valueAnimator.setIntValues(50, 100);
+        valueAnimator.setDuration(2500);
+        valueAnimator.setEvaluator(new IntEvaluator());
+        valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        valueAnimator.addUpdateListener(valueAnimator1 -> {
+            float animatedFraction = valueAnimator1.getAnimatedFraction();
+            currentCircle.setDimensions((animatedFraction * 50)+50);
+        });
+
+        valueAnimator.start();
     }
 
     private void removeGeofenceCircleAroundPin() {
         if (currentCircle != null) {
+            valueAnimator.cancel();
             currentCircle.remove();
         }
     }
