@@ -65,9 +65,8 @@ public class MapsViewModel extends BaseViewModel {
                     correctAnswers++;
             }
 
-            response = "You answered " + correctAnswers + " out of " + totalNumberOfPins +
-                    " pins correctly.\n" + "Your total time was " + minutes + " minutes and " +
-                    seconds + " seconds.";
+            response = String.format(context.getResources().getString(R.string.resultText),
+                    correctAnswers, totalNumberOfPins, minutes, seconds);
         }
 
         return response;
