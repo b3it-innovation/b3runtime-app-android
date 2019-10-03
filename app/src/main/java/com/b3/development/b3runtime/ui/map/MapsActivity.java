@@ -2,7 +2,6 @@ package com.b3.development.b3runtime.ui.map;
 
 import android.Manifest;
 import android.animation.IntEvaluator;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -51,8 +50,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -101,9 +98,9 @@ public class MapsActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         //check if questionfragment is created and retained, if it is then detach from screen
         if (savedInstanceState != null) {
-            if (savedInstanceState.getBoolean("questionAdded")) {
+            if (savedInstanceState.getBoolean(getResources().getString(R.string.questionFragmentAddedKey))) {
                 questionFragment =
-                        (QuestionFragment) getSupportFragmentManager().findFragmentByTag("question");
+                        (QuestionFragment) getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG);
                 getSupportFragmentManager().beginTransaction().detach(questionFragment).commit();
             }
         }
@@ -167,7 +164,6 @@ public class MapsActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_reset:
-                System.out.println("action reset");
                 // reset pins if all pins are completed todo:(delete this in release version)
                 viewModel.resetPins();
                 return true;
@@ -178,18 +174,19 @@ public class MapsActivity extends BaseActivity
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy");
         super.onDestroy();
         if (broadcastReceiver != null) {
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
         }
-        System.out.println(this.getClass() + " : onDestroy()");
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         //save state if questionfragment is created, to retain it during screen rotation
         savedInstanceState
-                .putBoolean("questionAdded", getSupportFragmentManager().findFragmentByTag("question") != null);
+                .putBoolean(getResources().getString(R.string.questionFragmentAddedKey),
+                        getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG) != null);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -203,15 +200,15 @@ public class MapsActivity extends BaseActivity
 
                 // Check if first pin is reached
                 if (intent.getStringExtra("id").equals(firstPinID)) {
-                    if(getSupportFragmentManager().findFragmentByTag("checkin") == null) {
-                        CheckinFragment.newInstance().show(getSupportFragmentManager(), "checkin");
+                    if(getSupportFragmentManager().findFragmentByTag(CheckinFragment.TAG) == null) {
+                        CheckinFragment.newInstance().show(getSupportFragmentManager(), CheckinFragment.TAG);
                     }
                 }
                 // Check if last pin is reached
                 else if (intent.getStringExtra("id").equals(finalPinID)) {
                     // Show result
-                    if(getSupportFragmentManager().findFragmentByTag("result") == null) {
-                        ResultFragment.newInstance().show(getSupportFragmentManager(), "result");
+                    if(getSupportFragmentManager().findFragmentByTag(ResultFragment.TAG) == null) {
+                        ResultFragment.newInstance().show(getSupportFragmentManager(), ResultFragment.TAG);
                     }
                 } else { // Otherwise show new question
 
@@ -220,7 +217,7 @@ public class MapsActivity extends BaseActivity
             }
         };
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter("newQuestion"));
+        localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter(getResources().getString(R.string.geofenceIntentName)));
     }
 
     /**
@@ -239,7 +236,7 @@ public class MapsActivity extends BaseActivity
                     if (!pins.isEmpty() && !pinsDrawn) {
                         firstPinID = pins.get(0).id;
                         finalPinID = pins.get(pins.size() - 1).id;
-                        System.out.println("Final Pin ID: " + finalPinID);
+                        Log.d(TAG, "Final Pin ID: " + finalPinID);
                         showAllPins(pins);
                         //set pinsDrawn to true to prevent redrawing of pins when data is changed
                         pinsDrawn = true;
@@ -345,10 +342,10 @@ public class MapsActivity extends BaseActivity
 
     //calls QuestionFragment to display a question for the user
     private void showQuestion() {
-        if (getSupportFragmentManager().findFragmentByTag("question") == null) {
-            questionFragment = QuestionFragment.newInstance(R.layout.fragment_question_dialog);
+        if (getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG) == null) {
+            questionFragment = QuestionFragment.newInstance();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(questionFragment, "question").show(questionFragment).commit();
+            ft.add(questionFragment, QuestionFragment.TAG).show(questionFragment).commit();
         } else {
             if (questionFragment != null) {
                 switchFragmentVisible(questionFragment);

@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.question;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -29,11 +30,11 @@ import static org.koin.java.KoinJavaComponent.get;
  */
 public class ResponseFragment extends BaseQuestionFragment {
 
+    public static final String TAG = ResponseFragment.class.getSimpleName();
     private static final String EXTRA_IS_CORRECT = "extraIsCorrect";
+    private static final int layoutId = R.layout.fragment_result_dialog;
 
     private MapsViewModel viewModel;
-
-    private static final int layoutId = R.layout.fragment_result_dialog;
     private TextView response;
     private ImageView colorBase;
     private CircleImageView colorLogo;
@@ -84,11 +85,11 @@ public class ResponseFragment extends BaseQuestionFragment {
         confirm.setOnClickListener(v -> {
             if (getArguments().getBoolean(EXTRA_IS_CORRECT)) {
                 //todo update pin here
-                System.out.println("SKIP PIN CALLED IN RESPONSE FRAGMENT");
+                Log.d(TAG, "SKIP PIN CALLED IN RESPONSE FRAGMENT");
                 viewModel.updatePinCorrectAnswer();
             } else {
                 //todo implement extra route
-                System.out.println("UPDATE PIN CALLED IN RESPONSE FRAGMENT");
+                Log.d(TAG, "UPDATE PIN CALLED IN RESPONSE FRAGMENT");
                 viewModel.updatePinCompleted();
             }
             viewModel.isResponseOnScreen = false;

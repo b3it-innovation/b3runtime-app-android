@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.JobIntentService;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.b3.development.b3runtime.R;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
@@ -31,7 +32,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
         //Get triggered geofence id and add it to new intent and broadcast to mapsactivity
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         List<Geofence> list = geofencingEvent.getTriggeringGeofences();
-        Intent newIntent = new Intent("newQuestion");
+        Intent newIntent = new Intent(getResources().getString(R.string.geofenceIntentName));
         Bundle extras = new Bundle();
         extras.putString("id", list.get(0).getRequestId());
         Log.d("GEOFENCE", "ID: " + list.get(0).getRequestId());

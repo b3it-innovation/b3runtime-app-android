@@ -28,6 +28,8 @@ import static org.koin.java.KoinJavaComponent.get;
  */
 public class ResultFragment extends BaseQuestionFragment {
 
+    public static final String TAG = ResultFragment.class.getSimpleName();
+
     private MapsViewModel viewModel;
 
     private static final int layoutId = R.layout.fragment_result_dialog;
