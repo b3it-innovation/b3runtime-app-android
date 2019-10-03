@@ -83,7 +83,7 @@ public class MapsViewModel extends BaseViewModel {
                 )
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                 //todo set a constant with adequate time for expiration duration
-                .setExpirationDuration(R.integer.geofenceExpirationDuration)
+                .setExpirationDuration(context.getResources().getInteger(R.integer.geofenceExpirationDuration))
                 .build());
     }
 
