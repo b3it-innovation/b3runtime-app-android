@@ -38,6 +38,7 @@ import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
 import com.b3.development.b3runtime.ui.question.ResultFragment;
+import com.b3.development.b3runtime.utils.Util;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -192,9 +193,13 @@ public class MapsActivity extends BaseActivity
 
     //todo: move to manifest to receive broadcasts when activity in background
     private void registerReceiver() {
+        final Context context = this;
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                // if the app is not in foreground, do nothing
+                if (!Util.isForeground(context)) return;
+
                 // Remove geofence otherwise it is still there and triggers questions on screen rotation
                 viewModel.removeGeofence();
 

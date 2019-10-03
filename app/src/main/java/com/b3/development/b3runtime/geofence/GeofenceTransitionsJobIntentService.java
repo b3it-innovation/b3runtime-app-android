@@ -1,5 +1,6 @@
 package com.b3.development.b3runtime.geofence;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -17,6 +18,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.ui.map.MapsActivity;
+import com.b3.development.b3runtime.utils.Util;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
@@ -37,7 +39,12 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
         Log.d("GEOFENCE", "SERVICE STARTED");
-        sendNotification();
+        // Send notification only when the app is in background
+        if(!Util.isForeground(this)) {
+        createNotificationChannel();
+        sendCheckpointNotification();
+        }
+
         //Get triggered geofence id and add it to new intent and broadcast to mapsactivity
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         List<Geofence> list = geofencingEvent.getTriggeringGeofences();
@@ -49,34 +56,36 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
         LocalBroadcastManager.getInstance(this).sendBroadcast(newIntent);
     }
 
-    private void sendNotification(){
-        createNotificationChannel();
-        // Create an explicit intent for an Activity in your app
+    private void sendCheckpointNotification() {
+        // Create an explicit intent for an Activity in the app
         Intent intent = new Intent(this, MapsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Checkpoint Notification")
-                .setContentText("You are in checkpoint now. Click here to answer the question!")
+                .setContentTitle(getResources().getString(R.string.checkpointNotificationTitle))
+                .setContentText(getResources().getString(R.string.checkpointNotificationText))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 // Set the intent that will fire when the user taps the notification
                 .setContentIntent(pendingIntent)
                 //.setFullScreenIntent(pendingIntent, true)
+                // Set the level of detail visible in the notification from the lock screen
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setAutoCancel(true)
-                .setTicker("b3 notification!");
+                .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000, 1000, 1000})
+                .setDefaults(Notification.DEFAULT_SOUND);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
-        // notificationId is a unique int for each notification that you must define
+        // NotificationId is a unique int for each notification that must be defined
+        // If it is same id, notification will be updated
         notificationManager.notify(1, builder.build());
     }
 
+    // Create the NotificationChannel, but only on API 26+ because
+    // the NotificationChannel class is new and not in the support library
     private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
@@ -84,7 +93,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
             channel.setShowBadge(true);
-            // Register the channel with the system; you can't change the importance
+            // Register the channel with the system; can't change the importance
             // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
