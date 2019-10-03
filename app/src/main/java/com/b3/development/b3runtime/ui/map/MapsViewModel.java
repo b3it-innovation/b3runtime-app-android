@@ -1,7 +1,10 @@
 package com.b3.development.b3runtime.ui.map;
 
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 
+import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseViewModel;
 import com.b3.development.b3runtime.data.local.model.pin.Pin;
 import com.b3.development.b3runtime.data.repository.pin.PinRepository;
@@ -22,14 +25,16 @@ public class MapsViewModel extends BaseViewModel {
     private GeofenceManager geofenceManager;
     public boolean isLatestAnsweredCorrect = false;
     public boolean isResponseOnScreen = false;
+    private Context context;
 
-    public MapsViewModel(PinRepository repository, GeofenceManager geofenceManager) {
+    public MapsViewModel(PinRepository repository, GeofenceManager geofenceManager, Context context) {
         this.pinRepository = repository;
         pinRepository.fetch();
         nextPin = pinRepository.getPin();
         allPins = pinRepository.getAllPins();
         errors = pinRepository.getError();
         this.geofenceManager = geofenceManager;
+        this.context = context;
     }
 
     @Override
@@ -74,11 +79,11 @@ public class MapsViewModel extends BaseViewModel {
                 .setCircularRegion(
                         pin.latitude,
                         pin.longitude,
-                        100
+                        context.getResources().getInteger(R.integer.geofenceRadius)
                 )
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                 //todo set a constant with adequate time for expiration duration
-                .setExpirationDuration(1500000)
+                .setExpirationDuration(context.getResources().getInteger(R.integer.geofenceExpirationDuration))
                 .build());
     }
 

@@ -67,7 +67,7 @@ public class ResponseFragment extends BaseQuestionFragment {
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
         //create or connect viewmodel to fragment
         viewModel = ViewModelProviders.of(getActivity(),
-                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class)))
+                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext()))
                 .get(MapsViewModel.class);
     }
 
