@@ -1,25 +1,18 @@
 package com.b3.development.b3runtime.ui.map;
 
 import android.Manifest;
-import android.animation.IntEvaluator;
-import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,7 +27,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
-import com.b3.development.b3runtime.data.local.model.pin.Pin;
 import com.b3.development.b3runtime.data.repository.pin.PinRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
@@ -46,14 +38,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.GroundOverlay;
-import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.util.List;
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -76,13 +61,11 @@ public class MapsActivity extends BaseActivity
     private AlertDialog permissionDeniedDialog;
     private BroadcastReceiver broadcastReceiver;
     private LocalBroadcastManager localBroadcastManager;
-    private ValueAnimator valueAnimator;
 
-    private GroundOverlay currentCircle;
+    private MapsRenderer mapsRenderer;
     private String firstPinID;
     private String finalPinID;
     private QuestionFragment questionFragment;
-    private Marker lastMarker;
     private boolean pinsDrawn = false;
 
     /**
@@ -138,6 +121,8 @@ public class MapsActivity extends BaseActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         setSupportActionBar(toolbar);
+
+        mapsRenderer = new MapsRenderer(getApplicationContext());
     }
 
     /**
@@ -197,14 +182,14 @@ public class MapsActivity extends BaseActivity
 
                 // Check if first pin is reached
                 if (intent.getStringExtra("id").equals(firstPinID)) {
-                    if(getSupportFragmentManager().findFragmentByTag(CheckinFragment.TAG) == null) {
+                    if (getSupportFragmentManager().findFragmentByTag(CheckinFragment.TAG) == null) {
                         CheckinFragment.newInstance().show(getSupportFragmentManager(), CheckinFragment.TAG);
                     }
                 }
                 // Check if last pin is reached
                 else if (intent.getStringExtra("id").equals(finalPinID)) {
                     // Show result
-                    if(getSupportFragmentManager().findFragmentByTag(ResultFragment.TAG) == null) {
+                    if (getSupportFragmentManager().findFragmentByTag(ResultFragment.TAG) == null) {
                         ResultFragment.newInstance().show(getSupportFragmentManager(), ResultFragment.TAG);
                     }
                 } else { // Otherwise show new question
@@ -234,7 +219,7 @@ public class MapsActivity extends BaseActivity
                         firstPinID = pins.get(0).id;
                         finalPinID = pins.get(pins.size() - 1).id;
                         Log.d(TAG, "Final Pin ID: " + finalPinID);
-                        showAllPins(pins);
+                        mapsRenderer.showAllPins(pins, viewModel, map);
                         //set pinsDrawn to true to prevent redrawing of pins when data is changed
                         pinsDrawn = true;
                     }
@@ -255,64 +240,7 @@ public class MapsActivity extends BaseActivity
             map.setMyLocationEnabled(true);
             //observes for change in the nextPin data and calls showNextPin(),
             // needs to be here to get permission before adding geofence
-            viewModel.nextPin.observe(this, MapsActivity.this::showNextPin);
-        }
-    }
-
-    private void showNextPin(Pin nextPin) {
-        if (nextPin == null) return;
-        // Change color of the completed nextPin
-        if (lastMarker != null) {
-            lastMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-        }
-        lastMarker = map.addMarker(new MarkerOptions()
-                .position(new LatLng(nextPin.latitude, nextPin.longitude))
-                .title(nextPin.name)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-        map.setOnMarkerClickListener(marker -> {
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-            return true;
-        });
-
-        if(viewModel.isResponseOnScreen){
-            return;
-        }
-        else if(viewModel.isLatestAnsweredCorrect) {
-            viewModel.skipPin();
-            viewModel.isLatestAnsweredCorrect = false;
-        }else {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextPin.latitude, nextPin.longitude), 15f));
-            //adds a geofence on the recieved nextPin
-            viewModel.addGeofence(nextPin);
-            // draw geofence circle around nextPin
-            drawGeofenceCircleAroundPin();
-        }
-
-    }
-
-    // Draw all pins except for the current pin if possible
-    private void showAllPins(List<Pin> allPins) {
-        if (allPins == null || allPins.isEmpty()) return;
-        for (int i = 0; i < allPins.size(); i++) {
-            Pin pin = allPins.get(i);
-            Pin nextPin = viewModel.nextPin.getValue();
-            if (nextPin == null) {
-                Marker marker = map.addMarker(new MarkerOptions()
-                        .position(new LatLng(pin.latitude, pin.longitude))
-                        .title(pin.name));
-                if (pin.completed) {
-                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                }
-            } else {
-                if (nextPin != null && (!pin.id.equals(viewModel.nextPin.getValue().id))) {
-                    Marker marker = map.addMarker(new MarkerOptions()
-                            .position(new LatLng(pin.latitude, pin.longitude))
-                            .title(pin.name));
-                    if (pin.completed) {
-                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                    }
-                }
-            }
+            viewModel.nextPin.observe(this, pin -> mapsRenderer.showNextPin(pin, viewModel, map));
         }
     }
 
@@ -408,52 +336,6 @@ public class MapsActivity extends BaseActivity
     private void showPermissionDeniedDialog() {
         if (!permissionDeniedDialog.isShowing()) {
             permissionDeniedDialog.show();
-        }
-    }
-
-    private void drawGeofenceCircleAroundPin() {
-        removeGeofenceCircleAroundPin();
-
-        GradientDrawable gd = new GradientDrawable();
-        gd.setShape(GradientDrawable.OVAL);
-        gd.setSize(500, 500);
-        gd.setColor(getResources().getInteger(R.integer.circleColor));
-        gd.setStroke(getResources().getInteger(R.integer.circleStroke), Color.TRANSPARENT);
-
-        Bitmap bitmap = Bitmap.createBitmap(
-                gd.getIntrinsicWidth(),
-                gd.getIntrinsicHeight(),
-                Bitmap.Config.ARGB_8888);
-
-        Canvas canvas = new Canvas(bitmap);
-        gd.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        gd.draw(canvas);
-
-        currentCircle = map.addGroundOverlay(new GroundOverlayOptions().position(
-                new LatLng(viewModel.nextPin.getValue().latitude,
-                        viewModel.nextPin.getValue().longitude), getResources().getInteger(R.integer.geofenceRadius)).image(BitmapDescriptorFactory.fromBitmap(bitmap)));
-
-        if (valueAnimator == null) {
-            valueAnimator = new ValueAnimator();
-        }
-        valueAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        valueAnimator.setRepeatMode(ValueAnimator.REVERSE);
-        valueAnimator.setIntValues(0, 100);
-        valueAnimator.setDuration(getResources().getInteger(R.integer.groundOverlayPulseDuration));
-        valueAnimator.setEvaluator(new IntEvaluator());
-        valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
-        valueAnimator.addUpdateListener(valueAnimator1 -> {
-            float animatedFraction = valueAnimator1.getAnimatedFraction();
-            currentCircle.setDimensions((animatedFraction * 50) + 50);
-        });
-
-        valueAnimator.start();
-    }
-
-    private void removeGeofenceCircleAroundPin() {
-        if (currentCircle != null) {
-            valueAnimator.cancel();
-            currentCircle.remove();
         }
     }
 
