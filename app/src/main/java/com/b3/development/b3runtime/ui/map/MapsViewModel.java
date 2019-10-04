@@ -42,11 +42,11 @@ public class MapsViewModel extends BaseViewModel {
         int correctAnswers = 0;
         int totalNumberOfPins = allPins.getValue().size() - 2;
 
-        if(allPins.getValue().get(0).completedTime != null) {
-            if (allPins.getValue().get(allPins.getValue().size()-1).completedTime == null) {
-                allPins.getValue().get(allPins.getValue().size()-1).completedTime = System.currentTimeMillis();
+        if (allPins.getValue().get(0).completedTime != null) {
+            if (allPins.getValue().get(allPins.getValue().size() - 1).completedTime == null) {
+                allPins.getValue().get(allPins.getValue().size() - 1).completedTime = System.currentTimeMillis();
             }
-            Long endTime = allPins.getValue().get(allPins.getValue().size()-1).completedTime;
+            Long endTime = allPins.getValue().get(allPins.getValue().size() - 1).completedTime;
             Long startTime = allPins.getValue().get(0).completedTime;
             Long totalTime = endTime - startTime;
 

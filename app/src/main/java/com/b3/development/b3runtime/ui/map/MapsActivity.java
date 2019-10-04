@@ -168,6 +168,7 @@ public class MapsActivity extends BaseActivity
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         if (broadcastReceiver != null) {
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
         }
@@ -193,12 +194,11 @@ public class MapsActivity extends BaseActivity
 
     //todo: move to manifest to receive broadcasts when activity in background
     private void registerReceiver() {
-        final Context context = this;
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 // if the app is not in foreground, do nothing
-                if (!Util.isForeground(context)) return;
+                if (!Util.isForeground(getApplicationContext())) return;
 
                 // Remove geofence otherwise it is still there and triggers questions on screen rotation
                 viewModel.removeGeofence();

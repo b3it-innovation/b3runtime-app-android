@@ -40,9 +40,9 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
     protected void onHandleWork(@NonNull Intent intent) {
         Log.d("GEOFENCE", "SERVICE STARTED");
         // Send notification only when the app is in background
-        if(!Util.isForeground(this)) {
-        createNotificationChannel();
-        sendCheckpointNotification();
+        if (!Util.isForeground(getApplicationContext())) {
+            createNotificationChannel();
+            sendCheckpointNotification();
         }
 
         //Get triggered geofence id and add it to new intent and broadcast to mapsactivity
