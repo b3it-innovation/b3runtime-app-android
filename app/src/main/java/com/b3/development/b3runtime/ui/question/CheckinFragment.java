@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.question;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -70,6 +71,7 @@ public class CheckinFragment extends BaseQuestionFragment {
         super.onViewCreated(view, savedInstanceState);
 
         response = view.findViewById(R.id.textResult);
+        response.setHeight((int) (getScreenHeightPixels() * 0.3));
         colorBase = view.findViewById(R.id.imageBackgroundResult);
         colorLogo = view.findViewById(R.id.imageLogoResult);
         setCancelable(false);
@@ -85,6 +87,13 @@ public class CheckinFragment extends BaseQuestionFragment {
             viewModel.updatePinCompleted();
             dismiss();
         });
+    }
+
+    private int getScreenHeightPixels() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int y = displayMetrics.heightPixels;
+        return y;
     }
 
 }

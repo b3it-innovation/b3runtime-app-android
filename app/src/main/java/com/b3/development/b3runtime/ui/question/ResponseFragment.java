@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.question;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -76,6 +77,7 @@ public class ResponseFragment extends BaseQuestionFragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel.isResponseOnScreen = true;
         response = view.findViewById(R.id.textResult);
+        response.setHeight((int) (getScreenHeightPixels() * 0.3));
         colorBase = view.findViewById(R.id.imageBackgroundResult);
         colorLogo = view.findViewById(R.id.imageLogoResult);
         setCancelable(false);
@@ -97,6 +99,13 @@ public class ResponseFragment extends BaseQuestionFragment {
         if (getArguments() != null) {
             showResponse(getArguments().getBoolean(EXTRA_IS_CORRECT));
         }
+    }
+
+    private int getScreenHeightPixels() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int y = displayMetrics.heightPixels;
+        return y;
     }
 
     //changes look of responsefragment depending if answered correctly
