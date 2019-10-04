@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.question;
 
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -79,6 +80,7 @@ public class QuestionFragment extends BaseQuestionFragment {
         callback = (FragmentShowHideCallback) getActivity();
         //sets data as in ViewModel
         questionTextView = view.findViewById(R.id.textQuestion);
+        questionTextView.setMovementMethod(new ScrollingMovementMethod());
         buttonA = view.findViewById(R.id.optionA);
         buttonB = view.findViewById(R.id.optionB);
         buttonC = view.findViewById(R.id.optionC);

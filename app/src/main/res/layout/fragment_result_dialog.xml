@@ -39,7 +39,8 @@
             android:textAlignment="center"
             android:textSize="24sp"
             android:gravity="center_vertical"
-            android:textStyle="italic" />
+            android:textStyle="italic"
+            android:padding="24dp"/>
 
         <Button
             android:id="@+id/confirmResult"

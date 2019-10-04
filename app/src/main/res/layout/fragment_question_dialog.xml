@@ -11,8 +11,10 @@
         android:textSize="21sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:maxHeight="186dp"
         android:background="@color/b3Yellow"
         android:hint="@string/question"
+        android:scrollbars="vertical"
         android:scaleType="center" />
 
     <RadioGroup
