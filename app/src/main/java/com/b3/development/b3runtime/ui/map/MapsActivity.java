@@ -11,13 +11,10 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.drawable.GradientDrawable;
-import android.location.Location;
-import android.location.LocationManager;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
@@ -44,7 +41,7 @@ import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
 import com.b3.development.b3runtime.ui.question.ResultFragment;
-import com.google.android.gms.location.LocationServices;
+import com.b3.development.b3runtime.utils.MockLocationUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -242,14 +239,9 @@ public class MapsActivity extends BaseActivity
                         pinsDrawn = true;
                     }
                 });
-        //sets mocklocation of device when clicking on map todo: remove before release
-        map.setOnMapClickListener(latLng -> {
-            setMockLocation(latLng.latitude, latLng.longitude, getResources().getInteger(R.integer.mocklockationAccuracy));
 
-            Toast.makeText(MapsActivity.this,
-                    "Lat: " + latLng.latitude +
-                            "\r\nLong: " + latLng.longitude, Toast.LENGTH_SHORT).show();
-        });
+        //sets mocklocation of device when clicking on map todo: remove before release
+        MockLocationUtil.setMockLocation(getApplicationContext(), map);
     }
 
     private void initializeMap() {
@@ -265,22 +257,6 @@ public class MapsActivity extends BaseActivity
             // needs to be here to get permission before adding geofence
             viewModel.nextPin.observe(this, MapsActivity.this::showNextPin);
         }
-    }
-
-    //todo: Remove before release
-    private void setMockLocation(double lat, double lng, float accuracy) {
-        //Create a new location
-        Location newLocation = new Location(LocationManager.GPS_PROVIDER);
-        newLocation.setAccuracy(accuracy);
-        newLocation.setLatitude(lat);
-        newLocation.setLongitude(lng);
-        newLocation.setAltitude(0);
-        newLocation.setTime(System.currentTimeMillis());
-        newLocation.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
-
-        //Set the new mock location on the device
-        LocationServices.getFusedLocationProviderClient(this).setMockMode(true);
-        LocationServices.getFusedLocationProviderClient(this).setMockLocation(newLocation);
     }
 
     private void showNextPin(Pin nextPin) {
