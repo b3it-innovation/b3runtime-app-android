@@ -41,6 +41,7 @@ import com.b3.development.b3runtime.base.BaseActivity;
 import com.b3.development.b3runtime.data.local.model.pin.Pin;
 import com.b3.development.b3runtime.data.repository.pin.PinRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
+import com.b3.development.b3runtime.geofence.LocationService;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
@@ -153,6 +154,8 @@ public class MapsActivity extends BaseActivity
     public void onStart() {
         super.onStart();
         requestLocationPermissions();
+        //start foreground service to allow tracking of location in background
+        startService(new Intent(this, LocationService.class));
     }
 
     // Menu icons are inflated just as they were with actionbar
@@ -178,11 +181,13 @@ public class MapsActivity extends BaseActivity
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         if (broadcastReceiver != null) {
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
         }
+        //stop notification foreground service
+        stopService(new Intent(this, LocationService.class));
         System.out.println(this.getClass() + " : onDestroy()");
+        super.onDestroy();
     }
 
     @Override
