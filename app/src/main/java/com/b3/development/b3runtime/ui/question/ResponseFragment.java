@@ -101,13 +101,6 @@ public class ResponseFragment extends BaseQuestionFragment {
         }
     }
 
-    private int getScreenHeightPixels() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int y = displayMetrics.heightPixels;
-        return y;
-    }
-
     //changes look of responsefragment depending if answered correctly
     private void showResponse(Boolean isCorrect) {
         if (isCorrect) {

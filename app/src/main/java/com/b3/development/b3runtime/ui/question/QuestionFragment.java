@@ -80,6 +80,7 @@ public class QuestionFragment extends BaseQuestionFragment {
         callback = (FragmentShowHideCallback) getActivity();
         //sets data as in ViewModel
         questionTextView = view.findViewById(R.id.textQuestion);
+        questionTextView.setHeight((int) (getScreenHeightPixels() * 0.3));
         questionTextView.setMovementMethod(new ScrollingMovementMethod());
         buttonA = view.findViewById(R.id.optionA);
         buttonB = view.findViewById(R.id.optionB);
