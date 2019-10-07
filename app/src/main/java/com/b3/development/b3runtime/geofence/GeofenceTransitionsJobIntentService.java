@@ -63,7 +63,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
                 .setContentTitle(getResources().getString(R.string.checkpointNotificationTitle))
                 .setContentText(getResources().getString(R.string.checkpointNotificationText))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
