@@ -29,6 +29,7 @@ import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
 import com.b3.development.b3runtime.data.repository.pin.PinRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
+import com.b3.development.b3runtime.sound.Jukebox;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
@@ -63,6 +64,7 @@ public class MapsActivity extends BaseActivity
     private LocalBroadcastManager localBroadcastManager;
 
     private MapsRenderer mapsRenderer;
+    private Jukebox jukebox;
     private String firstPinID;
     private String finalPinID;
     private QuestionFragment questionFragment;
@@ -123,6 +125,8 @@ public class MapsActivity extends BaseActivity
         setSupportActionBar(toolbar);
 
         mapsRenderer = new MapsRenderer(getApplicationContext());
+
+        jukebox = new Jukebox(getApplicationContext());
     }
 
     /**
@@ -139,6 +143,8 @@ public class MapsActivity extends BaseActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu_main; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem menuItem = menu.getItem(1);
+        setSoundModeTextInMenuItem(menuItem);
         return true;
     }
 
@@ -149,8 +155,19 @@ public class MapsActivity extends BaseActivity
                 // reset pins if all pins are completed todo:(delete this in release version)
                 viewModel.resetPins();
                 return true;
+            case R.id.action_sound_mode:
+                jukebox.toggleSoundStatus();
+                setSoundModeTextInMenuItem(item);
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void setSoundModeTextInMenuItem(MenuItem menuItem){
+        if(jukebox.soundEnabled){
+            menuItem.setTitle("Sound off");
+        } else {
+            menuItem.setTitle("Sound on");
         }
     }
 
@@ -158,6 +175,9 @@ public class MapsActivity extends BaseActivity
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
         super.onDestroy();
+        if(jukebox != null){
+            jukebox.destroy();
+        }
         if (broadcastReceiver != null) {
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
         }
@@ -347,5 +367,9 @@ public class MapsActivity extends BaseActivity
             ft.detach(fragment);
         }
         ft.commit();
+    }
+
+    public Jukebox getJukebox() {
+        return jukebox;
     }
 }

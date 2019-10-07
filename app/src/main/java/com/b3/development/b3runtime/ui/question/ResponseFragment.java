@@ -17,6 +17,8 @@ import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseQuestionFragment;
 import com.b3.development.b3runtime.data.repository.pin.PinRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
+import com.b3.development.b3runtime.sound.SoundEvent;
+import com.b3.development.b3runtime.ui.map.MapsActivity;
 import com.b3.development.b3runtime.ui.map.MapsViewModel;
 import com.b3.development.b3runtime.ui.map.MapsViewModelFactory;
 import com.github.abdularis.civ.CircleImageView;
@@ -97,6 +99,13 @@ public class ResponseFragment extends BaseQuestionFragment {
         });
         if (getArguments() != null) {
             showResponse(getArguments().getBoolean(EXTRA_IS_CORRECT));
+        }
+        // Play sound effect
+        final MapsActivity mapsActivity = (MapsActivity) getActivity();
+        if(getArguments().getBoolean(EXTRA_IS_CORRECT)){
+            mapsActivity.getJukebox().playSoundForGameEvent(SoundEvent.AnswerCorrect);
+        } else {
+            mapsActivity.getJukebox().playSoundForGameEvent(SoundEvent.AnswerWrong);
         }
     }
 
