@@ -2,6 +2,7 @@ package com.b3.development.b3runtime.ui.question;
 
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -29,9 +30,11 @@ import static org.koin.java.KoinJavaComponent.get;
  */
 public class QuestionFragment extends BaseQuestionFragment {
 
+    public static final String TAG = QuestionFragment.class.getSimpleName();
+    private static final int layoutId = R.layout.fragment_question_dialog;
+
     private QuestionViewModel viewModel;
     private int selectedOption;
-    private int layoutId;
     private TextView questionTextView;
     private RadioGroup answers;
     private RadioButton buttonA;
@@ -47,11 +50,10 @@ public class QuestionFragment extends BaseQuestionFragment {
     public QuestionFragment() {
     }
 
-    public static final QuestionFragment newInstance(int layoutId) {
+    public static final QuestionFragment newInstance() {
         QuestionFragment fragment = new QuestionFragment();
-        Bundle bundle = new Bundle(1);
-        bundle.putInt("layoutId", layoutId);
-        fragment.setArguments(bundle);
+        Bundle arguments = new Bundle();
+        fragment.setArguments(arguments);
         fragment.setRetainInstance(true);
         return fragment;
     }
@@ -59,12 +61,11 @@ public class QuestionFragment extends BaseQuestionFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
         //create or connect viewmodel to fragment
         viewModel = ViewModelProviders.of(this,
                 new QuestionViewModelFactory(get(QuestionRepository.class)))
                 .get(QuestionViewModel.class);
-        this.layoutId = getArguments().getInt("layoutId");
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
     }
 
     @Override
@@ -97,14 +98,14 @@ public class QuestionFragment extends BaseQuestionFragment {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 selectedOption = answers.getCheckedRadioButtonId();
-                System.out.println("selected option:" + selectedOption);
+                Log.d(TAG,"selected option:" + selectedOption);
                 confirmButton.setEnabled(true);
             }
         });
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Calling viewModel to validate answer");
+                Log.d(TAG,"Calling viewModel to validate answer");
                 viewModel.validateAnswer(selectedOption);
                 callback.switchFragmentVisible(fragment);
                 //uncheck buttons for next time question is shown
@@ -127,7 +128,7 @@ public class QuestionFragment extends BaseQuestionFragment {
         if (q == null) {
             return;
         }
-        System.out.println("Update QUESTION called in Q Fragment");
+        Log.d(TAG, "Update QUESTION called in Q Fragment");
         viewModel.updateQuestion(q);
     }
 
@@ -136,7 +137,7 @@ public class QuestionFragment extends BaseQuestionFragment {
     }
 
     private void showResponse(Boolean isCorrect) {
-        ResponseFragment.newInstance(isCorrect).show(getFragmentManager(), "response");
+        ResponseFragment.newInstance(isCorrect).show(getFragmentManager(), ResponseFragment.TAG);
         //remove observer and recreate MutableLiveData to prevent showing of response more than once
         viewModel.validated.removeObservers(this);
         viewModel.validated = new MutableLiveData<>();
@@ -144,7 +145,7 @@ public class QuestionFragment extends BaseQuestionFragment {
 
     //changes text in questionfragment to current question
     private void handleQuestion(Question question) {
-        System.out.println("Question in fragment is null: " + (question == null));
+        Log.d(TAG, "Question in fragment is null: " + (question == null));
         if (question == null) {
             //reset questions if all question are answered todo: (delete this in release version)
             viewModel.resetQuestionsIsAnswered();

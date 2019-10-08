@@ -29,9 +29,10 @@ import static org.koin.java.KoinJavaComponent.get;
  */
 public class CheckinFragment extends BaseQuestionFragment {
 
-    private MapsViewModel viewModel;
-
+    public static final String TAG = CheckinFragment.class.getSimpleName();
     private static final int layoutId = R.layout.fragment_result_dialog;
+
+    private MapsViewModel viewModel;
     private TextView response;
     private ImageView colorBase;
     private CircleImageView colorLogo;
@@ -62,7 +63,7 @@ public class CheckinFragment extends BaseQuestionFragment {
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
         //create or connect viewmodel to fragment
         viewModel = ViewModelProviders.of(getActivity(),
-                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class)))
+                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext()))
                 .get(MapsViewModel.class);
     }
 
