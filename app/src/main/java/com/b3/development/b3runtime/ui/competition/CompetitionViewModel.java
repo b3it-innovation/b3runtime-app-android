@@ -21,22 +21,18 @@ import java.util.List;
 public class CompetitionViewModel extends BaseViewModel {
 
     public LiveData<List<BackendCompetition>> competitions;
-//    MutableLiveData<Boolean> showLoading = new MutableLiveData<>();
     private CompetitionRepository repository;
+    public boolean firstTimeFetched = true;
 
     private static final DatabaseReference COMPETITIONS_REF =
             FirebaseDatabase.getInstance().getReference("competitions");
 
-    private final QueryLiveData liveData = new QueryLiveData(COMPETITIONS_REF);
+    private final QueryLiveData liveData;
 
     public CompetitionViewModel(CompetitionRepository competitionRepository) {
         this.repository = competitionRepository;
-//        repository.fetch();
-//        showLoading.postValue(false);
         competitions = repository.getCompetitionsLiveData();
-//        errors = repository.getError();
-
-
+        liveData  = new QueryLiveData(COMPETITIONS_REF);
     }
 
     @NonNull

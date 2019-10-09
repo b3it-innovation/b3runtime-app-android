@@ -54,7 +54,6 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
     private List<BackendCompetition> convertDatasnapshotToCompetitions(DataSnapshot dataSnapshot) {
         List<BackendCompetition> competitions = new ArrayList<>();
         if (dataSnapshot != null) {
-            System.out.println("data change in compr");
             for (DataSnapshot competitionSnapshot : dataSnapshot.getChildren()) {
                 //gets the BackendCompetition object
                 BackendCompetition fbCompetition = new BackendCompetition();
@@ -80,7 +79,6 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
                 fbCompetition.setTracks(tracks);
                 fbCompetition.setActive((Boolean)competitionSnapshot.child("active").getValue());
                 fbCompetition.setName((String) competitionSnapshot.child("name").getValue());
-                //fbCompetition.setDate((Long) competitionSnapshot.child("date").getValue());
                 //adds the object to the List of BackendResponsePin objects
                 competitions.add(fbCompetition);
             }
