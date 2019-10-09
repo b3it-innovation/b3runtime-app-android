@@ -6,6 +6,8 @@
         <item name="colorPrimary">@color/b3Pink</item>
         <item name="colorPrimaryDark">@color/b3Grey</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <!-- Disable default sound effect -->
+        <item name="android:soundEffectsEnabled">false</item>
     </style>
 
     <style name="QuestionStyle" parent="Theme.AppCompat.Light.Dialog.MinWidth">
