@@ -55,6 +55,7 @@ public class CompetitionActivity extends AppCompatActivity {
                     Log.d(TAG, comp.getKey().toString());
                     Log.d(TAG, comp.getName().toString());
                 }
+                createButtons(backendCompetitions);
             }
         });
     }
