@@ -16,6 +16,7 @@
     <string name="continueButtonText">Continue</string>
     <string name="wrongAnswer">Wisdom comes with experience. Take an extra route to clear your Мind.</string>
     <string name="intent_failed">settings intent failed</string>
+    <string name="chooseCompetition">Choose competition</string>
     <string name="questionFragmentAddedKey">questionAdded</string>
     <string name="geofenceIntentName">newQuestion</string>
     <string name="resultText">You answered %d out of %d pins correctly.\nYour total time was %d minutes and %d seconds.</string>

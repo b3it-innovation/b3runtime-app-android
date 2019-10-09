@@ -12,6 +12,7 @@ public class BackendCompetition {
     private String key;
     private String name;
     private Long date;
+    private boolean active;
     private ArrayList<BackendTrack> tracks;
 
     public String getKey() {
@@ -36,6 +37,14 @@ public class BackendCompetition {
 
     public void setDate(Long date) {
         this.date = date;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public ArrayList<BackendTrack> getTracks() {
