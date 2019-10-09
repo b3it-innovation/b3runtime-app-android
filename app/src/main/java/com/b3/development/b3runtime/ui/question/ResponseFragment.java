@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.question;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -79,6 +80,7 @@ public class ResponseFragment extends BaseQuestionFragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel.isResponseOnScreen = true;
         response = view.findViewById(R.id.textResult);
+        response.setHeight((int) (getScreenHeightPixels() * 0.3));
         colorBase = view.findViewById(R.id.imageBackgroundResult);
         colorLogo = view.findViewById(R.id.imageLogoResult);
         setCancelable(false);

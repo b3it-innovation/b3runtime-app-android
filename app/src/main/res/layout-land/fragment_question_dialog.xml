@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <TextView
+            android:id="@+id/textQuestion"
+            android:layout_width="249dp"
+            android:layout_height="match_parent"
+            android:background="@color/b3Yellow"
+            android:hint="@string/question"
+            android:scaleType="center"
+            android:scrollbars="vertical"
+            android:textColor="#000000"
+            android:textSize="21sp" />
+
+        <RadioGroup
+            android:id="@+id/radioGroupAnswers"
+            android:layout_width="0dp"
+            android:layout_height="263dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="26dp"
+            android:layout_weight="1">
+
+            <RadioButton
+                android:id="@+id/optionA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="optionA"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/optionB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="optionB"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/optionC"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="optionC"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/optionD"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="optionD"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/buttonConfirmAnswer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="76dp"
+                android:text="@string/confirm" />
+
+        </RadioGroup>
+
+        <ProgressBar
+            android:id="@+id/progress_loader"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="visible" />
+
+    </LinearLayout>
+</RelativeLayout>
