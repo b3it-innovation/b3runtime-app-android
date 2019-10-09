@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -52,11 +53,11 @@ public class CompetitionActivity extends AppCompatActivity {
         LinearLayout.LayoutParams layoutParams =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.bottomMargin = 5;
         for (BackendCompetition bc : competitions) {
             if (bc.isActive()) {
-                Button button = new Button(this);
+                Button button = new Button(new ContextThemeWrapper(this, R.style.baseButton), null, R.style.baseButton);
                 button.setText(bc.getName());
+                button.setStateListAnimator(null);
                 //create new intent to send to next activity
                 Intent intent = new Intent(this, CompetitionActivity.class);
                 intent.putExtra("competitionKey", bc.getKey());
