@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface CompetitionRepository {
 
-    MutableLiveData<List<BackendCompetition>> getCompetitions();
+
+    LiveData<List<BackendCompetition>> getCompetitionsLiveData();
 
     LiveData<Failure> getError();
 
-    void fetch();
 }

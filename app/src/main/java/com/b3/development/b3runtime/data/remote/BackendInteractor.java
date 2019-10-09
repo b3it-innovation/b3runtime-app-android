@@ -1,8 +1,12 @@
 package com.b3.development.b3runtime.data.remote;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.remote.model.pin.BackendResponsePin;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
+import com.google.firebase.database.DataSnapshot;
 
 import java.util.List;
 
@@ -14,7 +18,7 @@ public interface BackendInteractor {
 
     void getQuestions(QuestionsCallback questionCallback);
 
-    void getCompetitions(CompetitionsCallback competitionsCallback);
+    LiveData<DataSnapshot> getCompetitionsDatasnapshot();
 
     interface PinsCallback {
         void onPinsReceived(List<BackendResponsePin> pins);

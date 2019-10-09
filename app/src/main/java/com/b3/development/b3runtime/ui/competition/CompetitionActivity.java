@@ -41,50 +41,14 @@ public class CompetitionActivity extends AppCompatActivity {
         viewModel = ViewModelProviders.of(this,
                 new CompetitionViewModelFactory(get(CompetitionRepository.class)))
                 .get(CompetitionViewModel.class);
-//        viewModel.competitions.observe(this, comps -> showComps(comps));
 
-
-        LiveData<DataSnapshot> liveData = viewModel.getDataSnapshotLiveData();
-
-        liveData.observe(this, new Observer<DataSnapshot>() {
+        viewModel.competitions.observe(this, new Observer<List<BackendCompetition>>() {
             @Override
-            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
-                if (dataSnapshot != null) {
-                    System.out.println("data change in competitions");
-                    List<BackendCompetition> competitions = new ArrayList<>();
-                    for (DataSnapshot competitionSnapshot : dataSnapshot.getChildren()) {
-                        //gets the BackendCompetition object
-                        BackendCompetition fbCompetition = new BackendCompetition();
-                        fbCompetition.setKey(competitionSnapshot.getKey());
-                        //gets the nested "child" object of the actual competition
-                        ArrayList<BackendTrack> tracks = new ArrayList<>();
-                        for(DataSnapshot tracksSnapshot : competitionSnapshot.child("tracks").getChildren()){
-                            BackendTrack track = new BackendTrack();
-                            BackendCategory category = new BackendCategory();
-                            track.setKey(tracksSnapshot.getKey());
-                            track.setName((String)tracksSnapshot.child("name").getValue());
-                            Map obj = (Map)tracksSnapshot.child("category").getValue();
-                            Set keys = obj.keySet();
-                            Iterator iter = keys.iterator();
-                            String key = (String)iter.next();
-                            category.setKey(key);
-                            obj = (Map)obj.get(key);
-                            category.setName((String)obj.get("name"));
-                            track.setCategory(category);
-                            tracks.add(track);
-                        }
-                        //sets the rest of the BackendCompetition object
-                        fbCompetition.setTracks(tracks);
-                        fbCompetition.setName((String) competitionSnapshot.child("name").getValue());
-                        //fbCompetition.setDate((Long) competitionSnapshot.child("date").getValue());
-                        //adds the object to the List of BackendResponsePin objects
-                        competitions.add(fbCompetition);
-                    }
-                    for (BackendCompetition comp : competitions) {
-                        Log.d(TAG, "COMPETITION FETCHED: ");
-                        Log.d(TAG, comp.getKey().toString());
-                        Log.d(TAG, comp.getName().toString());
-                    }
+            public void onChanged(@Nullable List<BackendCompetition> backendCompetitions) {
+                for (BackendCompetition comp : backendCompetitions) {
+                    Log.d(TAG, "COMPETITION FETCHED: ");
+                    Log.d(TAG, comp.getKey().toString());
+                    Log.d(TAG, comp.getName().toString());
                 }
             }
         });
@@ -93,18 +57,5 @@ public class CompetitionActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        Log.d(TAG, viewModel.competitions.toString());
-//        List<BackendCompetition> list = viewModel.competitions.getValue();
-//        Log.d(TAG, "List isEmpty" + list.isEmpty());
-    }
-
-    private void showComps(List<BackendCompetition> comps) {
-        Log.d(TAG, "List null" + (comps == null));
-        if (comps != null && !comps.isEmpty()) {
-            for (BackendCompetition c : comps) {
-                Log.d(TAG, comps.toString());
-            }
-        }
-
     }
 }

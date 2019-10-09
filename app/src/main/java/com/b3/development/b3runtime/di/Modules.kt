@@ -36,13 +36,12 @@ val b3RuntimeModule = module {
     single { Room.databaseBuilder(androidApplication(), B3RuntimeDatabase::class.java, "b3Runtime_db").build() }
     single { get<B3RuntimeDatabase>().pinDao() }
     single { get<B3RuntimeDatabase>().questionDao() }
-    single { get<B3RuntimeDatabase>().competitionDao() }
     single { BackendInteractorImpl(get(StringQualifier("pins")), get(StringQualifier("questions")), get(StringQualifier("competitions"))) as BackendInteractor }
     single(StringQualifier("pins")) { FirebaseDatabase.getInstance().getReference("control_points") }
     single(StringQualifier("questions")) { FirebaseDatabase.getInstance().getReference("questions") }
     single(StringQualifier("competitions")) { FirebaseDatabase.getInstance().getReference("competitions") }
     single { PinRepositoryImpl(get(), get()) as PinRepository }
     single { QuestionRepositoryImpl(get(), get()) as QuestionRepository }
-    single { CompetitionRepositoryImpl(get(), get()) as CompetitionRepository }
+    single { CompetitionRepositoryImpl(get()) as CompetitionRepository }
     single { GeofenceManagerImpl(androidContext()) as GeofenceManager }
 }

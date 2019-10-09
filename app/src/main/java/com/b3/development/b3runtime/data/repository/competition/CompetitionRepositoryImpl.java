@@ -4,35 +4,39 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
-import com.b3.development.b3runtime.data.local.model.competition.CompetitionDao;
 import com.b3.development.b3runtime.data.remote.BackendInteractor;
+import com.b3.development.b3runtime.data.remote.model.category.BackendCategory;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
+import com.b3.development.b3runtime.data.remote.model.track.BackendTrack;
 import com.b3.development.b3runtime.utils.failure.Failure;
-import com.b3.development.b3runtime.utils.failure.FailureType;
+import com.google.firebase.database.DataSnapshot;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CompetitionRepositoryImpl implements CompetitionRepository {
 
-    private CompetitionDao competitionDao;
-    private BackendInteractor backendInteractor;
-    private MutableLiveData<List<BackendCompetition>> competitions  = new MutableLiveData<>();
-    private MutableLiveData<Failure> error = new MutableLiveData<>();
+    public static final String TAG = CompetitionRepository.class.getSimpleName();
+
+    private final BackendInteractor backendInteractor;
+    private final MutableLiveData<Failure> error = new MutableLiveData<>();
+    private final LiveData<DataSnapshot> competitionsLiveDataSnapshot;
+    private MutableLiveData<List<BackendCompetition>> competitionMutableLiveData = new MutableLiveData<>();
+    private final LiveData<List<BackendCompetition>> competitionsLiveData;
 
     /**
      * A public constructor for {@link CompetitionRepository} implementation
      *
      * @param bi a reference to {@link BackendInteractor}
      */
-    public CompetitionRepositoryImpl(CompetitionDao dao, BackendInteractor bi) {
-        this.competitionDao = dao;
+    public CompetitionRepositoryImpl(BackendInteractor bi) {
         this.backendInteractor = bi;
-        competitions = new MutableLiveData<>();
-    }
-
-    @Override
-    public MutableLiveData<List<BackendCompetition>> getCompetitions() {
-        return competitions;
+        competitionsLiveDataSnapshot = bi.getCompetitionsDatasnapshot();
+        competitionsLiveData = Transformations.map(competitionsLiveDataSnapshot,
+                snapshot -> convertDatasnapshotToCompetitions(snapshot));
     }
 
     /**
@@ -43,34 +47,47 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
         return error;
     }
 
-    /**
-     * Contains logic for fetching data from backendInteractor
-     */
-    @Override
-    public void fetch() {
-        //implements BackendInteractor.CompetitionsCallback
-        backendInteractor.getCompetitions(new BackendInteractor.CompetitionsCallback() {
-            //handles response
-            @Override
-            public void onCompetitionsReceived(List<BackendCompetition> backendCompetitions) {
-                //early return in case of server error
-                if (backendCompetitions == null || backendCompetitions.isEmpty()) {
-                    error.postValue(new Failure(FailureType.SERVER));
-                    return;
-                }
-                System.out.println("COMPETITIONS RECEIVED FROM BACKEND");
-                //List<Pin> pins = convert(backendCompetitions);
-                //writes in local database asynchronously
-                //AsyncTask.execute(() -> pinDao.insertPins(pins));
-                competitions = new MutableLiveData<>();
-                competitions.setValue(backendCompetitions);
-                System.out.println("COMPETITIONS CONVERTED... WRITING IN DATABASE ASYNC STARTS");
-            }
 
-            @Override
-            public void onError() {
-                error.postValue(new Failure(FailureType.NETWORK));
+    /**
+     * Contains logic for converting firebase datasnapshot into backendcompetitions
+     */
+    private List<BackendCompetition> convertDatasnapshotToCompetitions(DataSnapshot dataSnapshot) {
+        List<BackendCompetition> competitions = new ArrayList<>();
+        if (dataSnapshot != null) {
+            System.out.println("data change in compr");
+            for (DataSnapshot competitionSnapshot : dataSnapshot.getChildren()) {
+                //gets the BackendCompetition object
+                BackendCompetition fbCompetition = new BackendCompetition();
+                fbCompetition.setKey(competitionSnapshot.getKey());
+                //gets the nested "child" object of the actual competition
+                ArrayList<BackendTrack> tracks = new ArrayList<>();
+                for (DataSnapshot tracksSnapshot : competitionSnapshot.child("tracks").getChildren()) {
+                    BackendTrack track = new BackendTrack();
+                    BackendCategory category = new BackendCategory();
+                    track.setKey(tracksSnapshot.getKey());
+                    track.setName((String) tracksSnapshot.child("name").getValue());
+                    Map obj = (Map) tracksSnapshot.child("category").getValue();
+                    Set keys = obj.keySet();
+                    Iterator iter = keys.iterator();
+                    String key = (String) iter.next();
+                    category.setKey(key);
+                    obj = (Map) obj.get(key);
+                    category.setName((String) obj.get("name"));
+                    track.setCategory(category);
+                    tracks.add(track);
+                }
+                //sets the rest of the BackendCompetition object
+                fbCompetition.setTracks(tracks);
+                fbCompetition.setName((String) competitionSnapshot.child("name").getValue());
+                //fbCompetition.setDate((Long) competitionSnapshot.child("date").getValue());
+                //adds the object to the List of BackendResponsePin objects
+                competitions.add(fbCompetition);
             }
-        });
+        }
+        return competitions;
+    }
+
+    public LiveData<List<BackendCompetition>> getCompetitionsLiveData() {
+        return competitionsLiveData;
     }
 }

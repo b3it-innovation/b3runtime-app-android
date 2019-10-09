@@ -12,14 +12,10 @@ import com.google.firebase.database.ValueEventListener;
 
 public class QueryLiveData extends LiveData<DataSnapshot> {
 
-    private static final String TAG = BackendInteractor.class.getSimpleName();
+    private static final String TAG = QueryLiveData.class.getSimpleName();
 
     private final Query query;
     private final QueryValueEventListener valueEventListener = new QueryValueEventListener();
-
-    public QueryLiveData(Query query) {
-        this.query = query;
-    }
 
     public QueryLiveData(DatabaseReference databaseRef) {
         this.query = databaseRef;
@@ -40,6 +36,7 @@ public class QueryLiveData extends LiveData<DataSnapshot> {
     private class QueryValueEventListener implements ValueEventListener {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
+
             setValue(dataSnapshot);
         }
 
