@@ -4,17 +4,24 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.b3.development.b3runtime.data.remote.model.category.BackendCategory;
+import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.remote.model.pin.BackendPin;
 import com.b3.development.b3runtime.data.remote.model.pin.BackendResponsePin;
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
+import com.b3.development.b3runtime.data.remote.model.track.BackendTrack;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * An implementation of the {@link BackendInteractor} interface
@@ -25,15 +32,19 @@ public class BackendInteractorImpl implements BackendInteractor {
 
     private DatabaseReference firebaseDbPins;
     private DatabaseReference firebaseDbQuestions;
+    private DatabaseReference firebaseDbCompetitions;
 
     /**
      * A public constructor for {@link BackendInteractor}
      *
      * @param firebaseDbPins a reference to the <code>Firebase Database</code>
      */
-    public BackendInteractorImpl(DatabaseReference firebaseDbPins, DatabaseReference firebaseDbQuestions) {
+    public BackendInteractorImpl(DatabaseReference firebaseDbPins,
+                                 DatabaseReference firebaseDbQuestions,
+                                 DatabaseReference firebaseDbCompetitions) {
         this.firebaseDbPins = firebaseDbPins;
         this.firebaseDbQuestions = firebaseDbQuestions;
+        this.firebaseDbCompetitions = firebaseDbCompetitions;
     }
 
     /**
@@ -166,6 +177,74 @@ public class BackendInteractorImpl implements BackendInteractor {
             public void onCancelled(@NonNull DatabaseError error) {
                 questionCallback.onError();
                 System.out.println("canceled");
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    /**
+     * <code>getCompetitions()</code> is called from the repository to feed the local database with data from the remote.
+     * Receives an implementation of the callback} interface
+     *
+     * @param competitionsCallback a callback instance
+     */
+    @Override
+    public void getCompetitions(final CompetitionsCallback competitionsCallback) {
+        //sets listener on the data in firebase
+        firebaseDbCompetitions.addValueEventListener(new ValueEventListener() {
+
+            /**
+             * Contains the logic on handling a data change in the remote database
+             * @param dataSnapshot a snapshot of the data in control_points after the change
+             */
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                System.out.println("data change in competitions");
+                List<BackendCompetition> competitions = new ArrayList<>();
+                for (DataSnapshot competitionSnapshot : dataSnapshot.getChildren()) {
+                    //gets the BackendCompetition object
+                    BackendCompetition fbCompetition = new BackendCompetition();
+                    fbCompetition.setKey(competitionSnapshot.getKey());
+                    //gets the nested "child" object of the actual competition
+                    ArrayList<BackendTrack> tracks = new ArrayList<>();
+                    for(DataSnapshot tracksSnapshot : competitionSnapshot.child("tracks").getChildren()){
+                        BackendTrack track = new BackendTrack();
+                        BackendCategory category = new BackendCategory();
+                        track.setKey(tracksSnapshot.getKey());
+                        track.setName((String)tracksSnapshot.child("name").getValue());
+                        Map obj = (Map)tracksSnapshot.child("category").getValue();
+                        Set keys = obj.keySet();
+                        Iterator iter = keys.iterator();
+                        String key = (String)iter.next();
+                        category.setKey(key);
+                        obj = (Map)obj.get(key);
+                        category.setName((String)obj.get("name"));
+                        track.setCategory(category);
+                        tracks.add(track);
+                    }
+                    //sets the rest of the BackendCompetition object
+                    fbCompetition.setTracks(tracks);
+                    fbCompetition.setName((String) competitionSnapshot.child("name").getValue());
+                    //fbCompetition.setDate((Long) competitionSnapshot.child("date").getValue());
+                    //adds the object to the List of BackendResponsePin objects
+                    competitions.add(fbCompetition);
+                }
+                //returns the Callback containing the List of locations
+                competitionsCallback.onCompetitionsReceived(competitions);
+                //debug log
+                Log.d(TAG, "Locations read: " + competitions.size());
+                //removes the listener
+                firebaseDbPins.removeEventListener(this);
+            }
+
+            /**
+             * Contains logic for handling possible database errors
+             *
+             * @param error the error recieved
+             */
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                competitionsCallback.onError();
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
         });

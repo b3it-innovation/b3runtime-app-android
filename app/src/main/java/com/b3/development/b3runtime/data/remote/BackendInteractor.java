@@ -1,5 +1,6 @@
 package com.b3.development.b3runtime.data.remote;
 
+import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.remote.model.pin.BackendResponsePin;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
 
@@ -13,6 +14,8 @@ public interface BackendInteractor {
 
     void getQuestions(QuestionsCallback questionCallback);
 
+    void getCompetitions(CompetitionsCallback competitionsCallback);
+
     interface PinsCallback {
         void onPinsReceived(List<BackendResponsePin> pins);
 
@@ -21,6 +24,12 @@ public interface BackendInteractor {
 
     interface QuestionsCallback {
         void onQuestionsReceived(List<BackendResponseQuestion> questions);
+
+        void onError();
+    }
+
+    interface CompetitionsCallback {
+        void onCompetitionsReceived(List<BackendCompetition> competitions);
 
         void onError();
     }
