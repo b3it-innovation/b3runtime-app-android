@@ -126,7 +126,7 @@ public class MapsActivity extends BaseActivity
 
         mapsRenderer = new MapsRenderer(getApplicationContext());
 
-        jukebox = new Jukebox(getApplicationContext());
+        jukebox = Jukebox.getInstance(getApplicationContext());
     }
 
     /**
