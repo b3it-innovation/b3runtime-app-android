@@ -4,25 +4,18 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
-import com.b3.development.b3runtime.data.remote.model.category.BackendCategory;
-import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.remote.model.pin.BackendPin;
 import com.b3.development.b3runtime.data.remote.model.pin.BackendResponsePin;
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
-import com.b3.development.b3runtime.data.remote.model.track.BackendTrack;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * An implementation of the {@link BackendInteractor} interface
@@ -49,6 +42,11 @@ public class BackendInteractorImpl implements BackendInteractor {
         this.firebaseDbQuestions = firebaseDbQuestions;
         this.firebaseDbCompetitions = firebaseDbCompetitions;
         this.competitionsLiveDataSnapshot = new QueryLiveData(firebaseDbCompetitions);
+    }
+
+    @NonNull
+    public LiveData<DataSnapshot> getCompetitionsDataSnapshot() {
+        return competitionsLiveDataSnapshot;
     }
 
     /**
@@ -105,11 +103,6 @@ public class BackendInteractorImpl implements BackendInteractor {
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
         });
-    }
-
-    @NonNull
-    public LiveData<DataSnapshot> getCompetitionsDatasnapshot() {
-        return competitionsLiveDataSnapshot;
     }
 
     @Override

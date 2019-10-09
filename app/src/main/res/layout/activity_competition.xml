@@ -12,7 +12,6 @@
         android:id="@+id/textChooseCompetition"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/b3Yellow"
         android:text="@string/chooseCompetition"
         android:padding="5dp"
         android:layout_marginBottom="5dp"

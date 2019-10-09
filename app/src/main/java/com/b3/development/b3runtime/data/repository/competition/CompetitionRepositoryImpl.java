@@ -24,7 +24,6 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
     private final BackendInteractor backendInteractor;
     private final MutableLiveData<Failure> error = new MutableLiveData<>();
     private final LiveData<DataSnapshot> competitionsLiveDataSnapshot;
-    private MutableLiveData<List<BackendCompetition>> competitionMutableLiveData = new MutableLiveData<>();
     private final LiveData<List<BackendCompetition>> competitionsLiveData;
 
     /**
@@ -34,7 +33,7 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
      */
     public CompetitionRepositoryImpl(BackendInteractor bi) {
         this.backendInteractor = bi;
-        competitionsLiveDataSnapshot = bi.getCompetitionsDatasnapshot();
+        competitionsLiveDataSnapshot = bi.getCompetitionsDataSnapshot();
         competitionsLiveData = Transformations.map(competitionsLiveDataSnapshot,
                 snapshot -> convertDatasnapshotToCompetitions(snapshot));
     }
@@ -77,7 +76,7 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
                 }
                 //sets the rest of the BackendCompetition object
                 fbCompetition.setTracks(tracks);
-                fbCompetition.setActive((Boolean)competitionSnapshot.child("active").getValue());
+                fbCompetition.setActive((Boolean) competitionSnapshot.child("active").getValue());
                 fbCompetition.setName((String) competitionSnapshot.child("name").getValue());
                 //adds the object to the List of BackendResponsePin objects
                 competitions.add(fbCompetition);
