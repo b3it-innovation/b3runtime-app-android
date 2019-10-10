@@ -1,6 +1,8 @@
 package com.b3.development.b3runtime.ui.question;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,6 +18,8 @@ import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseQuestionFragment;
 import com.b3.development.b3runtime.data.repository.pin.PinRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
+import com.b3.development.b3runtime.sound.SoundEvent;
+import com.b3.development.b3runtime.ui.map.MapsActivity;
 import com.b3.development.b3runtime.ui.map.MapsViewModel;
 import com.b3.development.b3runtime.ui.map.MapsViewModelFactory;
 import com.github.abdularis.civ.CircleImageView;
@@ -29,18 +33,17 @@ import static org.koin.java.KoinJavaComponent.get;
  */
 public class ResponseFragment extends BaseQuestionFragment {
 
+    public static final String TAG = ResponseFragment.class.getSimpleName();
     private static final String EXTRA_IS_CORRECT = "extraIsCorrect";
+    private static final int layoutId = R.layout.fragment_result_dialog;
 
     private MapsViewModel viewModel;
-
-    private int layoutId;
     private TextView response;
     private ImageView colorBase;
     private CircleImageView colorLogo;
     private Button confirm;
 
-    public ResponseFragment(int layoutId) {
-        this.layoutId = layoutId;
+    public ResponseFragment() {
     }
 
     /**
@@ -52,7 +55,7 @@ public class ResponseFragment extends BaseQuestionFragment {
     public static ResponseFragment newInstance(boolean isCorrect) {
         Bundle arguments = new Bundle();
         arguments.putBoolean(ResponseFragment.EXTRA_IS_CORRECT, isCorrect);
-        ResponseFragment responseFragment = new ResponseFragment(R.layout.fragment_result_dialog);
+        ResponseFragment responseFragment = new ResponseFragment();
         responseFragment.setArguments(arguments);
         return responseFragment;
     }
@@ -68,15 +71,16 @@ public class ResponseFragment extends BaseQuestionFragment {
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
         //create or connect viewmodel to fragment
         viewModel = ViewModelProviders.of(getActivity(),
-                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class)))
+                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext()))
                 .get(MapsViewModel.class);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        viewModel.isResponseOnScreen = true;
         response = view.findViewById(R.id.textResult);
+        response.setHeight((int) (getScreenHeightPixels() * 0.3));
         colorBase = view.findViewById(R.id.imageBackgroundResult);
         colorLogo = view.findViewById(R.id.imageLogoResult);
         setCancelable(false);
@@ -85,17 +89,25 @@ public class ResponseFragment extends BaseQuestionFragment {
         confirm.setOnClickListener(v -> {
             if (getArguments().getBoolean(EXTRA_IS_CORRECT)) {
                 //todo update pin here
-                System.out.println("SKIP PIN CALLED IN RESPONSE FRAGMENT");
-                viewModel.skipPin();
+                Log.d(TAG, "SKIP PIN CALLED IN RESPONSE FRAGMENT");
+                viewModel.updatePinCorrectAnswer();
             } else {
                 //todo implement extra route
-                System.out.println("UPDATE PIN CALLED IN RESPONSE FRAGMENT");
+                Log.d(TAG, "UPDATE PIN CALLED IN RESPONSE FRAGMENT");
                 viewModel.updatePinCompleted();
             }
+            viewModel.isResponseOnScreen = false;
             dismiss();
         });
         if (getArguments() != null) {
             showResponse(getArguments().getBoolean(EXTRA_IS_CORRECT));
+        }
+        // Play sound effect
+        final MapsActivity mapsActivity = (MapsActivity) getActivity();
+        if(getArguments().getBoolean(EXTRA_IS_CORRECT)){
+            mapsActivity.getJukebox().playSoundForGameEvent(SoundEvent.AnswerCorrect);
+        } else {
+            mapsActivity.getJukebox().playSoundForGameEvent(SoundEvent.AnswerWrong);
         }
     }
 

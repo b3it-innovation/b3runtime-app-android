@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="geofenceRadius">150</integer>
+    <integer name="mocklockationAccuracy">10</integer>
+    <integer name="geofenceExpirationDuration">1500000</integer>
+    <integer name="circleStroke">2</integer>
+    <integer name="circleColor">0x40ff0000</integer>
+    <integer name="groundOverlayPulseDuration">2500</integer>
+    <integer name="sound_pool_max_streams">3</integer>
+    <integer name="default_sfx_volume">1</integer>
+    <integer name="default_music_volume">1</integer>
+
+</resources>
