@@ -49,15 +49,17 @@ public class CompetitionActivity extends AppCompatActivity {
     }
 
     private void createButtons(List<BackendCompetition> competitions) {
-        LinearLayout layout = (LinearLayout) findViewById(R.id.competitionLayout);
+        LinearLayout layout = findViewById(R.id.competitionLayout);
         LinearLayout.LayoutParams layoutParams =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(80, 45,80,10);
         for (BackendCompetition bc : competitions) {
             if (bc.isActive()) {
                 Button button = new Button(new ContextThemeWrapper(this, R.style.baseButton), null, R.style.baseButton);
                 button.setText(bc.getName());
                 button.setStateListAnimator(null);
+                button.setBackground(getDrawable(R.drawable.btn_selector));
                 //create new intent to send to next activity
                 Intent intent = new Intent(this, CompetitionActivity.class);
                 intent.putExtra("competitionKey", bc.getKey());
