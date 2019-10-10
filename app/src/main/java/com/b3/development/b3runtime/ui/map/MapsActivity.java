@@ -253,12 +253,12 @@ public class MapsActivity extends BaseActivity
         initializeMap();
         // Get all checkpoints and draw / save ID of the last checkpoint
         viewModel.allCheckpoints.observe(this,
-                checkpoint -> {
-                    if (!checkpoint.isEmpty() && !checkpointsDrawn) {
-                        firstCheckpointID = checkpoint.get(0).id;
-                        finalCheckpointID = checkpoint.get(checkpoint.size() - 1).id;
+                checkpoints -> {
+                    if (!checkpoints.isEmpty() && !checkpointsDrawn) {
+                        firstCheckpointID = checkpoints.get(0).id;
+                        finalCheckpointID = checkpoints.get(checkpoints.size() - 1).id;
                         Log.d(TAG, "Final Checkpoint ID: " + finalCheckpointID);
-                        mapsRenderer.showAllCheckpoints(checkpoint, viewModel, map);
+                        mapsRenderer.showAllCheckpoints(checkpoints, viewModel, map);
                         //set checkpointsDrawn to true to prevent redrawing of checkpoints when data is changed
                         checkpointsDrawn = true;
                     }

@@ -34,7 +34,7 @@ public class BackendInteractorImpl implements BackendInteractor {
      * A public constructor for {@link BackendInteractor}
      *
      * @param firebaseDbQuestions         a reference to the <code>Firebase Database</code>
-     *                                    * @param firebaseDbCompetitions a reference to the <code>Firebase Database</code>
+     * @param firebaseDbCompetitions      a reference to the <code>Firebase Database</code>
      * @param firebaseDbTracksCheckpoints a reference to the <code>Firebase Database</code>
      */
     public BackendInteractorImpl(DatabaseReference firebaseDbQuestions,
