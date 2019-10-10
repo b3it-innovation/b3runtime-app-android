@@ -1,40 +1,38 @@
-package com.b3.development.b3runtime.ui.competition;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+package com.b3.development.b3runtime.ui.track;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
-import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
-import com.b3.development.b3runtime.ui.track.TrackActivity;
+import com.b3.development.b3runtime.ui.competition.CompetitionActivity;
 
 import java.util.List;
 
 import static org.koin.java.KoinJavaComponent.get;
 
-public class CompetitionActivity extends AppCompatActivity {
+public class TrackActivity extends AppCompatActivity {
 
-    public static final String TAG = CompetitionActivity.class.getSimpleName();
+    public static final String TAG = TrackActivity.class.getSimpleName();
 
-    private CompetitionViewModel viewModel;
+    private TrackViewModel viewModel;
     public boolean firstTimeFetched = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_competition);
+        setContentView(R.layout.activity_track);
         //create or connect viewmodel to activity
         viewModel = ViewModelProviders.of(this,
-                new CompetitionViewModelFactory(get(CompetitionRepository.class)))
-                .get(CompetitionViewModel.class);
+                new TrackViewModelFactory(get(CompetitionRepository.class)))
+                .get(TrackViewModel.class);
 
         viewModel.competitions.observe(this, backendCompetitions -> {
             if (firstTimeFetched) {
@@ -62,7 +60,7 @@ public class CompetitionActivity extends AppCompatActivity {
                 button.setStateListAnimator(null);
                 button.setBackground(getDrawable(R.drawable.btn_selector));
                 //create new intent to send to next activity
-                Intent intent = new Intent(this, TrackActivity.class);
+                Intent intent = new Intent(this, CompetitionActivity.class);
                 intent.putExtra("competitionKey", bc.getKey());
 
                 button.setOnClickListener(v -> {

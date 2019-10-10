@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/competitionLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorWhite"
+    tools:context=".ui.competition.CompetitionActivity">
+
+    <TextView
+        android:id="@+id/textChooseCompetition"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/chooseTrack"
+        android:textSize="34sp"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:textColor="#A3A3A3"
+        android:padding="25dp"
+        android:layout_marginBottom="5dp"
+        android:scaleType="center" />
+
+</LinearLayout>
