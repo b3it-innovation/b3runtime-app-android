@@ -1,7 +1,6 @@
 package com.b3.development.b3runtime.ui.question;
 
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,7 +14,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseQuestionFragment;
-import com.b3.development.b3runtime.data.repository.pin.PinRepository;
+import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.ui.map.MapsViewModel;
 import com.b3.development.b3runtime.ui.map.MapsViewModelFactory;
@@ -63,7 +62,7 @@ public class CheckinFragment extends BaseQuestionFragment {
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
         //create or connect viewmodel to fragment
         viewModel = ViewModelProviders.of(getActivity(),
-                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext()))
+                new MapsViewModelFactory(get(CheckpointRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext(),""))
                 .get(MapsViewModel.class);
     }
 
@@ -85,7 +84,7 @@ public class CheckinFragment extends BaseQuestionFragment {
         confirm.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
 
         confirm.setOnClickListener(v -> {
-            viewModel.updatePinCompleted();
+            viewModel.updateCheckpointCompleted();
             dismiss();
         });
     }

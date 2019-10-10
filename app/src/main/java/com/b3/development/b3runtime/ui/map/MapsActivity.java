@@ -28,8 +28,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
-import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
-import com.b3.development.b3runtime.data.repository.pin.PinRepository;
+import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.geofence.LocationService;
 import com.b3.development.b3runtime.sound.Jukebox;
@@ -37,10 +36,8 @@ import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
 import com.b3.development.b3runtime.ui.question.ResultFragment;
-import com.b3.development.b3runtime.utils.Util;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
-
-import com.google.android.gms.location.LocationServices;
+import com.b3.development.b3runtime.utils.Util;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -71,10 +68,10 @@ public class MapsActivity extends BaseActivity
 
     private MapsRenderer mapsRenderer;
     private Jukebox jukebox;
-    private String firstPinID;
-    private String finalPinID;
+    private String firstCheckpointID;
+    private String finalCheckpointID;
     private QuestionFragment questionFragment;
-    private boolean pinsDrawn = false;
+    private boolean checkpointsDrawn = false;
 
     /**
      * Contains the main logic of the {@link MapsActivity}
@@ -93,9 +90,12 @@ public class MapsActivity extends BaseActivity
             }
         }
 
+        Intent intent = getIntent();
+        String trackKey = intent.getStringExtra("trackKey");
+        
         //create or connect already existing viewmodel to activity
         viewModel = ViewModelProviders.of(this,
-                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class), getApplicationContext()))
+                new MapsViewModelFactory(get(CheckpointRepository.class), get(GeofenceManager.class), getApplicationContext(), trackKey))
                 .get(MapsViewModel.class);
 
         //observe for errors and inform user if an error occurs
@@ -162,8 +162,8 @@ public class MapsActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_reset:
-                // reset pins if all pins are completed todo:(delete this in release version)
-                viewModel.resetPins();
+                // reset checkpoints if all checkpoints are completed todo:(delete this in release version)
+                viewModel.resetCheckpoints();
                 return true;
             case R.id.action_sound_mode:
                 jukebox.toggleSoundStatus();
@@ -173,8 +173,8 @@ public class MapsActivity extends BaseActivity
         }
     }
 
-    private void setSoundModeTextInMenuItem(MenuItem menuItem){
-        if(jukebox.soundEnabled){
+    private void setSoundModeTextInMenuItem(MenuItem menuItem) {
+        if (jukebox.soundEnabled) {
             menuItem.setTitle("Sound off");
         } else {
             menuItem.setTitle("Sound on");
@@ -191,10 +191,10 @@ public class MapsActivity extends BaseActivity
         if (isMyServiceRunning(LocationService.class)) {
             stopService(new Intent(this, LocationService.class));
         }
-        if(jukebox != null){
+        if (jukebox != null) {
             jukebox.destroy();
         }
-        super.onDestroy();       
+        super.onDestroy();
     }
 
     @Override
@@ -217,14 +217,14 @@ public class MapsActivity extends BaseActivity
                 // Remove geofence otherwise it is still there and triggers questions on screen rotation
                 viewModel.removeGeofence();
 
-                // Check if first pin is reached
-                if (intent.getStringExtra("id").equals(firstPinID)) {
+                // Check if first checkpoint is reached
+                if (intent.getStringExtra("id").equals(firstCheckpointID)) {
                     if (getSupportFragmentManager().findFragmentByTag(CheckinFragment.TAG) == null) {
                         CheckinFragment.newInstance().show(getSupportFragmentManager(), CheckinFragment.TAG);
                     }
                 }
-                // Check if last pin is reached
-                else if (intent.getStringExtra("id").equals(finalPinID)) {
+                // Check if last checkpoint is reached
+                else if (intent.getStringExtra("id").equals(finalCheckpointID)) {
                     // Show result
                     if (getSupportFragmentManager().findFragmentByTag(ResultFragment.TAG) == null) {
                         ResultFragment.newInstance().show(getSupportFragmentManager(), ResultFragment.TAG);
@@ -249,16 +249,16 @@ public class MapsActivity extends BaseActivity
         map = googleMap;
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15f));
         initializeMap();
-        // Get all pins and draw / save ID of the last pin
-        viewModel.allPins.observe(this,
-                pins -> {
-                    if (!pins.isEmpty() && !pinsDrawn) {
-                        firstPinID = pins.get(0).id;
-                        finalPinID = pins.get(pins.size() - 1).id;
-                        Log.d(TAG, "Final Pin ID: " + finalPinID);
-                        mapsRenderer.showAllPins(pins, viewModel, map);
-                        //set pinsDrawn to true to prevent redrawing of pins when data is changed
-                        pinsDrawn = true;
+        // Get all checkpoints and draw / save ID of the last checkpoint
+        viewModel.allCheckpoints.observe(this,
+                checkpoints -> {
+                    if (!checkpoints.isEmpty() && !checkpointsDrawn) {
+                        firstCheckpointID = checkpoints.get(0).id;
+                        finalCheckpointID = checkpoints.get(checkpoints.size() - 1).id;
+                        Log.d(TAG, "Final Checkpoint ID: " + finalCheckpointID);
+                        mapsRenderer.showAllCheckpoints(checkpoints, viewModel, map);
+                        //set checkpointsDrawn to true to prevent redrawing of checkpoints when data is changed
+                        checkpointsDrawn = true;
                     }
                 });
 
@@ -275,9 +275,9 @@ public class MapsActivity extends BaseActivity
             return;
         } else {
             map.setMyLocationEnabled(true);
-            //observes for change in the nextPin data and calls showNextPin(),
+            //observes for change in the nextCheckpoint data and calls showNextCheckpoint(),
             // needs to be here to get permission before adding geofence
-            viewModel.nextPin.observe(this, pin -> mapsRenderer.showNextPin(pin, viewModel, map));
+            viewModel.nextCheckpoint.observe(this, checkpoint -> mapsRenderer.showNextCheckpoint(checkpoint, viewModel, map));
         }
     }
 
@@ -385,7 +385,7 @@ public class MapsActivity extends BaseActivity
         }
         ft.commit();
     }
-    
+
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {

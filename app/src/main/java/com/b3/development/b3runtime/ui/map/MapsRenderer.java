@@ -10,7 +10,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.b3.development.b3runtime.R;
-import com.b3.development.b3runtime.data.local.model.pin.Pin;
+import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -35,15 +35,15 @@ public class MapsRenderer {
     }
 
     // Draw next checkpoint on the map
-    public void showNextPin(final Pin nextPin, final MapsViewModel viewModel, final GoogleMap map) {
-        if (nextPin == null) return;
-        // Change color of the completed nextPin
+    public void showNextCheckpoint(final Checkpoint nextCheckpoint, final MapsViewModel viewModel, final GoogleMap map) {
+        if (nextCheckpoint == null) return;
+        // Change color of the completed nextCheckpoint
         if (lastMarker != null) {
             setCompletedColorOnMarker(lastMarker);
         }
         lastMarker = map.addMarker(new MarkerOptions()
-                .position(new LatLng(nextPin.latitude, nextPin.longitude))
-                .title(nextPin.name)
+                .position(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude))
+                .title(nextCheckpoint.name)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
         map.setOnMarkerClickListener(marker -> {
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
@@ -53,42 +53,42 @@ public class MapsRenderer {
         if (viewModel.isResponseOnScreen) {
             return;
         } else if (viewModel.isLatestAnsweredCorrect) {
-            viewModel.skipPin();
+            viewModel.skipCheckpoint();
             viewModel.isLatestAnsweredCorrect = false;
         } else {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextPin.latitude, nextPin.longitude), 15f));
-            //adds a geofence on the recieved nextPin
-            viewModel.addGeofence(nextPin);
-            // draw geofence circle around nextPin
-            drawGeofenceCircleAroundPin(viewModel, map);
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude), 15f));
+            //adds a geofence on the recieved nextCheckpoint
+            viewModel.addGeofence(nextCheckpoint);
+            // draw geofence circle around nextCheckpoint
+            drawGeofenceCircleAroundCheckpoint(viewModel, map);
         }
 
     }
 
-    // Draw all pins except for the current pin if possible
-    public void showAllPins(final List<Pin> allPins, final MapsViewModel viewModel, final GoogleMap map) {
-        if (allPins == null || allPins.isEmpty()) return;
-        final Pin nextPin = viewModel.nextPin.getValue();
-        if(nextPin == null){
-            // draw all pins
-            for (int i = 0; i < allPins.size(); i++) {
-                Pin pin = allPins.get(i);
+    // Draw all checkpoints except for the current checkpoints if possible
+    public void showAllCheckpoints(final List<Checkpoint> allCheckpoints, final MapsViewModel viewModel, final GoogleMap map) {
+        if (allCheckpoints == null || allCheckpoints.isEmpty()) return;
+        final Checkpoint nextCheckpoint = viewModel.nextCheckpoint.getValue();
+        if (nextCheckpoint == null) {
+            // draw all checkpoints
+            for (int i = 0; i < allCheckpoints.size(); i++) {
+                Checkpoint checkpoint = allCheckpoints.get(i);
                 Marker marker = map.addMarker(new MarkerOptions()
-                        .position(new LatLng(pin.latitude, pin.longitude))
-                        .title(pin.name));
-                if (pin.completed) {
+                        .position(new LatLng(checkpoint.latitude, checkpoint.longitude))
+                        .title(checkpoint.name));
+                if (checkpoint.completed) {
                     setCompletedColorOnMarker(marker);
                 }
             }
         } else {
-            // draw all pins except for next checkpoint
-            for (int i = 0; i < allPins.size(); i++) {
-                Pin pin = allPins.get(i);
-                if (nextPin != null && (!pin.id.equals(viewModel.nextPin.getValue().id))) {
+            // draw all checkpoints except for next checkpoint
+            for (int i = 0; i < allCheckpoints.size(); i++) {
+                Checkpoint checkpoint = allCheckpoints.get(i);
+                if (nextCheckpoint != null && (!checkpoint.id.equals(viewModel.nextCheckpoint.getValue().id))) {
                     Marker marker = map.addMarker(new MarkerOptions()
-                            .position(new LatLng(pin.latitude, pin.longitude))
-                            .title(pin.name));
-                    if (pin.completed) {
+                            .position(new LatLng(checkpoint.latitude, checkpoint.longitude))
+                            .title(checkpoint.name));
+                    if (checkpoint.completed) {
                         setCompletedColorOnMarker(marker);
                     }
                 }
@@ -96,12 +96,12 @@ public class MapsRenderer {
         }
     }
 
-    private void setCompletedColorOnMarker(final Marker marker){
+    private void setCompletedColorOnMarker(final Marker marker) {
         marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
     }
 
-    private void drawGeofenceCircleAroundPin(final MapsViewModel viewModel, final GoogleMap map) {
-        removeGeofenceCircleAroundPin();
+    private void drawGeofenceCircleAroundCheckpoint(final MapsViewModel viewModel, final GoogleMap map) {
+        removeGeofenceCircleAroundCheckpoint();
 
         GradientDrawable gd = new GradientDrawable();
         gd.setShape(GradientDrawable.OVAL);
@@ -119,7 +119,7 @@ public class MapsRenderer {
         gd.draw(canvas);
 
         currentCircle = map.addGroundOverlay(new GroundOverlayOptions().position(
-                new LatLng(viewModel.nextPin.getValue().latitude, viewModel.nextPin.getValue().longitude),
+                new LatLng(viewModel.nextCheckpoint.getValue().latitude, viewModel.nextCheckpoint.getValue().longitude),
                 context.getResources().getInteger(R.integer.geofenceRadius)).image(BitmapDescriptorFactory.fromBitmap(bitmap)));
 
         if (valueAnimator == null) {
@@ -139,7 +139,7 @@ public class MapsRenderer {
         valueAnimator.start();
     }
 
-    private void removeGeofenceCircleAroundPin() {
+    private void removeGeofenceCircleAroundCheckpoint() {
         if (currentCircle != null) {
             valueAnimator.cancel();
             currentCircle.remove();

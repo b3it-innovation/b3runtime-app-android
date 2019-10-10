@@ -1,7 +1,6 @@
 package com.b3.development.b3runtime.ui.question;
 
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,7 +15,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseQuestionFragment;
-import com.b3.development.b3runtime.data.repository.pin.PinRepository;
+import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.sound.SoundEvent;
 import com.b3.development.b3runtime.ui.map.MapsActivity;
@@ -71,7 +70,7 @@ public class ResponseFragment extends BaseQuestionFragment {
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
         //create or connect viewmodel to fragment
         viewModel = ViewModelProviders.of(getActivity(),
-                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext()))
+                new MapsViewModelFactory(get(CheckpointRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext(),""))
                 .get(MapsViewModel.class);
     }
 
@@ -90,11 +89,11 @@ public class ResponseFragment extends BaseQuestionFragment {
             if (getArguments().getBoolean(EXTRA_IS_CORRECT)) {
                 //todo update pin here
                 Log.d(TAG, "SKIP PIN CALLED IN RESPONSE FRAGMENT");
-                viewModel.updatePinCorrectAnswer();
+                viewModel.updateCheckpointCorrectAnswer();
             } else {
                 //todo implement extra route
                 Log.d(TAG, "UPDATE PIN CALLED IN RESPONSE FRAGMENT");
-                viewModel.updatePinCompleted();
+                viewModel.updateCheckpointCompleted();
             }
             viewModel.isResponseOnScreen = false;
             dismiss();

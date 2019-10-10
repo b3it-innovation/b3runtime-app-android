@@ -1,11 +1,11 @@
-package com.b3.development.b3runtime.data.remote.model.pin;
+package com.b3.development.b3runtime.data.remote.model.checkpoint;
 
-import com.b3.development.b3runtime.data.local.model.pin.Pin;
+import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 
 /**
- * A model of the {@link Pin} object nested in the {@link BackendResponsePin}
+ * A model of the {@link Checkpoint} object nested in the {@link BackendResponseCheckpoint}
  */
-public class BackendPin {
+public class BackendCheckpoint {
     private Boolean draggable;
     private String label;
     private Double longitude;

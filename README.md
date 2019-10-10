@@ -7,7 +7,7 @@ within their category - area of work, education or challenge.
 ### How it works
 //todo add photos
 When the app is started, (//this needs to be changed when sing in/login is added) the *game* starts immediately. 
-It shows a map and a marker of the first challenge location. Once the user is within a range of the pin a notification 
+It shows a map and a marker of the first challenge location. Once the user is within a range of the checkpoint a notification
 is triggered and a question within user's category pops up. After user chooses and confirms their answer a response 
 popup informs user of their result. Depending on the result an additional route (if answer is wrong) or next challenge 
 location (if answer is correct) are suggested and game continues.
