@@ -137,9 +137,9 @@ public class LocationService extends Service {
 
             Notification.Builder builder = new Notification.Builder(getApplicationContext(), CHANNEL_ID)
                     .setAutoCancel(true)
-                    .setSmallIcon(R.drawable.ic_launcher_foreground)
-                    .setContentTitle("LocationTracker New")
-                    .setContentText("Tracking location")
+                    .setSmallIcon(R.mipmap.ic_launcher_round)
+                    .setContentTitle("b3 Runtime")
+                    .setContentText("Tracking your progress")
                     .setContentIntent(pendingIntent)
                     .setVisibility(Notification.VISIBILITY_PUBLIC)
                     .setAutoCancel(false);
@@ -148,9 +148,9 @@ public class LocationService extends Service {
         } else {
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_launcher_foreground)
-                    .setContentTitle("LocationTracker Old")
-                    .setContentText("Tracking location")
+                    .setSmallIcon(R.mipmap.ic_launcher_round)
+                    .setContentTitle("b3 Runtime")
+                    .setContentText("Tracking your progress")
                     .setPriority(NotificationCompat.PRIORITY_LOW)
                     .setContentIntent(pendingIntent)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
