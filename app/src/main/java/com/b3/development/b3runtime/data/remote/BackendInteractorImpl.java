@@ -3,6 +3,7 @@ package com.b3.development.b3runtime.data.remote;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 
 import com.b3.development.b3runtime.data.remote.model.pin.BackendPin;
 import com.b3.development.b3runtime.data.remote.model.pin.BackendResponsePin;
@@ -25,15 +26,27 @@ public class BackendInteractorImpl implements BackendInteractor {
 
     private DatabaseReference firebaseDbPins;
     private DatabaseReference firebaseDbQuestions;
+    private DatabaseReference firebaseDbCompetitions;
+
+    private final QueryLiveData competitionsLiveDataSnapshot;
 
     /**
      * A public constructor for {@link BackendInteractor}
      *
      * @param firebaseDbPins a reference to the <code>Firebase Database</code>
      */
-    public BackendInteractorImpl(DatabaseReference firebaseDbPins, DatabaseReference firebaseDbQuestions) {
+    public BackendInteractorImpl(DatabaseReference firebaseDbPins,
+                                 DatabaseReference firebaseDbQuestions,
+                                 DatabaseReference firebaseDbCompetitions) {
         this.firebaseDbPins = firebaseDbPins;
         this.firebaseDbQuestions = firebaseDbQuestions;
+        this.firebaseDbCompetitions = firebaseDbCompetitions;
+        this.competitionsLiveDataSnapshot = new QueryLiveData(firebaseDbCompetitions);
+    }
+
+    @NonNull
+    public LiveData<DataSnapshot> getCompetitionsDataSnapshot() {
+        return competitionsLiveDataSnapshot;
     }
 
     /**

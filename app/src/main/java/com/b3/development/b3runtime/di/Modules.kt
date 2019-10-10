@@ -4,6 +4,8 @@ import androidx.room.Room
 import com.b3.development.b3runtime.data.local.B3RuntimeDatabase
 import com.b3.development.b3runtime.data.remote.BackendInteractor
 import com.b3.development.b3runtime.data.remote.BackendInteractorImpl
+import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository
+import com.b3.development.b3runtime.data.repository.competition.CompetitionRepositoryImpl
 import com.b3.development.b3runtime.data.repository.pin.PinRepository
 import com.b3.development.b3runtime.data.repository.pin.PinRepositoryImpl
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository
@@ -34,10 +36,12 @@ val b3RuntimeModule = module {
     single { Room.databaseBuilder(androidApplication(), B3RuntimeDatabase::class.java, "b3Runtime_db").build() }
     single { get<B3RuntimeDatabase>().pinDao() }
     single { get<B3RuntimeDatabase>().questionDao() }
-    single { BackendInteractorImpl(get(StringQualifier("pins")), get(StringQualifier("questions"))) as BackendInteractor }
+    single { BackendInteractorImpl(get(StringQualifier("pins")), get(StringQualifier("questions")), get(StringQualifier("competitions"))) as BackendInteractor }
     single(StringQualifier("pins")) { FirebaseDatabase.getInstance().getReference("control_points") }
     single(StringQualifier("questions")) { FirebaseDatabase.getInstance().getReference("questions") }
+    single(StringQualifier("competitions")) { FirebaseDatabase.getInstance().getReference("competitions") }
     single { PinRepositoryImpl(get(), get()) as PinRepository }
     single { QuestionRepositoryImpl(get(), get()) as QuestionRepository }
+    single { CompetitionRepositoryImpl(get()) as CompetitionRepository }
     single { GeofenceManagerImpl(androidContext()) as GeofenceManager }
 }
