@@ -17,6 +17,10 @@
     <string name="continueButtonText">Continue</string>
     <string name="wrongAnswer">Wisdom comes with experience. Take an extra route to clear your Мind.</string>
     <string name="intent_failed">settings intent failed</string>
+    <string name="channel_name">b3_runtime</string>
+    <string name="channel_description">channel_description</string>
+    <string name="checkpointNotificationTitle">Checkpoint Notification</string>
+    <string name="checkpointNotificationText">You are in checkpoint now. Click here to opne the app!</string>
     <string name="resultText">You answered %d out of %d pins correctly.\nYour total time was %d minutes and %d seconds.</string>
 
     <!-- string properties for application settings  -->

@@ -34,7 +34,10 @@ import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
 import com.b3.development.b3runtime.ui.question.ResultFragment;
+import com.b3.development.b3runtime.utils.Util;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
+
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -175,9 +178,11 @@ public class MapsActivity extends BaseActivity
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
         super.onDestroy();
+
         if(jukebox != null){
             jukebox.destroy();
         }
+        
         if (broadcastReceiver != null) {
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
         }
@@ -197,6 +202,9 @@ public class MapsActivity extends BaseActivity
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                // if the app is not in foreground, do nothing
+                if (!Util.isForeground(getApplicationContext())) return;
+
                 // Remove geofence otherwise it is still there and triggers questions on screen rotation
                 viewModel.removeGeofence();
 
