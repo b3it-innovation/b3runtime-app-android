@@ -8,10 +8,12 @@
 
     <TextView
         android:id="@+id/textQuestion"
+        android:textSize="21sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/b3Yellow"
         android:hint="@string/question"
+        android:scrollbars="vertical"
         android:scaleType="center" />
 
     <RadioGroup
@@ -23,27 +25,31 @@
 
         <RadioButton
             android:id="@+id/optionA"
+            android:textSize="18sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="optionAoptionAoptionAoptionAoptionA AoptionAoptionAoptionA" />
+            android:hint="optionA" />
 
         <RadioButton
             android:id="@+id/optionB"
+            android:textSize="18sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="optionBoptionB" />
+            android:hint="optionB" />
 
         <RadioButton
             android:id="@+id/optionC"
+            android:textSize="18sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="optionC optionC optionC optionC" />
+            android:hint="optionC" />
 
         <RadioButton
             android:id="@+id/optionD"
+            android:textSize="18sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="optionD optionD" />
+            android:hint="optionD" />
 
     </RadioGroup>
 

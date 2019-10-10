@@ -3,14 +3,16 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/b3Pink</item>
+        <item name="colorPrimaryDark">@color/b3Grey</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <!-- Disable default sound effect -->
+        <item name="android:soundEffectsEnabled">false</item>
     </style>
 
     <style name="QuestionStyle" parent="Theme.AppCompat.Light.Dialog.MinWidth">
-        <item name="android:windowMinWidthMajor">85%</item>
-        <item name="android:windowMinWidthMinor">85%</item>
+        <item name="android:windowMinWidthMajor">95%</item>
+        <item name="android:windowMinWidthMinor">95%</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

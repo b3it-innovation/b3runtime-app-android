@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.question;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -27,6 +28,8 @@ import static org.koin.java.KoinJavaComponent.get;
  * Contains logic for displaying a {@link ResultFragment} to inform user of their result
  */
 public class ResultFragment extends BaseQuestionFragment {
+
+    public static final String TAG = ResultFragment.class.getSimpleName();
 
     private MapsViewModel viewModel;
 
@@ -61,7 +64,7 @@ public class ResultFragment extends BaseQuestionFragment {
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
         //create or connect viewmodel to fragment
         viewModel = ViewModelProviders.of(getActivity(),
-                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class)))
+                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext()))
                 .get(MapsViewModel.class);
         //observe allPins and set response with the result
         viewModel.allPins.observe(this, pins -> response.setText(viewModel.getResult()));
@@ -72,6 +75,7 @@ public class ResultFragment extends BaseQuestionFragment {
         super.onViewCreated(view, savedInstanceState);
 
         response = view.findViewById(R.id.textResult);
+        response.setHeight((int) (getScreenHeightPixels() * 0.3));
         colorBase = view.findViewById(R.id.imageBackgroundResult);
         colorLogo = view.findViewById(R.id.imageLogoResult);
         setCancelable(false);
@@ -86,5 +90,4 @@ public class ResultFragment extends BaseQuestionFragment {
             dismiss();
         });
     }
-
 }

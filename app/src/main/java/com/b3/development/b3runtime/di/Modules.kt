@@ -29,8 +29,8 @@ import org.koin.dsl.module
  * this has proven to cause errors. Please use as suggested.
  */
 val b3RuntimeModule = module {
-    viewModel { MapsViewModel(get(), get()) }
-    viewModel { QuestionViewModel(get()) }
+//    viewModel { MapsViewModel(get(), get()) }
+//    viewModel { QuestionViewModel(get()) }
     single { Room.databaseBuilder(androidApplication(), B3RuntimeDatabase::class.java, "b3Runtime_db").build() }
     single { get<B3RuntimeDatabase>().pinDao() }
     single { get<B3RuntimeDatabase>().questionDao() }

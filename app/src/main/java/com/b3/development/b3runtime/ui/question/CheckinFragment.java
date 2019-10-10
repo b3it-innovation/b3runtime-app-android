@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.question;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -28,9 +29,10 @@ import static org.koin.java.KoinJavaComponent.get;
  */
 public class CheckinFragment extends BaseQuestionFragment {
 
-    private MapsViewModel viewModel;
-
+    public static final String TAG = CheckinFragment.class.getSimpleName();
     private static final int layoutId = R.layout.fragment_result_dialog;
+
+    private MapsViewModel viewModel;
     private TextView response;
     private ImageView colorBase;
     private CircleImageView colorLogo;
@@ -61,7 +63,7 @@ public class CheckinFragment extends BaseQuestionFragment {
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
         //create or connect viewmodel to fragment
         viewModel = ViewModelProviders.of(getActivity(),
-                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class)))
+                new MapsViewModelFactory(get(PinRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext()))
                 .get(MapsViewModel.class);
     }
 
@@ -70,6 +72,7 @@ public class CheckinFragment extends BaseQuestionFragment {
         super.onViewCreated(view, savedInstanceState);
 
         response = view.findViewById(R.id.textResult);
+        response.setHeight((int) (getScreenHeightPixels() * 0.3));
         colorBase = view.findViewById(R.id.imageBackgroundResult);
         colorLogo = view.findViewById(R.id.imageLogoResult);
         setCancelable(false);
@@ -86,5 +89,4 @@ public class CheckinFragment extends BaseQuestionFragment {
             dismiss();
         });
     }
-
 }

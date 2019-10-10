@@ -7,4 +7,9 @@
         android:orderInCategory="100"
         android:title="Reset Track"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_sound_mode"
+        android:orderInCategory="200"
+        android:title="Sound on"
+        app:showAsAction="never" />
 </menu>

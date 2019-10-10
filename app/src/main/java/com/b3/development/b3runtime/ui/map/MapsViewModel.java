@@ -1,7 +1,10 @@
 package com.b3.development.b3runtime.ui.map;
 
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 
+import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseViewModel;
 import com.b3.development.b3runtime.data.local.model.pin.Pin;
 import com.b3.development.b3runtime.data.repository.pin.PinRepository;
@@ -22,14 +25,16 @@ public class MapsViewModel extends BaseViewModel {
     private GeofenceManager geofenceManager;
     public boolean isLatestAnsweredCorrect = false;
     public boolean isResponseOnScreen = false;
+    private Context context;
 
-    public MapsViewModel(PinRepository repository, GeofenceManager geofenceManager) {
+    public MapsViewModel(PinRepository repository, GeofenceManager geofenceManager, Context context) {
         this.pinRepository = repository;
         pinRepository.fetch();
         nextPin = pinRepository.getPin();
         allPins = pinRepository.getAllPins();
         errors = pinRepository.getError();
         this.geofenceManager = geofenceManager;
+        this.context = context;
     }
 
     @Override
@@ -44,11 +49,11 @@ public class MapsViewModel extends BaseViewModel {
         int correctAnswers = 0;
         int totalNumberOfPins = allPins.getValue().size() - 2;
 
-        if(allPins.getValue().get(0).completedTime != null) {
-            if (allPins.getValue().get(allPins.getValue().size()-1).completedTime == null) {
-                    allPins.getValue().get(allPins.getValue().size()-1).completedTime = System.currentTimeMillis();
+        if (allPins.getValue().get(0).completedTime != null) {
+            if (allPins.getValue().get(allPins.getValue().size() - 1).completedTime == null) {
+                allPins.getValue().get(allPins.getValue().size() - 1).completedTime = System.currentTimeMillis();
             }
-            Long endTime = allPins.getValue().get(allPins.getValue().size()-1).completedTime;
+            Long endTime = allPins.getValue().get(allPins.getValue().size() - 1).completedTime;
             Long startTime = allPins.getValue().get(0).completedTime;
             Long totalTime = endTime - startTime;
 
@@ -56,13 +61,16 @@ public class MapsViewModel extends BaseViewModel {
             Long seconds = (totalTime / 1000) % 60;
 
             for (Pin pin : allPins.getValue()) {
-                if (pin.answeredCorrect)
+                if (pin.skipped) {
+                    totalNumberOfPins--;
+                }
+                if ((!pin.skipped) && pin.answeredCorrect) {
                     correctAnswers++;
+                }
             }
 
-            response = "You answered " + correctAnswers + " out of " + totalNumberOfPins +
-                    " pins correctly.\n" + "Your total time was " + minutes + " minutes and " +
-                    seconds + " seconds.";
+            response = String.format(context.getResources().getString(R.string.resultText),
+                    correctAnswers, totalNumberOfPins, minutes, seconds);
         }
 
         return response;
@@ -74,11 +82,11 @@ public class MapsViewModel extends BaseViewModel {
                 .setCircularRegion(
                         pin.latitude,
                         pin.longitude,
-                        100
+                        context.getResources().getInteger(R.integer.geofenceRadius)
                 )
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                 //todo set a constant with adequate time for expiration duration
-                .setExpirationDuration(1500000)
+                .setExpirationDuration(context.getResources().getInteger(R.integer.geofenceExpirationDuration))
                 .build());
     }
 
@@ -102,7 +110,7 @@ public class MapsViewModel extends BaseViewModel {
         updatePinCompleted();
     }
 
-    public void skipPin(){
+    public void skipPin() {
         System.out.println("Skips pin order: " + nextPin.getValue().order);
         Pin pin = nextPin.getValue();
         pin.skipped = true;
