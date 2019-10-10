@@ -2,8 +2,8 @@ package com.b3.development.b3runtime.ui.map;
 
 import android.Manifest;
 import android.animation.IntEvaluator;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -145,6 +145,9 @@ public class MapsActivity extends BaseActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         setSupportActionBar(toolbar);
+
+        //start foreground service to allow tracking of location in background
+        startService(new Intent(this, LocationService.class));
     }
 
     /**
@@ -154,8 +157,6 @@ public class MapsActivity extends BaseActivity
     public void onStart() {
         super.onStart();
         requestLocationPermissions();
-        //start foreground service to allow tracking of location in background
-        startService(new Intent(this, LocationService.class));
     }
 
     // Menu icons are inflated just as they were with actionbar
@@ -185,7 +186,9 @@ public class MapsActivity extends BaseActivity
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
         }
         //stop notification foreground service
-        stopService(new Intent(this, LocationService.class));
+        if (isMyServiceRunning(LocationService.class)) {
+            stopService(new Intent(this, LocationService.class));
+        }
         System.out.println(this.getClass() + " : onDestroy()");
         super.onDestroy();
     }
@@ -208,14 +211,14 @@ public class MapsActivity extends BaseActivity
 
                 // Check if first pin is reached
                 if (intent.getStringExtra("id").equals(firstPinID)) {
-                    if(getSupportFragmentManager().findFragmentByTag("checkin") == null) {
+                    if (getSupportFragmentManager().findFragmentByTag("checkin") == null) {
                         CheckinFragment.newInstance().show(getSupportFragmentManager(), "checkin");
                     }
                 }
                 // Check if last pin is reached
                 else if (intent.getStringExtra("id").equals(finalPinID)) {
                     // Show result
-                    if(getSupportFragmentManager().findFragmentByTag("result") == null) {
+                    if (getSupportFragmentManager().findFragmentByTag("result") == null) {
                         ResultFragment.newInstance().show(getSupportFragmentManager(), "result");
                     }
                 } else { // Otherwise show new question
@@ -306,13 +309,12 @@ public class MapsActivity extends BaseActivity
             return true;
         });
 
-        if(viewModel.isResponseOnScreen){
+        if (viewModel.isResponseOnScreen) {
             return;
-        }
-        else if(viewModel.isLatestAnsweredCorrect) {
+        } else if (viewModel.isLatestAnsweredCorrect) {
             viewModel.skipPin();
             viewModel.isLatestAnsweredCorrect = false;
-        }else {
+        } else {
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextPin.latitude, nextPin.longitude), 15f));
             //adds a geofence on the recieved nextPin
             viewModel.addGeofence(nextPin);
@@ -407,6 +409,8 @@ public class MapsActivity extends BaseActivity
                                         getString(R.string.somethingWentWrong),
                                         Toast.LENGTH_SHORT)
                                         .show();
+                                Log.d(TAG, "FELET: " + e.getMessage());
+                                System.out.println(e.getMessage());
                             }
                             finish();
                         },
@@ -448,7 +452,7 @@ public class MapsActivity extends BaseActivity
 
         GradientDrawable gd = new GradientDrawable();
         gd.setShape(GradientDrawable.OVAL);
-        gd.setSize(500,500);
+        gd.setSize(500, 500);
         gd.setColor(0x40ff0000);
         gd.setStroke(2, Color.TRANSPARENT);
 
@@ -463,7 +467,7 @@ public class MapsActivity extends BaseActivity
 
         currentCircle = map.addGroundOverlay(new GroundOverlayOptions().position(
                 new LatLng(viewModel.nextPin.getValue().latitude,
-                viewModel.nextPin.getValue().longitude), 100).image(BitmapDescriptorFactory.fromBitmap(bitmap)));
+                        viewModel.nextPin.getValue().longitude), 100).image(BitmapDescriptorFactory.fromBitmap(bitmap)));
 
         if (valueAnimator == null) {
             valueAnimator = new ValueAnimator();
@@ -476,7 +480,7 @@ public class MapsActivity extends BaseActivity
         valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
         valueAnimator.addUpdateListener(valueAnimator1 -> {
             float animatedFraction = valueAnimator1.getAnimatedFraction();
-            currentCircle.setDimensions((animatedFraction * 50)+50);
+            currentCircle.setDimensions((animatedFraction * 50) + 50);
         });
 
         valueAnimator.start();
@@ -497,5 +501,15 @@ public class MapsActivity extends BaseActivity
             ft.detach(fragment);
         }
         ft.commit();
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
