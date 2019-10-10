@@ -54,18 +54,18 @@ public class Jukebox {
         loadIfNeeded();
     }
 
-    public static Jukebox getInstance(Context context){
-        if(jukebox == null){
+    public static Jukebox getInstance(Context context) {
+        if (jukebox == null) {
             jukebox = new Jukebox(context);
         }
         return jukebox;
     }
 
-    private void loadIfNeeded(){
-        if(soundEnabled){
+    private void loadIfNeeded() {
+        if (soundEnabled) {
             loadSounds();
         }
-        if(musicEnabled){
+        if (musicEnabled) {
             loadMusic();
         }
     }
@@ -74,8 +74,7 @@ public class Jukebox {
     private void createSoundPool() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             soundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0);
-        }
-        else {
+        } else {
             AudioAttributes attr = new AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_GAME)
                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -98,33 +97,35 @@ public class Jukebox {
     }
 
     // Puts SoundEvent and soundId to map
-    private void loadEventSound(final SoundEvent event, final String fileName){
+    private void loadEventSound(final SoundEvent event, final String fileName) {
         try {
             AssetFileDescriptor afd = context.getAssets().openFd(fileName);
             int soundId = soundPool.load(afd, 1);
             soundsMap.put(event, soundId);
-        }catch(IOException e){
+        } catch (IOException e) {
             Log.e(TAG, "loadEventSound: error loading sound " + e.toString());
         }
     }
 
     // Play sound effect according to SoundEvent
-    public void playSoundForGameEvent(SoundEvent event){
-        if(!soundEnabled){return;}
+    public void playSoundForGameEvent(SoundEvent event) {
+        if (!soundEnabled) {
+            return;
+        }
         final float leftVolume = DEFAULT_SFX_VOLUME;
         final float rightVolume = DEFAULT_SFX_VOLUME;
         final int priority = 1;
         final int loop = 0; //-1 loop forever, 0 play once
         final float rate = 1.0f;
         final Integer soundID = soundsMap.get(event);
-        if(soundID != null){
+        if (soundID != null) {
             soundPool.play(soundID, leftVolume, rightVolume, priority, loop, rate);
         }
     }
 
     // Loads music file for background music
-    private void loadMusic(){
-        try{
+    private void loadMusic() {
+        try {
             bgPlayer = new MediaPlayer();
             AssetFileDescriptor afd = context
                     .getAssets().openFd("");
@@ -135,36 +136,37 @@ public class Jukebox {
             bgPlayer.setLooping(true);
             bgPlayer.setVolume(DEFAULT_MUSIC_VOLUME, DEFAULT_MUSIC_VOLUME);
             bgPlayer.prepare();
-        }catch(IOException e){
+        } catch (IOException e) {
             bgPlayer = null;
             musicEnabled = false;
             Log.e(TAG, e.getMessage());
         }
     }
 
-    private void unloadMusic(){
-        if(bgPlayer != null) {
+    private void unloadMusic() {
+        if (bgPlayer != null) {
             bgPlayer.stop();
             bgPlayer.release();
         }
     }
 
-    public void pauseBgMusic(){
-        if(musicEnabled){
+    public void pauseBgMusic() {
+        if (musicEnabled) {
             bgPlayer.pause();
         }
     }
-    public void resumeBgMusic(){
-        if(musicEnabled){
+
+    public void resumeBgMusic() {
+        if (musicEnabled) {
             bgPlayer.start();
         }
     }
 
-    public void toggleSoundStatus(){
+    public void toggleSoundStatus() {
         soundEnabled = !soundEnabled;
-        if(soundEnabled){
+        if (soundEnabled) {
             loadSounds();
-        }else{
+        } else {
             unloadSounds();
         }
         PreferenceManager
@@ -174,11 +176,11 @@ public class Jukebox {
                 .commit();
     }
 
-    public void toggleMusicStatus(){
+    public void toggleMusicStatus() {
         musicEnabled = !musicEnabled;
-        if(musicEnabled){
+        if (musicEnabled) {
             loadMusic();
-        }else{
+        } else {
             unloadMusic();
         }
         PreferenceManager
@@ -188,8 +190,8 @@ public class Jukebox {
                 .commit();
     }
 
-    private void unloadSounds(){
-        if(soundPool != null) {
+    private void unloadSounds() {
+        if (soundPool != null) {
             soundPool.release();
             soundPool = null;
             soundsMap.clear();

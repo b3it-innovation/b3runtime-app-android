@@ -22,7 +22,7 @@
     <string name="channel_description">channel_description</string>
     <string name="checkpointNotificationTitle">Checkpoint Notification</string>
     <string name="checkpointNotificationText">You are in checkpoint now. Click here to opne the app!</string>
-    <string name="resultText">You answered %d out of %d pins correctly.\nYour total time was %d minutes and %d seconds.</string>
+    <string name="resultText">You answered %d out of %d checkpoints correctly.\nYour total time was %d minutes and %d seconds.</string>
 
     <!-- string properties for application settings  -->
     <string name="questionFragmentAddedKey">questionAdded</string>

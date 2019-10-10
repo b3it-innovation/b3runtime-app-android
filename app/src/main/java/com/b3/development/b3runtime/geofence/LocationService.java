@@ -80,9 +80,9 @@ public class LocationService extends Service {
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, mLocationListener);
 
         } catch (java.lang.SecurityException ex) {
-             Log.i(TAG, "failed to request location update", ex);
+            Log.i(TAG, "failed to request location update", ex);
         } catch (IllegalArgumentException ex) {
-             Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
         }
 
     }

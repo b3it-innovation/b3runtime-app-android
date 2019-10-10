@@ -6,8 +6,8 @@ import androidx.lifecycle.LiveData;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseViewModel;
-import com.b3.development.b3runtime.data.local.model.pin.Pin;
-import com.b3.development.b3runtime.data.repository.pin.PinRepository;
+import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
+import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.google.android.gms.location.Geofence;
 
@@ -19,20 +19,20 @@ import java.util.List;
  */
 public class MapsViewModel extends BaseViewModel {
 
-    LiveData<Pin> nextPin;
-    public LiveData<List<Pin>> allPins;
-    private PinRepository pinRepository;
+    LiveData<Checkpoint> nextCheckpoint;
+    public LiveData<List<Checkpoint>> allCheckpoints;
+    private CheckpointRepository checkpointRepository;
     private GeofenceManager geofenceManager;
     public boolean isLatestAnsweredCorrect = false;
     public boolean isResponseOnScreen = false;
     private Context context;
 
-    public MapsViewModel(PinRepository repository, GeofenceManager geofenceManager, Context context) {
-        this.pinRepository = repository;
-        pinRepository.fetch();
-        nextPin = pinRepository.getPin();
-        allPins = pinRepository.getAllPins();
-        errors = pinRepository.getError();
+    public MapsViewModel(CheckpointRepository repository, GeofenceManager geofenceManager, Context context, String trackKey) {
+        this.checkpointRepository = repository;
+        checkpointRepository.fetch(trackKey);
+        nextCheckpoint = checkpointRepository.getCheckpoint();
+        allCheckpoints = checkpointRepository.getAllCheckpoints();
+        errors = checkpointRepository.getError();
         this.geofenceManager = geofenceManager;
         this.context = context;
     }
@@ -47,41 +47,41 @@ public class MapsViewModel extends BaseViewModel {
     public String getResult() {
         String response = "";
         int correctAnswers = 0;
-        int totalNumberOfPins = allPins.getValue().size() - 2;
+        int totalNumberOfCheckpoints = allCheckpoints.getValue().size() - 2;
 
-        if (allPins.getValue().get(0).completedTime != null) {
-            if (allPins.getValue().get(allPins.getValue().size() - 1).completedTime == null) {
-                allPins.getValue().get(allPins.getValue().size() - 1).completedTime = System.currentTimeMillis();
+        if (allCheckpoints.getValue().get(0).completedTime != null) {
+            if (allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime == null) {
+                allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime = System.currentTimeMillis();
             }
-            Long endTime = allPins.getValue().get(allPins.getValue().size() - 1).completedTime;
-            Long startTime = allPins.getValue().get(0).completedTime;
+            Long endTime = allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime;
+            Long startTime = allCheckpoints.getValue().get(0).completedTime;
             Long totalTime = endTime - startTime;
 
             Long minutes = (totalTime / 1000) / 60;
             Long seconds = (totalTime / 1000) % 60;
 
-            for (Pin pin : allPins.getValue()) {
-                if (pin.skipped) {
-                    totalNumberOfPins--;
+            for (Checkpoint checkpoint : allCheckpoints.getValue()) {
+                if (checkpoint.skipped) {
+                    totalNumberOfCheckpoints--;
                 }
-                if ((!pin.skipped) && pin.answeredCorrect) {
+                if ((!checkpoint.skipped) && checkpoint.answeredCorrect) {
                     correctAnswers++;
                 }
             }
 
             response = String.format(context.getResources().getString(R.string.resultText),
-                    correctAnswers, totalNumberOfPins, minutes, seconds);
+                    correctAnswers, totalNumberOfCheckpoints, minutes, seconds);
         }
 
         return response;
     }
 
-    public void addGeofence(Pin pin) {
+    public void addGeofence(Checkpoint checkpoint) {
         geofenceManager.addGeofence(new Geofence.Builder()
-                .setRequestId(pin.id)
+                .setRequestId(checkpoint.id)
                 .setCircularRegion(
-                        pin.latitude,
-                        pin.longitude,
+                        checkpoint.latitude,
+                        checkpoint.longitude,
                         context.getResources().getInteger(R.integer.geofenceRadius)
                 )
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
@@ -94,31 +94,31 @@ public class MapsViewModel extends BaseViewModel {
         geofenceManager.removeGeofences();
     }
 
-    //set pin to completed and update in local database
-    public void updatePinCompleted() {
-        Pin pin = nextPin.getValue();
-        pin.completed = true;
-        pin.completedTime = System.currentTimeMillis();
-        pinRepository.updatePin(pin);
+    //set checkpoint to completed and update in local database
+    public void updateCheckpointCompleted() {
+        Checkpoint checkpoint = nextCheckpoint.getValue();
+        checkpoint.completed = true;
+        checkpoint.completedTime = System.currentTimeMillis();
+        checkpointRepository.updateCheckpoint(checkpoint);
     }
 
-    public void updatePinCorrectAnswer() {
-        System.out.println("Before update, pin order: " + nextPin.getValue().order);
-        Pin pin = nextPin.getValue();
-        pin.answeredCorrect = true;
+    public void updateCheckpointCorrectAnswer() {
+        System.out.println("Before update, checkpoint order: " + nextCheckpoint.getValue().order);
+        Checkpoint checkpoint = nextCheckpoint.getValue();
+        checkpoint.answeredCorrect = true;
         isLatestAnsweredCorrect = true;
-        updatePinCompleted();
+        updateCheckpointCompleted();
     }
 
-    public void skipPin() {
-        System.out.println("Skips pin order: " + nextPin.getValue().order);
-        Pin pin = nextPin.getValue();
-        pin.skipped = true;
-        updatePinCompleted();
+    public void skipCheckpoint() {
+        System.out.println("Skips checkpoint order: " + nextCheckpoint.getValue().order);
+        Checkpoint checkpoint = nextCheckpoint.getValue();
+        checkpoint.skipped = true;
+        updateCheckpointCompleted();
     }
 
-    //sets all pin to not completed
-    public void resetPins() {
-        pinRepository.resetPinsCompleted();
+    //sets all checkpoint to not completed
+    public void resetCheckpoints() {
+        checkpointRepository.resetCheckpointsCompleted();
     }
 }

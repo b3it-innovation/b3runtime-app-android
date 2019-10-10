@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
+import com.b3.development.b3runtime.ui.map.MapsActivity;
 
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class CompetitionActivity extends AppCompatActivity {
                 button.setText(bc.getName());
                 button.setStateListAnimator(null);
                 //create new intent to send to next activity
-                Intent intent = new Intent(this, CompetitionActivity.class);
+                Intent intent = new Intent(this, MapsActivity.class);
                 intent.putExtra("competitionKey", bc.getKey());
 
                 button.setOnClickListener(v -> {

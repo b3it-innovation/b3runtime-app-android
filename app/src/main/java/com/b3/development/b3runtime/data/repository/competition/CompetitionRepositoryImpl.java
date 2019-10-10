@@ -78,7 +78,7 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
                 fbCompetition.setTracks(tracks);
                 fbCompetition.setActive((Boolean) competitionSnapshot.child("active").getValue());
                 fbCompetition.setName((String) competitionSnapshot.child("name").getValue());
-                //adds the object to the List of BackendResponsePin objects
+                //adds the object to the List of BackendResponseCheckpoint objects
                 competitions.add(fbCompetition);
             }
         }

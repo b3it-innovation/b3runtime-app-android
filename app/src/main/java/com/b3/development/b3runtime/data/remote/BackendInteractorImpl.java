@@ -5,13 +5,13 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
-import com.b3.development.b3runtime.data.remote.model.pin.BackendPin;
-import com.b3.development.b3runtime.data.remote.model.pin.BackendResponsePin;
+import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -24,24 +24,26 @@ public class BackendInteractorImpl implements BackendInteractor {
 
     private static final String TAG = BackendInteractor.class.getSimpleName();
 
-    private DatabaseReference firebaseDbPins;
     private DatabaseReference firebaseDbQuestions;
     private DatabaseReference firebaseDbCompetitions;
+    private DatabaseReference firebaseDbTracksCheckpoints;
 
     private final QueryLiveData competitionsLiveDataSnapshot;
 
     /**
      * A public constructor for {@link BackendInteractor}
      *
-     * @param firebaseDbPins a reference to the <code>Firebase Database</code>
+     * @param firebaseDbQuestions         a reference to the <code>Firebase Database</code>
+     *                                    * @param firebaseDbCompetitions a reference to the <code>Firebase Database</code>
+     * @param firebaseDbTracksCheckpoints a reference to the <code>Firebase Database</code>
      */
-    public BackendInteractorImpl(DatabaseReference firebaseDbPins,
-                                 DatabaseReference firebaseDbQuestions,
-                                 DatabaseReference firebaseDbCompetitions) {
-        this.firebaseDbPins = firebaseDbPins;
+    public BackendInteractorImpl(DatabaseReference firebaseDbQuestions,
+                                 DatabaseReference firebaseDbCompetitions,
+                                 DatabaseReference firebaseDbTracksCheckpoints) {
         this.firebaseDbQuestions = firebaseDbQuestions;
         this.firebaseDbCompetitions = firebaseDbCompetitions;
-        this.competitionsLiveDataSnapshot = new QueryLiveData(firebaseDbCompetitions);
+        this.firebaseDbTracksCheckpoints = firebaseDbTracksCheckpoints;
+        this.competitionsLiveDataSnapshot = new QueryLiveData(this.firebaseDbCompetitions);
     }
 
     @NonNull
@@ -50,15 +52,18 @@ public class BackendInteractorImpl implements BackendInteractor {
     }
 
     /**
-     * <code>getPin()</code> is called from the repository to feed the local database with data from the remote.
+     * <code>getCheckpoint()</code> is called from the repository to feed the local database with data from the remote.
      * Receives an implementation of the callback} interface
      *
-     * @param pinCallback a callback instance
+     * @param checkpointsCallback a callback instance
+     * @param trackKey            key of selected track
      */
     @Override
-    public void getPins(final PinsCallback pinCallback) {
+    public void getCheckpoints(final CheckpointsCallback checkpointsCallback, String trackKey) {
+        // create query to fetch checkpoints related to certain trackKey
+        Query query = firebaseDbTracksCheckpoints.orderByKey().equalTo(trackKey);
         //sets listener on the data in firebase
-        firebaseDbPins.addValueEventListener(new ValueEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
 
             /**
              * Contains the logic on handling a data change in the remote database
@@ -66,30 +71,29 @@ public class BackendInteractorImpl implements BackendInteractor {
              */
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                System.out.println("data change in pins");
-                List<BackendResponsePin> locations = new ArrayList<>();
-                for (DataSnapshot locationSnapshot : dataSnapshot.getChildren()) {
-                    //gets the BackendResponsePin object
-                    BackendResponsePin fbLocation = new BackendResponsePin();
-                    fbLocation.setKey(locationSnapshot.getKey());
-                    //gets the nested "child" object of the actual pin
-                    BackendPin pin = new BackendPin();
-                    pin.setDraggable((Boolean) locationSnapshot.child("mapLocation").child("draggable").getValue());
-                    pin.setLabel((String) locationSnapshot.child("mapLocation").child("label").getValue());
-                    pin.setLatitude((double) locationSnapshot.child("mapLocation").child("lat").getValue());
-                    pin.setLongitude((double) locationSnapshot.child("mapLocation").child("lng").getValue());
-                    //sets the rest of the BackendResponsePin object
-                    fbLocation.setPin(pin);
-                    fbLocation.setText((String) locationSnapshot.child("text").getValue());
-                    //adds the object to the List of BackendResponsePin objects
-                    locations.add(fbLocation);
+                System.out.println("data change in checkpoints");
+                List<BackendResponseCheckpoint> checkpoints = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot locationSnapshot : snapshot.child("checkpoints").getChildren()) {
+                        //gets the BackendResponseCheckpoint object
+                        BackendResponseCheckpoint checkpoint = new BackendResponseCheckpoint();
+                        checkpoint.setKey(locationSnapshot.getKey());
+                        //checkpoint.setDraggable((Boolean) locationSnapshot.child("mapLocation").child("draggable").getValue());
+                        checkpoint.setLabel((String) locationSnapshot.child("label").getValue());
+                        checkpoint.setLatitude((Double) locationSnapshot.child("latitude").getValue());
+                        checkpoint.setLongitude((Double) locationSnapshot.child("longitude").getValue());
+                        checkpoint.setOrder((Long) locationSnapshot.child("order").getValue());
+                        checkpoint.setQuestionKey((String) locationSnapshot.child("questionKey").getValue());
+                        //adds the object to the List of BackendResponseCheckpoint objects
+                        checkpoints.add(checkpoint);
+                    }
                 }
                 //returns the Callback containing the List of locations
-                pinCallback.onPinsReceived(locations);
+                checkpointsCallback.onCheckpointsReceived(checkpoints);
                 //debug log
-                Log.d(TAG, "Locations read: " + locations.size());
+                Log.d(TAG, "Checkpoints read: " + checkpoints.size());
                 //removes the listener
-                firebaseDbPins.removeEventListener(this);
+                firebaseDbTracksCheckpoints.removeEventListener(this);
             }
 
             /**
@@ -99,7 +103,7 @@ public class BackendInteractorImpl implements BackendInteractor {
              */
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                pinCallback.onError();
+                checkpointsCallback.onError();
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
         });
@@ -168,7 +172,7 @@ public class BackendInteractorImpl implements BackendInteractor {
                 //debug log
                 Log.d(TAG, "Questions added: " + questions.size());
                 //removes the listener
-                firebaseDbPins.removeEventListener(this);
+                firebaseDbQuestions.removeEventListener(this);
             }
 
             /**

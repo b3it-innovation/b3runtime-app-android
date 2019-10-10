@@ -1,4 +1,4 @@
-package com.b3.development.b3runtime.data.local.model.pin;
+package com.b3.development.b3runtime.data.local.model.checkpoint;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
@@ -6,10 +6,10 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 /**
- * An <code>@Entity</code> class that defines a table for Pins in the local storage
+ * An <code>@Entity</code> class that defines a table for Checkpoints in the local storage
  */
 @Entity
-public class Pin {
+public class Checkpoint {
     @PrimaryKey
     @NonNull
     public String id;

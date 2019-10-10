@@ -6,18 +6,15 @@ import com.b3.development.b3runtime.data.remote.BackendInteractor
 import com.b3.development.b3runtime.data.remote.BackendInteractorImpl
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepositoryImpl
-import com.b3.development.b3runtime.data.repository.pin.PinRepository
-import com.b3.development.b3runtime.data.repository.pin.PinRepositoryImpl
+import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository
+import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepositoryImpl
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository
 import com.b3.development.b3runtime.data.repository.question.QuestionRepositoryImpl
 import com.b3.development.b3runtime.geofence.GeofenceManager
 import com.b3.development.b3runtime.geofence.GeofenceManagerImpl
-import com.b3.development.b3runtime.ui.map.MapsViewModel
-import com.b3.development.b3runtime.ui.question.QuestionViewModel
 import com.google.firebase.database.FirebaseDatabase
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.StringQualifier
 import org.koin.dsl.module
 
@@ -34,13 +31,13 @@ val b3RuntimeModule = module {
 //    viewModel { MapsViewModel(get(), get()) }
 //    viewModel { QuestionViewModel(get()) }
     single { Room.databaseBuilder(androidApplication(), B3RuntimeDatabase::class.java, "b3Runtime_db").build() }
-    single { get<B3RuntimeDatabase>().pinDao() }
+    single { get<B3RuntimeDatabase>().checkpointDao() }
     single { get<B3RuntimeDatabase>().questionDao() }
-    single { BackendInteractorImpl(get(StringQualifier("pins")), get(StringQualifier("questions")), get(StringQualifier("competitions"))) as BackendInteractor }
-    single(StringQualifier("pins")) { FirebaseDatabase.getInstance().getReference("control_points") }
+    single { BackendInteractorImpl(get(StringQualifier("questions")), get(StringQualifier("competitions")), get(StringQualifier("tracks_checkpoints"))) as BackendInteractor }
     single(StringQualifier("questions")) { FirebaseDatabase.getInstance().getReference("questions") }
     single(StringQualifier("competitions")) { FirebaseDatabase.getInstance().getReference("competitions") }
-    single { PinRepositoryImpl(get(), get()) as PinRepository }
+    single(StringQualifier("tracks_checkpoints")) { FirebaseDatabase.getInstance().getReference("tracks_checkpoints") }
+    single { CheckpointRepositoryImpl(get(), get()) as CheckpointRepository }
     single { QuestionRepositoryImpl(get(), get()) as QuestionRepository }
     single { CompetitionRepositoryImpl(get()) as CompetitionRepository }
     single { GeofenceManagerImpl(androidContext()) as GeofenceManager }
