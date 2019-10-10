@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.map;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,11 +31,16 @@ import com.b3.development.b3runtime.base.BaseActivity;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
 import com.b3.development.b3runtime.data.repository.pin.PinRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
+import com.b3.development.b3runtime.geofence.LocationService;
+import com.b3.development.b3runtime.sound.Jukebox;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
 import com.b3.development.b3runtime.ui.question.ResultFragment;
+import com.b3.development.b3runtime.utils.Util;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
+
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -64,6 +70,7 @@ public class MapsActivity extends BaseActivity
     private LocalBroadcastManager localBroadcastManager;
 
     private MapsRenderer mapsRenderer;
+    private Jukebox jukebox;
     private String firstPinID;
     private String finalPinID;
     private QuestionFragment questionFragment;
@@ -123,7 +130,13 @@ public class MapsActivity extends BaseActivity
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         setSupportActionBar(toolbar);
 
+        //start foreground service to allow tracking of location in background
+        startService(new Intent(this, LocationService.class));
+
         mapsRenderer = new MapsRenderer(getApplicationContext());
+
+        jukebox = Jukebox.getInstance(getApplicationContext());
+
     }
 
     /**
@@ -140,6 +153,8 @@ public class MapsActivity extends BaseActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu_main; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem menuItem = menu.getItem(1);
+        setSoundModeTextInMenuItem(menuItem);
         return true;
     }
 
@@ -150,18 +165,36 @@ public class MapsActivity extends BaseActivity
                 // reset pins if all pins are completed todo:(delete this in release version)
                 viewModel.resetPins();
                 return true;
+            case R.id.action_sound_mode:
+                jukebox.toggleSoundStatus();
+                setSoundModeTextInMenuItem(item);
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void setSoundModeTextInMenuItem(MenuItem menuItem){
+        if(jukebox.soundEnabled){
+            menuItem.setTitle("Sound off");
+        } else {
+            menuItem.setTitle("Sound on");
         }
     }
 
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
-        super.onDestroy();
         if (broadcastReceiver != null) {
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
         }
+        //stop notification foreground service
+        if (isMyServiceRunning(LocationService.class)) {
+            stopService(new Intent(this, LocationService.class));
+        }
+        if(jukebox != null){
+            jukebox.destroy();
+        }
+        super.onDestroy();       
     }
 
     @Override
@@ -178,6 +211,9 @@ public class MapsActivity extends BaseActivity
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                // if the app is not in foreground, do nothing
+                if (!Util.isForeground(getApplicationContext())) return;
+
                 // Remove geofence otherwise it is still there and triggers questions on screen rotation
                 viewModel.removeGeofence();
 
@@ -348,5 +384,19 @@ public class MapsActivity extends BaseActivity
             ft.detach(fragment);
         }
         ft.commit();
+    }
+    
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Jukebox getJukebox() {
+        return jukebox;
     }
 }

@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.base;
 
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,5 +21,12 @@ public abstract class BaseQuestionFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(getLayoutId(), container, false);
+    }
+
+    protected int getScreenHeightPixels() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int y = displayMetrics.heightPixels;
+        return y;
     }
 }

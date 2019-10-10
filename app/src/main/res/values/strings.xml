@@ -1,4 +1,5 @@
 <resources>
+    <!-- UI related string properties. Consider to locale.  -->
     <string name="app_name">b3Runtime</string>
     <string name="title_activity_maps">b3Runtime</string>
     <string name="goToSettingsButtonText">OK, go to settings</string>
@@ -17,7 +18,19 @@
     <string name="wrongAnswer">Wisdom comes with experience. Take an extra route to clear your Мind.</string>
     <string name="intent_failed">settings intent failed</string>
     <string name="chooseCompetition">Choose competition</string>
+    <string name="channel_name">b3_runtime</string>
+    <string name="channel_description">channel_description</string>
+    <string name="checkpointNotificationTitle">Checkpoint Notification</string>
+    <string name="checkpointNotificationText">You are in checkpoint now. Click here to opne the app!</string>
+    <string name="resultText">You answered %d out of %d pins correctly.\nYour total time was %d minutes and %d seconds.</string>
+
+    <!-- string properties for application settings  -->
     <string name="questionFragmentAddedKey">questionAdded</string>
     <string name="geofenceIntentName">newQuestion</string>
-    <string name="resultText">You answered %d out of %d pins correctly.\nYour total time was %d minutes and %d seconds.</string>
+    <string name="correct_answer_sound_file">sfx/correct_answer.mp3</string>
+    <string name="wrong_answer_sound_file">sfx/wrong_answer.mp3</string>
+    <string name="track_start_sound_file">sfx/pickup_coin.wav</string>
+    <string name="track_goal_sound_file">sfx/pickup_coin.wav</string>
+    <string name="sound_pref_key">sound_pref_key</string>
+    <string name="music_pref_key">music_pref_key</string>
 </resources>
