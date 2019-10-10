@@ -92,9 +92,7 @@ public class MapsActivity extends BaseActivity
 
         Intent intent = getIntent();
         String trackKey = intent.getStringExtra("trackKey");
-        // mock track key
-        trackKey = "-L9PzUv6fUetlB3NEqxx";
-
+        
         //create or connect already existing viewmodel to activity
         viewModel = ViewModelProviders.of(this,
                 new MapsViewModelFactory(get(CheckpointRepository.class), get(GeofenceManager.class), getApplicationContext(), trackKey))
