@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.map;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,6 +30,7 @@ import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
 import com.b3.development.b3runtime.data.repository.pin.PinRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
+import com.b3.development.b3runtime.geofence.LocationService;
 import com.b3.development.b3runtime.sound.Jukebox;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
@@ -127,9 +129,13 @@ public class MapsActivity extends BaseActivity
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         setSupportActionBar(toolbar);
 
+        //start foreground service to allow tracking of location in background
+        startService(new Intent(this, LocationService.class));
+
         mapsRenderer = new MapsRenderer(getApplicationContext());
 
         jukebox = Jukebox.getInstance(getApplicationContext());
+
     }
 
     /**
@@ -177,15 +183,17 @@ public class MapsActivity extends BaseActivity
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
-        super.onDestroy();
-
-        if(jukebox != null){
-            jukebox.destroy();
-        }
-        
         if (broadcastReceiver != null) {
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
         }
+        //stop notification foreground service
+        if (isMyServiceRunning(LocationService.class)) {
+            stopService(new Intent(this, LocationService.class));
+        }
+        if(jukebox != null){
+            jukebox.destroy();
+        }
+        super.onDestroy();       
     }
 
     @Override
@@ -375,6 +383,16 @@ public class MapsActivity extends BaseActivity
             ft.detach(fragment);
         }
         ft.commit();
+    }
+    
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Jukebox getJukebox() {
