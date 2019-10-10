@@ -85,7 +85,7 @@ public class CompetitionActivity extends AppCompatActivity {
         LinearLayout.LayoutParams layoutParams =
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(80, 45,80,10);
+        layoutParams.setMargins(80, 45, 80, 10);
         for (BackendCompetition bc : competitions) {
             if (bc.isActive()) {
                 Button button = new Button(new ContextThemeWrapper(this, R.style.baseButton), null, R.style.baseButton);
