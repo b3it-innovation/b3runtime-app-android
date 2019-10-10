@@ -28,7 +28,6 @@ public class TrackActivity extends AppCompatActivity {
     public static final String TAG = TrackActivity.class.getSimpleName();
 
     private CompetitionViewModel viewModel;
-    public boolean firstTimeFetched = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
