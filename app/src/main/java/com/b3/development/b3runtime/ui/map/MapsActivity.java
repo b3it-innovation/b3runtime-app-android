@@ -193,6 +193,18 @@ public class MapsActivity extends BaseActivity
     }
 
     @Override
+    public void onPause(){
+        Log.d(TAG, "onPause");
+        super.onPause();
+
+        // save trackKey to able to open activity via notification
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("trackKey", trackKey);
+        editor.apply();
+
+    }
+
+    @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
         if (broadcastReceiver != null) {
@@ -214,10 +226,6 @@ public class MapsActivity extends BaseActivity
         savedInstanceState
                 .putBoolean(getResources().getString(R.string.questionFragmentAddedKey),
                         getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG) != null);
-        // save trackKey to able to open activity via notification
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("trackKey", trackKey);
-        editor.apply();
         super.onSaveInstanceState(savedInstanceState);
     }
 
