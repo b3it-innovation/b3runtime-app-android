@@ -2,7 +2,7 @@ package com.b3.development.b3runtime.data.remote.model.question;
 
 public class BackendResponseQuestion {
     private String key;
-    private String category;
+    private String categoryKey;
     private String correctAnswer;
     private String imgUrl;
     private BackendAnswerOption options;
@@ -19,12 +19,12 @@ public class BackendResponseQuestion {
         this.key = key;
     }
 
-    public String getCategory() {
-        return category;
+    public String getCategoryKey() {
+        return categoryKey;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryKey(String categoryKey) {
+        this.categoryKey = categoryKey;
     }
 
     public String getCorrectAnswer() {

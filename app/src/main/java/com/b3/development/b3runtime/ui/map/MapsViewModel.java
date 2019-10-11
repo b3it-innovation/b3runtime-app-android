@@ -11,6 +11,7 @@ import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointReposit
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.google.android.gms.location.Geofence;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -120,5 +121,15 @@ public class MapsViewModel extends BaseViewModel {
     //sets all checkpoint to not completed
     public void resetCheckpoints() {
         checkpointRepository.resetCheckpointsCompleted();
+    }
+
+    public List<String> getQuestionKeys(){
+        List<String> questionKeys = new ArrayList<>();
+        for(Checkpoint c : allCheckpoints.getValue()){
+            if(c.questionKey != null && c.questionKey.equals("")){
+                questionKeys.add(c.questionKey);
+            }
+        }
+        return questionKeys;
     }
 }

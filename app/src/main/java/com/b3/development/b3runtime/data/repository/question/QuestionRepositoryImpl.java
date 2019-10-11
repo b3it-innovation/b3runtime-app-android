@@ -50,29 +50,30 @@ public class QuestionRepositoryImpl implements QuestionRepository {
     }
 
     @Override
-    public void fetch() {
+    public void fetch(List<String> questionKeys) {
         //implements BackendInteractor.QuestionsCallback
         backendInteractor.getQuestions(new BackendInteractor.QuestionsCallback() {
             //handles response
             @Override
-            public void onQuestionsReceived(List<BackendResponseQuestion> backendResponseQuestions) {
+            public void onQuestionsReceived(BackendResponseQuestion backendResponseQuestion) {
                 //early return in case of server error
-                if (backendResponseQuestions == null || backendResponseQuestions.isEmpty()) {
+                if (backendResponseQuestion == null) {
                     error.postValue(new Failure(FailureType.SERVER));
                     return;
                 }
-                System.out.println("QUESTIONS RECEIVED FROM BACKEND");
-                List<Question> questions = convert(backendResponseQuestions);
+
+                System.out.println("QUESTION RECEIVED FROM BACKEND");
+                Question question = convert(backendResponseQuestion);
                 //writes in local database asynchronously
-                AsyncTask.execute(() -> questionDao.insertQuestions(questions));
-                System.out.println("QUESTIONS CONVERTED... WRITING IN DATABASE ASYNC STARTS");
+                AsyncTask.execute(() -> questionDao.insertQuestion(question));
+                System.out.println("QUESTION CONVERTED... WRITING IN DATABASE ASYNC STARTS");
             }
 
             @Override
             public void onError() {
                 error.postValue(new Failure(FailureType.NETWORK));
             }
-        });
+        }, questionKeys);
     }
 
     @Override
@@ -81,13 +82,30 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         System.out.println("UPDATE Question CALLED IN repository");
     }
 
+    private Question convert(BackendResponseQuestion backendResponseQuestion) {
+
+        Question convertedQuestion = new Question();
+        convertedQuestion.id = backendResponseQuestion.getKey();
+        convertedQuestion.categoryKey = backendResponseQuestion.getCategoryKey();
+        convertedQuestion.correctAnswer = backendResponseQuestion.getCorrectAnswer();
+        convertedQuestion.question = backendResponseQuestion.getQuestionText();
+        convertedQuestion.optionA = backendResponseQuestion.getOptions().getA();
+        convertedQuestion.optionB = backendResponseQuestion.getOptions().getB();
+        convertedQuestion.optionC = backendResponseQuestion.getOptions().getC();
+        convertedQuestion.optionD = backendResponseQuestion.getOptions().getD();
+        convertedQuestion.isAnswered = false;
+        //convertedQuestion.order = i;
+
+        return convertedQuestion;
+    }
+
     private List<Question> convert(List<BackendResponseQuestion> backendResponseQuestions) {
         List<Question> convertedQuestions = new ArrayList<>();
         long i = 0;
         for (BackendResponseQuestion question : backendResponseQuestions) {
             Question convertedQuestion = new Question();
             convertedQuestion.id = question.getKey();
-            convertedQuestion.category = question.getCategory();
+            convertedQuestion.categoryKey = question.getCategoryKey();
             convertedQuestion.correctAnswer = question.getCorrectAnswer();
             convertedQuestion.question = question.getQuestionText();
             convertedQuestion.optionA = question.getOptions().getA();
@@ -103,7 +121,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
     }
 
     @Override
-    public void resetQuestionIsAnswered(){
+    public void resetQuestionIsAnswered() {
         AsyncTask.execute(() -> questionDao.updateQuestionIsAnswered(false));
     }
 }

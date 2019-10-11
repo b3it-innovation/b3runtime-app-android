@@ -23,6 +23,8 @@ import com.b3.development.b3runtime.data.local.model.question.Question;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 
+import java.util.List;
+
 import static org.koin.java.KoinJavaComponent.get;
 
 /**
@@ -45,13 +47,15 @@ public class QuestionFragment extends BaseQuestionFragment {
     private ProgressBar pb;
 
     private FragmentShowHideCallback callback;
+    private static List<String> questionsKeys;
 
 
     public QuestionFragment() {
     }
 
-    public static final QuestionFragment newInstance() {
+    public static final QuestionFragment newInstance(List<String> keys) {
         QuestionFragment fragment = new QuestionFragment();
+        questionsKeys = keys;
         Bundle arguments = new Bundle();
         fragment.setArguments(arguments);
         fragment.setRetainInstance(true);
@@ -66,6 +70,7 @@ public class QuestionFragment extends BaseQuestionFragment {
         viewModel = ViewModelProviders.of(this,
                 new QuestionViewModelFactory(get(QuestionRepository.class)))
                 .get(QuestionViewModel.class);
+        viewModel.init(questionsKeys);
     }
 
     @Override
@@ -98,14 +103,14 @@ public class QuestionFragment extends BaseQuestionFragment {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 selectedOption = answers.getCheckedRadioButtonId();
-                Log.d(TAG,"selected option:" + selectedOption);
+                Log.d(TAG, "selected option:" + selectedOption);
                 confirmButton.setEnabled(true);
             }
         });
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG,"Calling viewModel to validate answer");
+                Log.d(TAG, "Calling viewModel to validate answer");
                 viewModel.validateAnswer(selectedOption);
                 callback.switchFragmentVisible(fragment);
                 //uncheck buttons for next time question is shown
