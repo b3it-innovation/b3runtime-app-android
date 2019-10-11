@@ -4,8 +4,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.b3.development.b3runtime.base.BaseViewModel;
+import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.remote.QueryLiveData;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
+import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -20,7 +22,10 @@ public class CompetitionViewModel extends BaseViewModel {
 
     public LiveData<List<BackendCompetition>> competitions;
     private CompetitionRepository repository;
+    private AttendeeRepository attendeeRepository;
     MutableLiveData<Boolean> showLoading = new MutableLiveData<>();
+    private String userAccountId = "fakeId";
+    private Attendee attendee;
 
 
     private static final DatabaseReference COMPETITIONS_REF =
@@ -28,8 +33,9 @@ public class CompetitionViewModel extends BaseViewModel {
 
     private final QueryLiveData liveData;
 
-    public CompetitionViewModel(CompetitionRepository competitionRepository) {
+    public CompetitionViewModel(CompetitionRepository competitionRepository, AttendeeRepository attendeeRepository) {
         this.repository = competitionRepository;
+        this.attendeeRepository = attendeeRepository;
         competitions = repository.getCompetitionsLiveData();
         liveData = new QueryLiveData(COMPETITIONS_REF);
         showLoading.setValue(false);
@@ -37,6 +43,14 @@ public class CompetitionViewModel extends BaseViewModel {
 
     public void showLoading(boolean show) {
         showLoading.setValue(show);
+    }
+
+    public void createAttendee() {
+        attendee = new Attendee();
+        attendee.userAccountKey = userAccountId;
+        attendee.competitionKey = competitions.getValue().get(0).getKey();
+        attendee.trackKey = competitions.getValue().get(0).getTracks().get(0).getKey();
+        attendeeRepository.insertAttendee(attendee);
     }
 
 }

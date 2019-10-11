@@ -4,6 +4,8 @@ import androidx.room.Room
 import com.b3.development.b3runtime.data.local.B3RuntimeDatabase
 import com.b3.development.b3runtime.data.remote.BackendInteractor
 import com.b3.development.b3runtime.data.remote.BackendInteractorImpl
+import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository
+import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepositoryImpl
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepositoryImpl
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository
@@ -33,6 +35,7 @@ val b3RuntimeModule = module {
     single { Room.databaseBuilder(androidApplication(), B3RuntimeDatabase::class.java, "b3Runtime_db").build() }
     single { get<B3RuntimeDatabase>().checkpointDao() }
     single { get<B3RuntimeDatabase>().questionDao() }
+    single { get<B3RuntimeDatabase>().attendeeDao() }
     single { BackendInteractorImpl(get(StringQualifier("questions")), get(StringQualifier("competitions")), get(StringQualifier("tracks_checkpoints"))) as BackendInteractor }
     single(StringQualifier("questions")) { FirebaseDatabase.getInstance().getReference("questions") }
     single(StringQualifier("competitions")) { FirebaseDatabase.getInstance().getReference("competitions") }
@@ -40,5 +43,6 @@ val b3RuntimeModule = module {
     single { CheckpointRepositoryImpl(get(), get()) as CheckpointRepository }
     single { QuestionRepositoryImpl(get(), get()) as QuestionRepository }
     single { CompetitionRepositoryImpl(get()) as CompetitionRepository }
+    single { AttendeeRepositoryImpl(get(), get()) as AttendeeRepository }
     single { GeofenceManagerImpl(androidContext()) as GeofenceManager }
 }

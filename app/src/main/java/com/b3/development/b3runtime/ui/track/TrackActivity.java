@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.remote.model.track.BackendTrack;
+import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
 import com.b3.development.b3runtime.ui.competition.CompetitionActivity;
 import com.b3.development.b3runtime.ui.competition.CompetitionViewModel;
@@ -35,7 +36,7 @@ public class TrackActivity extends AppCompatActivity {
         setContentView(R.layout.activity_track);
         //create or connect viewmodel to activity
         viewModel = ViewModelProviders.of(this,
-                new CompetitionViewModelFactory(get(CompetitionRepository.class)))
+                new CompetitionViewModelFactory(get(CompetitionRepository.class), get(AttendeeRepository.class)))
                 .get(CompetitionViewModel.class);
 
         createButtons(getSelectedTracks());
@@ -74,6 +75,7 @@ public class TrackActivity extends AppCompatActivity {
             intent.putExtra("trackKey", bt.getKey());
 
             button.setOnClickListener(v -> {
+                viewModel.createAttendee();
                 // todo: send intent to new activity to show tracks
                 startActivity(intent);
             });
