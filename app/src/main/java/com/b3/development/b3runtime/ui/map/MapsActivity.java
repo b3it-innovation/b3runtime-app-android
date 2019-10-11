@@ -7,9 +7,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
@@ -72,6 +74,9 @@ public class MapsActivity extends BaseActivity
     private String finalCheckpointID;
     private QuestionFragment questionFragment;
     private boolean checkpointsDrawn = false;
+    private String trackKey;
+    private SharedPreferences prefs;
+
 
     /**
      * Contains the main logic of the {@link MapsActivity}
@@ -81,6 +86,11 @@ public class MapsActivity extends BaseActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        // get trackKey from intent
+        Intent intent = getIntent();
+        trackKey = intent.getStringExtra("trackKey");
+
         //check if questionfragment is created and retained, if it is then detach from screen
         if (savedInstanceState != null) {
             if (savedInstanceState.getBoolean(getResources().getString(R.string.questionFragmentAddedKey))) {
@@ -89,10 +99,11 @@ public class MapsActivity extends BaseActivity
                 getSupportFragmentManager().beginTransaction().detach(questionFragment).commit();
             }
         }
+        // when trackKey is null, get it from shared preference
+        if(trackKey == null){
+            trackKey = prefs.getString("trackKey", "");
+        }
 
-        Intent intent = getIntent();
-        String trackKey = intent.getStringExtra("trackKey");
-        
         //create or connect already existing viewmodel to activity
         viewModel = ViewModelProviders.of(this,
                 new MapsViewModelFactory(get(CheckpointRepository.class), get(GeofenceManager.class), getApplicationContext(), trackKey))
@@ -179,6 +190,18 @@ public class MapsActivity extends BaseActivity
         } else {
             menuItem.setTitle("Sound on");
         }
+    }
+
+    @Override
+    public void onPause(){
+        Log.d(TAG, "onPause");
+        super.onPause();
+
+        // save trackKey to able to open activity via notification
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("trackKey", trackKey);
+        editor.apply();
+
     }
 
     @Override
