@@ -10,6 +10,8 @@ import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointReposit
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepositoryImpl
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository
 import com.b3.development.b3runtime.data.repository.question.QuestionRepositoryImpl
+import com.b3.development.b3runtime.data.repository.result.ResultRepository
+import com.b3.development.b3runtime.data.repository.result.ResultRepositoryImpl
 import com.b3.development.b3runtime.geofence.GeofenceManager
 import com.b3.development.b3runtime.geofence.GeofenceManagerImpl
 import com.google.firebase.database.FirebaseDatabase
@@ -33,12 +35,14 @@ val b3RuntimeModule = module {
     single { Room.databaseBuilder(androidApplication(), B3RuntimeDatabase::class.java, "b3Runtime_db").build() }
     single { get<B3RuntimeDatabase>().checkpointDao() }
     single { get<B3RuntimeDatabase>().questionDao() }
-    single { BackendInteractorImpl(get(StringQualifier("questions")), get(StringQualifier("competitions")), get(StringQualifier("tracks_checkpoints"))) as BackendInteractor }
+    single { BackendInteractorImpl(get(StringQualifier("questions")), get(StringQualifier("competitions")), get(StringQualifier("tracks_checkpoints")), get(StringQualifier("results"))) as BackendInteractor }
     single(StringQualifier("questions")) { FirebaseDatabase.getInstance().getReference("questions") }
     single(StringQualifier("competitions")) { FirebaseDatabase.getInstance().getReference("competitions") }
     single(StringQualifier("tracks_checkpoints")) { FirebaseDatabase.getInstance().getReference("tracks_checkpoints") }
+    single(StringQualifier("results")) { FirebaseDatabase.getInstance().getReference("results") }
     single { CheckpointRepositoryImpl(get(), get()) as CheckpointRepository }
     single { QuestionRepositoryImpl(get(), get()) as QuestionRepository }
     single { CompetitionRepositoryImpl(get()) as CompetitionRepository }
+    single { ResultRepositoryImpl(get()) as ResultRepository }
     single { GeofenceManagerImpl(androidContext()) as GeofenceManager }
 }

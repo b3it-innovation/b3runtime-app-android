@@ -31,6 +31,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
+import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.geofence.LocationService;
 import com.b3.development.b3runtime.sound.Jukebox;
@@ -100,13 +101,14 @@ public class MapsActivity extends BaseActivity
             }
         }
         // when trackKey is null, get it from shared preference
-        if(trackKey == null){
+        if (trackKey == null) {
             trackKey = prefs.getString("trackKey", "");
         }
 
         //create or connect already existing viewmodel to activity
         viewModel = ViewModelProviders.of(this,
-                new MapsViewModelFactory(get(CheckpointRepository.class), get(GeofenceManager.class), getApplicationContext(), trackKey))
+                new MapsViewModelFactory(get(CheckpointRepository.class), get(ResultRepository.class),
+                        get(GeofenceManager.class), getApplicationContext(), trackKey))
                 .get(MapsViewModel.class);
 
         //observe for errors and inform user if an error occurs
@@ -193,7 +195,7 @@ public class MapsActivity extends BaseActivity
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         Log.d(TAG, "onPause");
         super.onPause();
 
