@@ -126,7 +126,7 @@ public class MapsViewModel extends BaseViewModel {
     public List<String> getQuestionKeys(){
         List<String> questionKeys = new ArrayList<>();
         for(Checkpoint c : allCheckpoints.getValue()){
-            if(c.questionKey != null && c.questionKey.equals("")){
+            if(c.questionKey != null && !c.questionKey.equals("")){
                 questionKeys.add(c.questionKey);
             }
         }
