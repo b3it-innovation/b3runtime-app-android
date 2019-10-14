@@ -86,7 +86,7 @@ public class BackendInteractorImpl implements BackendInteractor {
         // create query to fetch checkpoints related to certain trackKey
         Query query = firebaseDbTracksCheckpoints.orderByKey().equalTo(trackKey);
         //sets listener on the data in firebase
-        query.addValueEventListener(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             /**
              * Contains the logic on handling a data change in the remote database
@@ -115,8 +115,6 @@ public class BackendInteractorImpl implements BackendInteractor {
                 checkpointsCallback.onCheckpointsReceived(checkpoints);
                 //debug log
                 Log.d(TAG, "Checkpoints read: " + checkpoints.size());
-                //removes the listener
-                firebaseDbTracksCheckpoints.removeEventListener(this);
             }
 
             /**
@@ -135,7 +133,7 @@ public class BackendInteractorImpl implements BackendInteractor {
     @Override
     public void getQuestions(QuestionsCallback questionCallback) {
         //sets listener on the data in firebase
-        firebaseDbQuestions.addValueEventListener(new ValueEventListener() {
+        firebaseDbQuestions.addListenerForSingleValueEvent(new ValueEventListener() {
 
             /**
              * Contains the logic on handling a data change in the remote database
@@ -194,8 +192,6 @@ public class BackendInteractorImpl implements BackendInteractor {
                 questionCallback.onQuestionsReceived(questions);
                 //debug log
                 Log.d(TAG, "Questions added: " + questions.size());
-                //removes the listener
-                firebaseDbQuestions.removeEventListener(this);
             }
 
             /**
