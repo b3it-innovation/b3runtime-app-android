@@ -75,6 +75,11 @@ public class CheckpointRepositoryImpl implements CheckpointRepository {
         AsyncTask.execute(() -> checkpointDao.updateCheckpointsCompleted(false));
     }
 
+    @Override
+    public void removeAllCheckpoints() {
+        AsyncTask.execute(() -> checkpointDao.removeAllCheckpoints());
+    }
+
     /**
      * Contains logic for fetching data from backend
      */

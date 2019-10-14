@@ -34,6 +34,12 @@ public interface CheckpointDao {
     @Delete
     void removeCheckpoint(Checkpoint checkpoint);
 
+    @Delete
+    void removeCheckpoints(List<Checkpoint> checkpoints);
+
+    @Query("DELETE FROM Checkpoint")
+    int removeAllCheckpoints();
+
     @Query("UPDATE Checkpoint SET completed = :bool, answeredCorrect = :bool, skipped = :bool, completedTime = null")
     int updateCheckpointsCompleted(boolean bool);
 }

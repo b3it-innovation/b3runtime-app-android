@@ -29,12 +29,16 @@ public class MapsViewModel extends BaseViewModel {
 
     public MapsViewModel(CheckpointRepository repository, GeofenceManager geofenceManager, Context context, String trackKey) {
         this.checkpointRepository = repository;
+        init(trackKey);
+        this.geofenceManager = geofenceManager;
+        this.context = context;
+    }
+
+    public void init(String trackKey) {
         checkpointRepository.fetch(trackKey);
         nextCheckpoint = checkpointRepository.getCheckpoint();
         allCheckpoints = checkpointRepository.getAllCheckpoints();
         errors = checkpointRepository.getError();
-        this.geofenceManager = geofenceManager;
-        this.context = context;
     }
 
     @Override
@@ -120,5 +124,9 @@ public class MapsViewModel extends BaseViewModel {
     //sets all checkpoint to not completed
     public void resetCheckpoints() {
         checkpointRepository.resetCheckpointsCompleted();
+    }
+
+    public void removeAllCheckpoints() {
+        checkpointRepository.removeAllCheckpoints();
     }
 }

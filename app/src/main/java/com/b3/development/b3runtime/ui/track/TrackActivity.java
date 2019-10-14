@@ -13,7 +13,6 @@ import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.remote.model.track.BackendTrack;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
-import com.b3.development.b3runtime.ui.competition.CompetitionActivity;
 import com.b3.development.b3runtime.ui.competition.CompetitionViewModel;
 import com.b3.development.b3runtime.ui.competition.CompetitionViewModelFactory;
 import com.b3.development.b3runtime.ui.map.MapsActivity;
@@ -72,6 +71,7 @@ public class TrackActivity extends AppCompatActivity {
             //create new intent to send to next activity
             Intent intent = new Intent(this, MapsActivity.class);
             intent.putExtra("trackKey", bt.getKey());
+            intent.putExtra("callingActivity", TAG);
 
             button.setOnClickListener(v -> {
                 // todo: send intent to new activity to show tracks

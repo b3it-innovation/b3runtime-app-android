@@ -38,7 +38,8 @@ public class ResultFragment extends BaseQuestionFragment {
     private CircleImageView colorLogo;
     private Button confirm;
 
-    public ResultFragment(){}
+    public ResultFragment() {
+    }
 
     /**
      * Builds the {@link ResultFragment}
@@ -63,7 +64,7 @@ public class ResultFragment extends BaseQuestionFragment {
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
         //create or connect viewmodel to fragment
         viewModel = ViewModelProviders.of(getActivity(),
-                new MapsViewModelFactory(get(CheckpointRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext(),""))
+                new MapsViewModelFactory(get(CheckpointRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext(), ""))
                 .get(MapsViewModel.class);
         //observe allCheckpoints and set response with the result
         viewModel.allCheckpoints.observe(this, pins -> response.setText(viewModel.getResult()));
@@ -86,6 +87,7 @@ public class ResultFragment extends BaseQuestionFragment {
         confirm.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
 
         confirm.setOnClickListener(v -> {
+            viewModel.updateCheckpointCompleted();
             dismiss();
         });
     }
