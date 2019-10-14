@@ -2,7 +2,6 @@ package com.b3.development.b3runtime.utils;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.util.Log;
 
 import java.util.List;
 
@@ -20,6 +19,17 @@ public class Util {
                         return true;
                     }
                 }
+            }
+        }
+        return false;
+    }
+
+    // checks if the service is running
+    public static boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
             }
         }
         return false;

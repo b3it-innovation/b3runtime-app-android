@@ -213,7 +213,7 @@ public class MapsActivity extends BaseActivity
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
         }
         //stop notification foreground service
-        if (isMyServiceRunning(LocationService.class)) {
+        if (Util.isMyServiceRunning(LocationService.class, getApplicationContext())) {
             stopService(new Intent(this, LocationService.class));
         }
         if (jukebox != null) {
@@ -409,16 +409,6 @@ public class MapsActivity extends BaseActivity
             ft.detach(fragment);
         }
         ft.commit();
-    }
-
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public Jukebox getJukebox() {
