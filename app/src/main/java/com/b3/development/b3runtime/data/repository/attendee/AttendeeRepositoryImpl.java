@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.attendee.AttendeeDao;
 import com.b3.development.b3runtime.data.remote.BackendInteractor;
+import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.utils.failure.Failure;
 
 public class AttendeeRepositoryImpl implements AttendeeRepository {
@@ -26,7 +27,6 @@ public class AttendeeRepositoryImpl implements AttendeeRepository {
     public AttendeeRepositoryImpl(BackendInteractor bi, AttendeeDao attendeeDao) {
         this.attendeeDao = attendeeDao;
         this.backendInteractor = bi;
-
     }
 
     /**
@@ -45,6 +45,27 @@ public class AttendeeRepositoryImpl implements AttendeeRepository {
     @Override
     public void insertAttendee(Attendee attendee) {
         AsyncTask.execute(() -> attendeeDao.insertAttendee(attendee));
+    }
+
+    /**
+     * save Attendee as BackendAttendee to Firebase
+     *
+     * @param attendee Entity class for attendee in local database
+     * @return key Generated key in Firebase
+     */
+    @Override
+    public String saveAttendeeAsBackendAttendee(Attendee attendee) {
+        return backendInteractor.saveAttendee(convert(attendee));
+    }
+
+    // converts Attendee to BackendAttendee
+    public BackendAttendee convert(Attendee attendee) {
+        BackendAttendee backendAttendee = new BackendAttendee();
+        backendAttendee.setName(attendee.name);
+        backendAttendee.setUserAccountKey(attendee.userAccountKey);
+        backendAttendee.setTrackKey(attendee.trackKey);
+        backendAttendee.setCompetitionKey(attendee.competitionKey);
+        return backendAttendee;
     }
 
 }

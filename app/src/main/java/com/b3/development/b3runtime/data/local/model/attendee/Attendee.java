@@ -6,13 +6,13 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 /**
- * An <code>@Entity</code> class that defines a table for Checkpoints in the local storage
+ * An <code>@Entity</code> class that defines a table for Attendees in the local storage
  */
 @Entity
 public class Attendee {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @NonNull
-    public int id;
+    public String id;
 
     @ColumnInfo(name = "userAccountKey")
     public String userAccountKey;

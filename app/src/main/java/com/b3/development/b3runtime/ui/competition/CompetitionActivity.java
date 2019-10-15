@@ -69,7 +69,6 @@ public class CompetitionActivity extends AppCompatActivity {
         } else {
             pb.setVisibility(View.INVISIBLE);
         }
-
     }
 
 
@@ -91,13 +90,12 @@ public class CompetitionActivity extends AppCompatActivity {
                 button.setText(bc.getName());
                 button.setStateListAnimator(null);
                 button.setBackground(getDrawable(R.drawable.btn_selector));
-              
+
                 //create new intent to send to next activity
                 Intent intent = new Intent(this, TrackActivity.class);
                 intent.putExtra("competitionKey", bc.getKey());
 
                 button.setOnClickListener(v -> {
-                    // todo: send intent to new activity to show tracks
                     viewModel.setCompetitionKey(bc.getKey());
                     startActivity(intent);
                 });

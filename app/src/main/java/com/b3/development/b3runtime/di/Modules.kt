@@ -36,10 +36,12 @@ val b3RuntimeModule = module {
     single { get<B3RuntimeDatabase>().checkpointDao() }
     single { get<B3RuntimeDatabase>().questionDao() }
     single { get<B3RuntimeDatabase>().attendeeDao() }
-    single { BackendInteractorImpl(get(StringQualifier("questions")), get(StringQualifier("competitions")), get(StringQualifier("tracks_checkpoints"))) as BackendInteractor }
+    single { BackendInteractorImpl(get(StringQualifier("questions")), get(StringQualifier("competitions")),
+            get(StringQualifier("tracks_checkpoints")), get(StringQualifier("attendees"))) as BackendInteractor }
     single(StringQualifier("questions")) { FirebaseDatabase.getInstance().getReference("questions") }
     single(StringQualifier("competitions")) { FirebaseDatabase.getInstance().getReference("competitions") }
     single(StringQualifier("tracks_checkpoints")) { FirebaseDatabase.getInstance().getReference("tracks_checkpoints") }
+    single(StringQualifier("attendees")) { FirebaseDatabase.getInstance().getReference("attendees") }
     single { CheckpointRepositoryImpl(get(), get()) as CheckpointRepository }
     single { QuestionRepositoryImpl(get(), get()) as QuestionRepository }
     single { CompetitionRepositoryImpl(get()) as CompetitionRepository }

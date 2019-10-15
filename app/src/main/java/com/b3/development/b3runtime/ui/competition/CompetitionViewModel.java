@@ -5,12 +5,9 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.b3.development.b3runtime.base.BaseViewModel;
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
-import com.b3.development.b3runtime.data.remote.QueryLiveData;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
@@ -24,21 +21,17 @@ public class CompetitionViewModel extends BaseViewModel {
     private CompetitionRepository repository;
     private AttendeeRepository attendeeRepository;
     MutableLiveData<Boolean> showLoading = new MutableLiveData<>();
-    private String userAccountId = "fakeId";
     private Attendee currentAttendee;
     private String competitionKey;
     private String trackKey;
-
-    private static final DatabaseReference COMPETITIONS_REF =
-            FirebaseDatabase.getInstance().getReference("competitions");
-
-    private final QueryLiveData liveData;
+    // mock user account todo: connect to real user account
+    private String userAccountId = "fakeId";
+    private String userAccountName = "fakeName";
 
     public CompetitionViewModel(CompetitionRepository competitionRepository, AttendeeRepository attendeeRepository) {
         this.repository = competitionRepository;
         this.attendeeRepository = attendeeRepository;
         competitions = repository.getCompetitionsLiveData();
-        liveData = new QueryLiveData(COMPETITIONS_REF);
         showLoading.setValue(false);
     }
 
@@ -46,14 +39,15 @@ public class CompetitionViewModel extends BaseViewModel {
         showLoading.setValue(show);
     }
 
-    public void createAttendee() {
+    public Attendee createAttendee() {
         currentAttendee = new Attendee();
-        currentAttendee.userAccountKey = userAccountId;
         currentAttendee.competitionKey = competitionKey;
         currentAttendee.trackKey = trackKey;
-        attendeeRepository.insertAttendee(currentAttendee);
+        // mock user acount todo: connect to real user account
+        currentAttendee.userAccountKey = userAccountId;
+        currentAttendee.name = userAccountName;
+        return currentAttendee;
     }
-
 
     public Attendee getCurrentAttendee() {
         return currentAttendee;
@@ -73,5 +67,13 @@ public class CompetitionViewModel extends BaseViewModel {
 
     public void setTrackKey(String trackKey) {
         this.trackKey = trackKey;
+    }
+
+    public String saveBackendAttendee(Attendee attendee) {
+        return attendeeRepository.saveAttendeeAsBackendAttendee(attendee);
+    }
+
+    public void insertAttendee(Attendee attendee) {
+        attendeeRepository.insertAttendee(currentAttendee);
     }
 }
