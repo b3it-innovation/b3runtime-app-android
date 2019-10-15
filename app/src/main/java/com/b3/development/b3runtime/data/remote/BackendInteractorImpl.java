@@ -8,6 +8,9 @@ import androidx.lifecycle.LiveData;
 import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
+import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,6 +30,7 @@ public class BackendInteractorImpl implements BackendInteractor {
     private DatabaseReference firebaseDbQuestions;
     private DatabaseReference firebaseDbCompetitions;
     private DatabaseReference firebaseDbTracksCheckpoints;
+    private DatabaseReference firebaseDbResults;
 
     private final QueryLiveData competitionsLiveDataSnapshot;
 
@@ -36,19 +40,38 @@ public class BackendInteractorImpl implements BackendInteractor {
      * @param firebaseDbQuestions         a reference to the <code>Firebase Database</code>
      * @param firebaseDbCompetitions      a reference to the <code>Firebase Database</code>
      * @param firebaseDbTracksCheckpoints a reference to the <code>Firebase Database</code>
+     * @param firebaseDbResults           a reference to the <code>Firebase Database</code>
      */
     public BackendInteractorImpl(DatabaseReference firebaseDbQuestions,
                                  DatabaseReference firebaseDbCompetitions,
-                                 DatabaseReference firebaseDbTracksCheckpoints) {
+                                 DatabaseReference firebaseDbTracksCheckpoints,
+                                 DatabaseReference firebaseDbResults) {
         this.firebaseDbQuestions = firebaseDbQuestions;
         this.firebaseDbCompetitions = firebaseDbCompetitions;
         this.firebaseDbTracksCheckpoints = firebaseDbTracksCheckpoints;
+        this.firebaseDbResults = firebaseDbResults;
         this.competitionsLiveDataSnapshot = new QueryLiveData(this.firebaseDbCompetitions);
     }
 
     @NonNull
     public LiveData<DataSnapshot> getCompetitionsDataSnapshot() {
         return competitionsLiveDataSnapshot;
+    }
+
+    @Override
+    public void saveResult(BackendResult result) {
+        firebaseDbResults.push().setValue(result).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "succeeded to save result.");
+            }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "failed to save result. ", e);
+            }
+        });
     }
 
     /**
@@ -63,7 +86,7 @@ public class BackendInteractorImpl implements BackendInteractor {
         // create query to fetch checkpoints related to certain trackKey
         Query query = firebaseDbTracksCheckpoints.orderByKey().equalTo(trackKey);
         //sets listener on the data in firebase
-        query.addValueEventListener(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             /**
              * Contains the logic on handling a data change in the remote database
@@ -92,8 +115,6 @@ public class BackendInteractorImpl implements BackendInteractor {
                 checkpointsCallback.onCheckpointsReceived(checkpoints);
                 //debug log
                 Log.d(TAG, "Checkpoints read: " + checkpoints.size());
-                //removes the listener
-                firebaseDbTracksCheckpoints.removeEventListener(this);
             }
 
             /**
