@@ -30,8 +30,10 @@ public class MapsViewModel extends BaseViewModel {
     public boolean isResponseOnScreen = false;
     private Context context;
 
-    public MapsViewModel(CheckpointRepository repository, GeofenceManager geofenceManager, Context context, String trackKey) {
-        this.checkpointRepository = repository;
+    public MapsViewModel(CheckpointRepository checkpointRepository, ResultRepository resultRepository,
+                         GeofenceManager geofenceManager, Context context, String trackKey) {
+        this.checkpointRepository = checkpointRepository;
+        this.resultRepository = resultRepository;
         init(trackKey);
         this.geofenceManager = geofenceManager;
         this.context = context;
