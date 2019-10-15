@@ -16,7 +16,7 @@ public interface BackendInteractor {
 
     void getCheckpoints(CheckpointsCallback checkpointsCallback, String trackKey);
 
-    void getQuestions(QuestionsCallback questionCallback);
+    void getQuestions(QuestionsCallback questionCallback, List<String> keys);
 
     LiveData<DataSnapshot> getCompetitionsDataSnapshot();
 
@@ -29,7 +29,7 @@ public interface BackendInteractor {
     }
 
     interface QuestionsCallback {
-        void onQuestionsReceived(List<BackendResponseQuestion> questions);
+        void onQuestionsReceived(BackendResponseQuestion question);
 
         void onError();
     }

@@ -12,6 +12,7 @@ import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.google.android.gms.location.Geofence;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -132,5 +133,14 @@ public class MapsViewModel extends BaseViewModel {
 
     public void saveFinalResult() {
         resultRepository.saveResult(allCheckpoints.getValue(), getTotalTime());
+
+    public List<String> getQuestionKeys(){
+        List<String> questionKeys = new ArrayList<>();
+        for(Checkpoint c : allCheckpoints.getValue()){
+            if(c.questionKey != null && !c.questionKey.equals("")){
+                questionKeys.add(c.questionKey);
+            }
+        }
+        return questionKeys;
     }
 }

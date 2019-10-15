@@ -131,79 +131,83 @@ public class BackendInteractorImpl implements BackendInteractor {
     }
 
     @Override
-    public void getQuestions(QuestionsCallback questionCallback) {
-        //sets listener on the data in firebase
-        firebaseDbQuestions.addListenerForSingleValueEvent(new ValueEventListener() {
+    public void getQuestions(QuestionsCallback questionCallback, List<String> questionKeys) {
 
-            /**
-             * Contains the logic on handling a data change in the remote database
-             *
-             * @param dataSnapshot a snapshot of the data in questions after the change
-             */
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                System.out.println("data change in questions");
-                List<BackendResponseQuestion> questions = new ArrayList<>();
-                for (DataSnapshot questionSnapshot : dataSnapshot.getChildren()) {
-                    //gets the BackendResponseQuestion object
-                    BackendResponseQuestion fbQuestion = new BackendResponseQuestion();
-                    fbQuestion.setKey(questionSnapshot.getKey());
-                    // mock category
-                    //todo retrieve from relation in question
-                    fbQuestion.setCategory("category");
-                    fbQuestion.setCorrectAnswer((String) questionSnapshot.child("correctAnswer").getValue());
-                    fbQuestion.setImgUrl("imgUrl");
-                    //gets the nested "options" object containing the answer options
-                    //in case options are not set as mocked data in firebase varys on provided options
-                    //they are manually set to hardcoded values for debug purposes
-                    BackendAnswerOption answer = new BackendAnswerOption();
-                    String optionA = (String) questionSnapshot.child("options").child("0").child("text").getValue();
-                    if (optionA != null) {
-                        answer.setA(optionA);
-                    } else {
-                        answer.setA("unassigned optionA");
+        for (String key : questionKeys) {
+            Query query = firebaseDbQuestions.child(key);
+            query.addValueEventListener(new ValueEventListener() {
+
+                /**
+                 * Contains the logic on handling a data change in the remote database
+                 *
+                 * @param dataSnapshot a snapshot of the data in questions after the change
+                 */
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    System.out.println("data change in questions");
+                    BackendResponseQuestion fbQuestion = null;
+                    if (dataSnapshot.exists()) {
+                        fbQuestion = new BackendResponseQuestion();
+                        //gets the BackendResponseQuestion object
+                        fbQuestion.setKey(dataSnapshot.getKey());
+                        //todo retrieve from relation in question
+                        fbQuestion.setCategoryKey((String) dataSnapshot.child("categoryKey").getValue());
+                        fbQuestion.setCorrectAnswer((String) dataSnapshot.child("correctAnswer").getValue());
+                        fbQuestion.setImgUrl("imgUrl");
+                        //gets the nested "options" object containing the answer options
+                        //in case options are not set as mocked data in firebase varys on provided options
+                        //they are manually set to hardcoded values for debug purposes
+                        BackendAnswerOption answer = new BackendAnswerOption();
+                        String optionA = (String) dataSnapshot.child("options").child("0").child("text").getValue();
+                        if (optionA != null) {
+                            answer.setA(optionA);
+                        } else {
+                            answer.setA("unassigned optionA");
+                        }
+                        String optionB = (String) dataSnapshot.child("options").child("1").child("text").getValue();
+                        if (optionB != null) {
+                            answer.setB(optionB);
+                        } else {
+                            answer.setB("unassigned optionB");
+                        }
+                        String optionC = (String) dataSnapshot.child("options").child("2").child("text").getValue();
+                        if (optionC != null) {
+                            answer.setC(optionC);
+                        } else {
+                            answer.setC("unassigned optionC");
+                        }
+                        String optionD = (String) dataSnapshot.child("options").child("3").child("text").getValue();
+                        if (optionD != null) {
+                            answer.setD(optionD);
+                        } else {
+                            answer.setD("unassigned optionD");
+                        }
+                        fbQuestion.setOptions(answer);
+                        //sets the rest of the BackendResponseQuestion object
+                        fbQuestion.setQuestionText((String) dataSnapshot.child("text").getValue());
+                        fbQuestion.setTitle((String) dataSnapshot.child("title").getValue());
                     }
-                    String optionB = (String) questionSnapshot.child("options").child("1").child("text").getValue();
-                    if (optionB != null) {
-                        answer.setB(optionB);
-                    } else {
-                        answer.setB("unassigned optionB");
+                    //returns the Callback containing the List of locations
+                    if (fbQuestion != null) {
+                        questionCallback.onQuestionsReceived(fbQuestion);
                     }
-                    String optionC = (String) questionSnapshot.child("options").child("2").child("text").getValue();
-                    if (optionC != null) {
-                        answer.setC(optionC);
-                    } else {
-                        answer.setC("unassigned optionC");
-                    }
-                    String optionD = (String) questionSnapshot.child("options").child("3").child("text").getValue();
-                    if (optionD != null) {
-                        answer.setD(optionD);
-                    } else {
-                        answer.setD("unassigned optionD");
-                    }
-                    fbQuestion.setOptions(answer);
-                    //sets the rest of the BackendResponseQuestion object
-                    fbQuestion.setQuestionText((String) questionSnapshot.child("text").getValue());
-                    fbQuestion.setTitle((String) questionSnapshot.child("title").getValue());
-                    //adds the object to the List of BackendResponseQuestion objects
-                    questions.add(fbQuestion);
+                    //removes the listener
+                    firebaseDbQuestions.removeEventListener(this);
                 }
-                //returns the Callback containing the List of locations
-                questionCallback.onQuestionsReceived(questions);
-                //debug log
-                Log.d(TAG, "Questions added: " + questions.size());
-            }
 
-            /**
-             * Contains logic for handling possible database errors
-             * @param error the error recieved
-             */
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                questionCallback.onError();
-                System.out.println("canceled");
-                Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        });
+                /**
+                 * Contains logic for handling possible database errors
+                 * @param error the error recieved
+                 */
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    questionCallback.onError();
+                    System.out.println("canceled");
+                    Log.w(TAG, "Failed to read value.", error.toException());
+                }
+            });
+
+        }
+
     }
 }

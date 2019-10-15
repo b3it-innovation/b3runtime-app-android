@@ -26,6 +26,9 @@ public class Checkpoint {
     @ColumnInfo(name = "order")
     public Long order;
 
+    @ColumnInfo(name = "questionKey")
+    public String questionKey;
+
     @ColumnInfo(name = "completed")
     public boolean completed;
 

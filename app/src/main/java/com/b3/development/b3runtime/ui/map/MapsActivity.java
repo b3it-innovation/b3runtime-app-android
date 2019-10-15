@@ -309,7 +309,7 @@ public class MapsActivity extends BaseActivity
     //calls QuestionFragment to display a question for the user
     private void showQuestion() {
         if (getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG) == null) {
-            questionFragment = QuestionFragment.newInstance();
+            questionFragment = QuestionFragment.newInstance(viewModel.getQuestionKeys());
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(questionFragment, QuestionFragment.TAG).show(questionFragment).commit();
         } else {
