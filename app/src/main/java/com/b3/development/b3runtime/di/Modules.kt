@@ -4,6 +4,8 @@ import androidx.room.Room
 import com.b3.development.b3runtime.data.local.B3RuntimeDatabase
 import com.b3.development.b3runtime.data.remote.BackendInteractor
 import com.b3.development.b3runtime.data.remote.BackendInteractorImpl
+import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository
+import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepositoryImpl
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepositoryImpl
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository
@@ -35,14 +37,17 @@ val b3RuntimeModule = module {
     single { Room.databaseBuilder(androidApplication(), B3RuntimeDatabase::class.java, "b3Runtime_db").build() }
     single { get<B3RuntimeDatabase>().checkpointDao() }
     single { get<B3RuntimeDatabase>().questionDao() }
-    single { BackendInteractorImpl(get(StringQualifier("questions")), get(StringQualifier("competitions")), get(StringQualifier("tracks_checkpoints")), get(StringQualifier("results"))) as BackendInteractor }
+    single { get<B3RuntimeDatabase>().attendeeDao() }
+    single { BackendInteractorImpl(get(StringQualifier("questions")), get(StringQualifier("competitions")),
+            get(StringQualifier("tracks_checkpoints")), get(StringQualifier("attendees")), get(StringQualifier("results"))) as BackendInteractor }
     single(StringQualifier("questions")) { FirebaseDatabase.getInstance().getReference("questions") }
     single(StringQualifier("competitions")) { FirebaseDatabase.getInstance().getReference("competitions") }
     single(StringQualifier("tracks_checkpoints")) { FirebaseDatabase.getInstance().getReference("tracks_checkpoints") }
+    single(StringQualifier("attendees")) { FirebaseDatabase.getInstance().getReference("attendees") }
     single(StringQualifier("results")) { FirebaseDatabase.getInstance().getReference("results") }
     single { CheckpointRepositoryImpl(get(), get()) as CheckpointRepository }
     single { QuestionRepositoryImpl(get(), get()) as QuestionRepository }
     single { CompetitionRepositoryImpl(get()) as CompetitionRepository }
-    single { ResultRepositoryImpl(get()) as ResultRepository }
+    single { AttendeeRepositoryImpl(get(), get()) as AttendeeRepository }
     single { GeofenceManagerImpl(androidContext()) as GeofenceManager }
 }

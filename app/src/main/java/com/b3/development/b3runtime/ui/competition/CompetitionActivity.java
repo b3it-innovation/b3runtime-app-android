@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
+import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
 import com.b3.development.b3runtime.ui.track.TrackActivity;
 
@@ -36,7 +37,7 @@ public class CompetitionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_competition);
         //create or connect viewmodel to activity
         viewModel = ViewModelProviders.of(this,
-                new CompetitionViewModelFactory(get(CompetitionRepository.class)))
+                new CompetitionViewModelFactory(get(CompetitionRepository.class), get(AttendeeRepository.class)))
                 .get(CompetitionViewModel.class);
 
 
@@ -68,7 +69,6 @@ public class CompetitionActivity extends AppCompatActivity {
         } else {
             pb.setVisibility(View.INVISIBLE);
         }
-
     }
 
 
@@ -90,13 +90,13 @@ public class CompetitionActivity extends AppCompatActivity {
                 button.setText(bc.getName());
                 button.setStateListAnimator(null);
                 button.setBackground(getDrawable(R.drawable.btn_selector));
-              
+
                 //create new intent to send to next activity
                 Intent intent = new Intent(this, TrackActivity.class);
                 intent.putExtra("competitionKey", bc.getKey());
 
                 button.setOnClickListener(v -> {
-                    // todo: send intent to new activity to show tracks
+                    viewModel.setCompetitionKey(bc.getKey());
                     startActivity(intent);
                 });
                 layout.addView(button, layoutParams);
