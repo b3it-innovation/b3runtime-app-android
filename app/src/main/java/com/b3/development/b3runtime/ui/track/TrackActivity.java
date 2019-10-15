@@ -75,6 +75,7 @@ public class TrackActivity extends AppCompatActivity {
             intent.putExtra("trackKey", bt.getKey());
 
             button.setOnClickListener(v -> {
+                viewModel.setTrackKey(bt.getKey());
                 viewModel.createAttendee();
                 // todo: send intent to new activity to show tracks
                 startActivity(intent);

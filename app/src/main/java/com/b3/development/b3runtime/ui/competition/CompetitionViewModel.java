@@ -25,8 +25,9 @@ public class CompetitionViewModel extends BaseViewModel {
     private AttendeeRepository attendeeRepository;
     MutableLiveData<Boolean> showLoading = new MutableLiveData<>();
     private String userAccountId = "fakeId";
-    private Attendee attendee;
-
+    private Attendee currentAttendee;
+    private String competitionKey;
+    private String trackKey;
 
     private static final DatabaseReference COMPETITIONS_REF =
             FirebaseDatabase.getInstance().getReference("competitions");
@@ -46,11 +47,31 @@ public class CompetitionViewModel extends BaseViewModel {
     }
 
     public void createAttendee() {
-        attendee = new Attendee();
-        attendee.userAccountKey = userAccountId;
-        attendee.competitionKey = competitions.getValue().get(0).getKey();
-        attendee.trackKey = competitions.getValue().get(0).getTracks().get(0).getKey();
-        attendeeRepository.insertAttendee(attendee);
+        currentAttendee = new Attendee();
+        currentAttendee.userAccountKey = userAccountId;
+        currentAttendee.competitionKey = competitionKey;
+        currentAttendee.trackKey = trackKey;
+        attendeeRepository.insertAttendee(currentAttendee);
     }
 
+
+    public Attendee getCurrentAttendee() {
+        return currentAttendee;
+    }
+
+    public String getCompetitionKey() {
+        return competitionKey;
+    }
+
+    public void setCompetitionKey(String competitionKey) {
+        this.competitionKey = competitionKey;
+    }
+
+    public String getTrackKey() {
+        return trackKey;
+    }
+
+    public void setTrackKey(String trackKey) {
+        this.trackKey = trackKey;
+    }
 }

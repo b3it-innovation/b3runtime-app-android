@@ -98,6 +98,7 @@ public class CompetitionActivity extends AppCompatActivity {
 
                 button.setOnClickListener(v -> {
                     // todo: send intent to new activity to show tracks
+                    viewModel.setCompetitionKey(bc.getKey());
                     startActivity(intent);
                 });
                 layout.addView(button, layoutParams);
