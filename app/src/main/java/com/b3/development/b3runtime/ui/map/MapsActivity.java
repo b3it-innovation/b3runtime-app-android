@@ -426,7 +426,4 @@ public class MapsActivity extends BaseActivity
         ft.commit();
     }
 
-    public Jukebox getJukebox() {
-        return jukebox;
-    }
 }
