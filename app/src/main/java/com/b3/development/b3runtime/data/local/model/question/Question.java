@@ -18,8 +18,8 @@ public class Question {
     @ColumnInfo(name = "isAnswered")
     public boolean isAnswered;
 
-    @ColumnInfo(name = "category")
-    public String category;
+    @ColumnInfo(name = "categoryKey")
+    public String categoryKey;
 
     @ColumnInfo(name = "correctAnswer")
     public String correctAnswer;

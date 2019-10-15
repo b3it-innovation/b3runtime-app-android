@@ -20,6 +20,9 @@ public interface QuestionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertQuestions(List<Question> questions);
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insertQuestion(Question question);
+
     @Query("SELECT * FROM question")
     LiveData<List<Question>> getAll();
 

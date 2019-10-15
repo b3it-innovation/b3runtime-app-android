@@ -35,7 +35,7 @@ public class MapsRenderer {
     }
 
     // Draw next checkpoint on the map
-    public void showNextCheckpoint(final Checkpoint nextCheckpoint, final MapsViewModel viewModel, final GoogleMap map) {
+    public void drawNextCheckpoint(final Checkpoint nextCheckpoint, final MapsViewModel viewModel, final GoogleMap map) {
         if (nextCheckpoint == null) return;
         // Change color of the completed nextCheckpoint
         if (lastMarker != null) {
@@ -57,7 +57,9 @@ public class MapsRenderer {
             viewModel.isLatestAnsweredCorrect = false;
         } else {
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude), 15f));
-            //adds a geofence on the recieved nextCheckpoint
+            // remove all geofences
+            viewModel.removeGeofence();
+            //adds a geofence on the received nextCheckpoint
             viewModel.addGeofence(nextCheckpoint);
             // draw geofence circle around nextCheckpoint
             drawGeofenceCircleAroundCheckpoint(viewModel, map);
@@ -66,7 +68,7 @@ public class MapsRenderer {
     }
 
     // Draw all checkpoints except for the current checkpoints if possible
-    public void showAllCheckpoints(final List<Checkpoint> allCheckpoints, final MapsViewModel viewModel, final GoogleMap map) {
+    public void drawAllCheckpoints(final List<Checkpoint> allCheckpoints, final MapsViewModel viewModel, final GoogleMap map) {
         if (allCheckpoints == null || allCheckpoints.isEmpty()) return;
         final Checkpoint nextCheckpoint = viewModel.nextCheckpoint.getValue();
         if (nextCheckpoint == null) {
@@ -84,13 +86,20 @@ public class MapsRenderer {
             // draw all checkpoints except for next checkpoint
             for (int i = 0; i < allCheckpoints.size(); i++) {
                 Checkpoint checkpoint = allCheckpoints.get(i);
-                if (nextCheckpoint != null && (!checkpoint.id.equals(viewModel.nextCheckpoint.getValue().id))) {
+                if (!checkpoint.id.equals(viewModel.nextCheckpoint.getValue().id)) {
                     Marker marker = map.addMarker(new MarkerOptions()
                             .position(new LatLng(checkpoint.latitude, checkpoint.longitude))
                             .title(checkpoint.name));
                     if (checkpoint.completed) {
                         setCompletedColorOnMarker(marker);
                     }
+                } else { // draw next checkpoint in case the next checkpoint is already drawn and removed
+                    lastMarker = map.addMarker(new MarkerOptions()
+                            .position(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude))
+                            .title(nextCheckpoint.name)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                    // draw geofence circle around nextCheckpoint
+                    drawGeofenceCircleAroundCheckpoint(viewModel, map);
                 }
             }
         }
@@ -144,5 +153,11 @@ public class MapsRenderer {
             valueAnimator.cancel();
             currentCircle.remove();
         }
+    }
+
+    public void resetMap(GoogleMap map) {
+        lastMarker = null;
+        // removes all makers, polylines, polygons, overlays, etc from map (not geofences)
+        map.clear();
     }
 }

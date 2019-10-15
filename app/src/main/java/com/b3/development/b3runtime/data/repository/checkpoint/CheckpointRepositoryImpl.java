@@ -75,6 +75,11 @@ public class CheckpointRepositoryImpl implements CheckpointRepository {
         AsyncTask.execute(() -> checkpointDao.updateCheckpointsCompleted(false));
     }
 
+    @Override
+    public void removeAllCheckpoints() {
+        AsyncTask.execute(() -> checkpointDao.removeAllCheckpoints());
+    }
+
     /**
      * Contains logic for fetching data from backend
      */
@@ -119,6 +124,7 @@ public class CheckpointRepositoryImpl implements CheckpointRepository {
             convertedCheckpoint.latitude = checkpoint.getLatitude();
             convertedCheckpoint.longitude = checkpoint.getLongitude();
             convertedCheckpoint.order = checkpoint.getOrder();
+            convertedCheckpoint.questionKey = checkpoint.getQuestionKey();
             convertedCheckpoint.completed = false;
             convertedCheckpoint.answeredCorrect = false;
             convertedCheckpoint.skipped = false;

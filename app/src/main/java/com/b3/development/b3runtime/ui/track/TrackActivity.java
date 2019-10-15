@@ -73,6 +73,7 @@ public class TrackActivity extends AppCompatActivity {
             //create new intent to send to next activity
             Intent intent = new Intent(this, MapsActivity.class);
             intent.putExtra("trackKey", bt.getKey());
+            intent.putExtra("callingActivity", TAG);
 
             button.setOnClickListener(v -> {
                 viewModel.setTrackKey(bt.getKey());
