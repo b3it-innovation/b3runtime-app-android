@@ -49,5 +49,6 @@ val b3RuntimeModule = module {
     single { QuestionRepositoryImpl(get(), get()) as QuestionRepository }
     single { CompetitionRepositoryImpl(get()) as CompetitionRepository }
     single { AttendeeRepositoryImpl(get(), get()) as AttendeeRepository }
+    single { ResultRepositoryImpl(get()) as ResultRepository }
     single { GeofenceManagerImpl(androidContext()) as GeofenceManager }
 }
