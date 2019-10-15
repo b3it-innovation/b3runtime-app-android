@@ -31,6 +31,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
+import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.geofence.LocationService;
 import com.b3.development.b3runtime.sound.Jukebox;
@@ -108,7 +109,8 @@ public class MapsActivity extends BaseActivity
 
         //create or connect already existing viewmodel to activity
         viewModel = ViewModelProviders.of(this,
-                new MapsViewModelFactory(get(CheckpointRepository.class), get(GeofenceManager.class), getApplicationContext(), trackKey))
+                new MapsViewModelFactory(get(CheckpointRepository.class), get(ResultRepository.class),
+                        get(GeofenceManager.class), getApplicationContext(), trackKey))
                 .get(MapsViewModel.class);
 
         // if the intent is come from TrackActivity remove all checkpoints to redraw them
@@ -222,7 +224,7 @@ public class MapsActivity extends BaseActivity
             localBroadcastManager.unregisterReceiver(broadcastReceiver);
         }
         //stop notification foreground service
-        if (isMyServiceRunning(LocationService.class)) {
+        if (Util.isMyServiceRunning(LocationService.class, getApplicationContext())) {
             stopService(new Intent(this, LocationService.class));
         }
         if (jukebox != null) {
@@ -322,7 +324,7 @@ public class MapsActivity extends BaseActivity
     //calls QuestionFragment to display a question for the user
     private void showQuestion() {
         if (getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG) == null) {
-            questionFragment = QuestionFragment.newInstance();
+            questionFragment = QuestionFragment.newInstance(viewModel.getQuestionKeys());
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(questionFragment, QuestionFragment.TAG).show(questionFragment).commit();
         } else {
@@ -422,16 +424,6 @@ public class MapsActivity extends BaseActivity
             ft.detach(fragment);
         }
         ft.commit();
-    }
-
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public Jukebox getJukebox() {

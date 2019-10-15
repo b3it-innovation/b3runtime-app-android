@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 
 import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
+import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
 import com.google.firebase.database.DataSnapshot;
 
 import java.util.List;
@@ -15,9 +16,11 @@ public interface BackendInteractor {
 
     void getCheckpoints(CheckpointsCallback checkpointsCallback, String trackKey);
 
-    void getQuestions(QuestionsCallback questionCallback);
+    void getQuestions(QuestionsCallback questionCallback, List<String> keys);
 
     LiveData<DataSnapshot> getCompetitionsDataSnapshot();
+
+    void saveResult(BackendResult result);
 
     interface CheckpointsCallback {
         void onCheckpointsReceived(List<BackendResponseCheckpoint> checkpoints);
@@ -26,7 +29,7 @@ public interface BackendInteractor {
     }
 
     interface QuestionsCallback {
-        void onQuestionsReceived(List<BackendResponseQuestion> questions);
+        void onQuestionsReceived(BackendResponseQuestion question);
 
         void onError();
     }
