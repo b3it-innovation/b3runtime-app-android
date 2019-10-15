@@ -18,6 +18,7 @@ import com.b3.development.b3runtime.base.BaseQuestionFragment;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
+import com.b3.development.b3runtime.sound.Jukebox;
 import com.b3.development.b3runtime.sound.SoundEvent;
 import com.b3.development.b3runtime.ui.map.MapsActivity;
 import com.b3.development.b3runtime.ui.map.MapsViewModel;
@@ -106,9 +107,9 @@ public class ResponseFragment extends BaseQuestionFragment {
         // Play sound effect
         final MapsActivity mapsActivity = (MapsActivity) getActivity();
         if (getArguments().getBoolean(EXTRA_IS_CORRECT)) {
-            mapsActivity.getJukebox().playSoundForGameEvent(SoundEvent.AnswerCorrect);
+            Jukebox.getInstance(getContext()).playSoundForGameEvent(SoundEvent.AnswerCorrect);
         } else {
-            mapsActivity.getJukebox().playSoundForGameEvent(SoundEvent.AnswerWrong);
+            Jukebox.getInstance(getContext()).playSoundForGameEvent(SoundEvent.AnswerWrong);
         }
     }
 
