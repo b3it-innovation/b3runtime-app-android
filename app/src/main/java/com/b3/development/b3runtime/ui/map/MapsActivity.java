@@ -39,6 +39,7 @@ import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
 import com.b3.development.b3runtime.ui.question.ResultFragment;
+import com.b3.development.b3runtime.ui.track.TrackActivity;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
 import com.b3.development.b3runtime.utils.Util;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -86,6 +87,7 @@ public class MapsActivity extends BaseActivity
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         // get trackKey from intent
@@ -110,6 +112,15 @@ public class MapsActivity extends BaseActivity
                 new MapsViewModelFactory(get(CheckpointRepository.class), get(ResultRepository.class),
                         get(GeofenceManager.class), getApplicationContext(), trackKey))
                 .get(MapsViewModel.class);
+
+        // if the intent is come from TrackActivity remove all checkpoints to redraw them
+        final String callingActivityName = intent.getStringExtra("callingActivity");
+        if (callingActivityName != null && callingActivityName.equals(TrackActivity.TAG)) {
+            viewModel.removeAllCheckpoints();
+            viewModel.init(trackKey);
+            // reset extra to avoid to trigger reset on screen rotation
+            intent.putExtra("callingActivity", "");
+        }
 
         //observe for errors and inform user if an error occurs
         viewModel.errors.observe(this, error -> {
@@ -278,12 +289,16 @@ public class MapsActivity extends BaseActivity
         viewModel.allCheckpoints.observe(this,
                 checkpoints -> {
                     if (!checkpoints.isEmpty() && !checkpointsDrawn) {
+                        mapsRenderer.resetMap(map);
+                        // gets first and last final checkpoint
                         firstCheckpointID = checkpoints.get(0).id;
                         finalCheckpointID = checkpoints.get(checkpoints.size() - 1).id;
+                        Log.d(TAG, "First Checkpoint ID: " + firstCheckpointID);
                         Log.d(TAG, "Final Checkpoint ID: " + finalCheckpointID);
-                        mapsRenderer.showAllCheckpoints(checkpoints, viewModel, map);
+                        // draw all checkpoints on the map
+                        mapsRenderer.drawAllCheckpoints(checkpoints, viewModel, map);
                         //set checkpointsDrawn to true to prevent redrawing of checkpoints when data is changed
-                        checkpointsDrawn = true;
+                        //checkpointsDrawn = true;
                     }
                 });
 
@@ -300,9 +315,9 @@ public class MapsActivity extends BaseActivity
             return;
         } else {
             map.setMyLocationEnabled(true);
-            //observes for change in the nextCheckpoint data and calls showNextCheckpoint(),
+            //observes for change in the nextCheckpoint data and calls drawNextCheckpoint(),
             // needs to be here to get permission before adding geofence
-            viewModel.nextCheckpoint.observe(this, checkpoint -> mapsRenderer.showNextCheckpoint(checkpoint, viewModel, map));
+            viewModel.nextCheckpoint.observe(this, checkpoint -> mapsRenderer.drawNextCheckpoint(checkpoint, viewModel, map));
         }
     }
 

@@ -30,16 +30,18 @@ public class MapsViewModel extends BaseViewModel {
     public boolean isResponseOnScreen = false;
     private Context context;
 
-    public MapsViewModel(CheckpointRepository checkpointRepository, ResultRepository resultRepository,
-                         GeofenceManager geofenceManager, Context context, String trackKey) {
-        this.checkpointRepository = checkpointRepository;
-        this.resultRepository = resultRepository;
-        this.checkpointRepository.fetch(trackKey);
-        nextCheckpoint = this.checkpointRepository.getCheckpoint();
-        allCheckpoints = this.checkpointRepository.getAllCheckpoints();
-        errors = this.checkpointRepository.getError();
+    public MapsViewModel(CheckpointRepository repository, GeofenceManager geofenceManager, Context context, String trackKey) {
+        this.checkpointRepository = repository;
+        init(trackKey);
         this.geofenceManager = geofenceManager;
         this.context = context;
+    }
+
+    public void init(String trackKey) {
+        checkpointRepository.fetch(trackKey);
+        nextCheckpoint = checkpointRepository.getCheckpoint();
+        allCheckpoints = checkpointRepository.getAllCheckpoints();
+        errors = checkpointRepository.getError();
     }
 
     @Override
@@ -125,6 +127,10 @@ public class MapsViewModel extends BaseViewModel {
         checkpointRepository.resetCheckpointsCompleted();
     }
 
+    public void removeAllCheckpoints() {
+        checkpointRepository.removeAllCheckpoints();
+    }
+  
     private Long getTotalTime() {
         Long endTime = allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime;
         Long startTime = allCheckpoints.getValue().get(0).completedTime;
@@ -133,6 +139,7 @@ public class MapsViewModel extends BaseViewModel {
 
     public void saveFinalResult() {
         resultRepository.saveResult(allCheckpoints.getValue(), getTotalTime());
+    }
 
     public List<String> getQuestionKeys(){
         List<String> questionKeys = new ArrayList<>();
