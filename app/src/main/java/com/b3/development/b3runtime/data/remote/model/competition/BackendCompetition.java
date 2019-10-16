@@ -1,13 +1,16 @@
 package com.b3.development.b3runtime.data.remote.model.competition;
 
+import android.os.Parcel;
+
 import com.b3.development.b3runtime.data.remote.model.track.BackendTrack;
+import com.b3.development.b3runtime.ui.competition.ListItem;
 
 import java.util.ArrayList;
 
 /**
  * A model of the response from <code>firebase database</code>
  */
-public class BackendCompetition {
+public class BackendCompetition implements ListItem {
 
     private String key;
     private String name;
@@ -53,5 +56,10 @@ public class BackendCompetition {
 
     public void setTracks(ArrayList<BackendTrack> tracks) {
         this.tracks = tracks;
+    }
+
+    @Override
+    public int getType() {
+        return ListItem.TYPE_COMPETITION;
     }
 }
