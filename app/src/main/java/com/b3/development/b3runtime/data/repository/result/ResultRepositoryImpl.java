@@ -1,5 +1,6 @@
 package com.b3.development.b3runtime.data.repository.result;
 
+import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 import com.b3.development.b3runtime.data.remote.BackendInteractor;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
@@ -24,8 +25,8 @@ public class ResultRepositoryImpl implements ResultRepository {
     }
 
     @Override
-    public void saveResult(List<Checkpoint> checkpoints, Long totalTime) {
-        BackendResult backendResult = convert(checkpoints, totalTime);
+    public void saveResult(Attendee attendee, List<Checkpoint> checkpoints, Long totalTime) {
+        BackendResult backendResult = convert(attendee, checkpoints, totalTime);
         backend.saveResult(backendResult);
     }
 
@@ -35,12 +36,11 @@ public class ResultRepositoryImpl implements ResultRepository {
      * @param checkpoints a <code>List<BackendResponseCheckpoint></code>
      * @return convertedCheckpoints a <code>List<Checkpoint></code>
      */
-    private BackendResult convert(List<Checkpoint> checkpoints, Long totalTime) {
+    private BackendResult convert(Attendee attendee, List<Checkpoint> checkpoints, Long totalTime) {
         BackendResult backendResult = new BackendResult();
+        backendResult.setAttendeeKey(attendee.id);
         backendResult.setTotalTime(totalTime);
         backendResult.setResults(checkpoints);
-        // mock attendee key todo: set real attendee key
-        backendResult.setAttendeeKey("AttendeeKey");
         return backendResult;
     }
 }

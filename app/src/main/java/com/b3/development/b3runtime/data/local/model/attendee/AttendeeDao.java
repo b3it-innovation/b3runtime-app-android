@@ -1,5 +1,6 @@
 package com.b3.development.b3runtime.data.local.model.attendee;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -23,5 +24,8 @@ public interface AttendeeDao {
 
     @Query("SELECT * FROM Attendee WHERE userAccountKey = :userAccountKey")
     Attendee getAttendeeByUserAccountId(String userAccountKey);
+
+    @Query("SELECT * FROM Attendee WHERE id = :id")
+    LiveData<Attendee> getAttendeeById(String id);
 
 }

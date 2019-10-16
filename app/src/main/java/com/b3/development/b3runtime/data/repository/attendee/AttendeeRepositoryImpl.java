@@ -38,9 +38,16 @@ public class AttendeeRepositoryImpl implements AttendeeRepository {
     }
 
     @Override
-    public Attendee getAttendee(String userAccountKey) {
-        return attendeeDao.getAttendeeByUserAccountId("fakeId");
+    public Attendee getAttendeeByUserAccountKey(String userAccountKey) {
+        return attendeeDao.getAttendeeByUserAccountId(userAccountKey);
     }
+
+    @Override
+    public LiveData<Attendee> getAttendeeById(String id) {
+        return attendeeDao.getAttendeeById(id);
+    }
+
+    ;
 
     @Override
     public void insertAttendee(Attendee attendee) {
@@ -58,7 +65,7 @@ public class AttendeeRepositoryImpl implements AttendeeRepository {
         return backendInteractor.saveAttendee(convert(attendee));
     }
 
-    // converts Attendee to BackendAttendee
+    // converts Attendee to BackendAttendee except for id
     public BackendAttendee convert(Attendee attendee) {
         BackendAttendee backendAttendee = new BackendAttendee();
         backendAttendee.setName(attendee.name);
