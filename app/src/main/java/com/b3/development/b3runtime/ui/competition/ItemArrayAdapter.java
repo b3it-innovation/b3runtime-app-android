@@ -8,7 +8,6 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.b3.development.b3runtime.R;
-import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 
 import java.util.ArrayList;
 
@@ -44,21 +43,17 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
     public void onBindViewHolder(final ViewHolder holder, final int listPosition) {
         TextView item = holder.item;
         item.setText(itemList.get(listPosition).getName());
-        holder.item.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.onClick(view);
-            }
-        });
+        holder.item.setOnClickListener(view -> listener.onClick(view));
     }
 
     public void setOnItemClickListener(View.OnClickListener listener) {
         this.listener = listener;
     }
 
-    // Static inner class to initialize the views of rows
+    // static inner class to initialize the views of rows
     static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView item;
+
         public ViewHolder(View itemView) {
             super(itemView);
             item = (TextView) itemView.findViewById(R.id.row_item);

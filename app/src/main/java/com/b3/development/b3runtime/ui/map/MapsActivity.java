@@ -36,10 +36,10 @@ import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.geofence.LocationService;
 import com.b3.development.b3runtime.sound.Jukebox;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
+import com.b3.development.b3runtime.ui.competition.CompetitionActivity;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
 import com.b3.development.b3runtime.ui.question.ResultFragment;
-import com.b3.development.b3runtime.ui.track.TrackActivity;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
 import com.b3.development.b3runtime.utils.Util;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -115,7 +115,7 @@ public class MapsActivity extends BaseActivity
 
         // if the intent is come from TrackActivity remove all checkpoints to redraw them
         final String callingActivityName = intent.getStringExtra("callingActivity");
-        if (callingActivityName != null && callingActivityName.equals(TrackActivity.TAG)) {
+        if (callingActivityName != null && callingActivityName.equals(CompetitionActivity.TAG)) {
             viewModel.removeAllCheckpoints();
             viewModel.init(trackKey);
             // reset extra to avoid to trigger reset on screen rotation

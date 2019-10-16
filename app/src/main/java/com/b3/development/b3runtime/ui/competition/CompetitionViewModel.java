@@ -38,5 +38,4 @@ public class CompetitionViewModel extends BaseViewModel {
     public void showLoading(boolean show) {
         showLoading.setValue(show);
     }
-
 }
