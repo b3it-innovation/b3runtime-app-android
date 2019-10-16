@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
+import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
@@ -18,14 +20,16 @@ public class MapsViewModelFactory implements ViewModelProvider.Factory {
 
     private CheckpointRepository checkpointRepository;
     private ResultRepository resultRepository;
+    private AttendeeRepository attendeeRepository;
     private GeofenceManager geofenceManager;
     private Context context;
     private String trackKey;
 
     public MapsViewModelFactory(CheckpointRepository checkpointRepository, ResultRepository resultRepository,
-                                GeofenceManager geofenceManager, Context context, String trackKey) {
+                                AttendeeRepository attendeeRepository, GeofenceManager geofenceManager, Context context, String trackKey) {
         this.checkpointRepository = checkpointRepository;
         this.resultRepository = resultRepository;
+        this.attendeeRepository = attendeeRepository;
         this.geofenceManager = geofenceManager;
         this.context = context;
         this.trackKey = trackKey;
@@ -34,6 +38,7 @@ public class MapsViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new MapsViewModel(checkpointRepository, resultRepository, geofenceManager, context, trackKey);
+        return (T) new MapsViewModel(checkpointRepository, resultRepository, attendeeRepository,
+                geofenceManager, context, trackKey);
     }
 }

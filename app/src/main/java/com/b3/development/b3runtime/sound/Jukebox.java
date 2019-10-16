@@ -50,7 +50,7 @@ public class Jukebox {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
         soundEnabled = prefs.getBoolean(SOUNDS_PREF_KEY, true);
-        musicEnabled = prefs.getBoolean(MUSIC_PREF_KEY, true);
+        musicEnabled = prefs.getBoolean(MUSIC_PREF_KEY, false);
         loadIfNeeded();
     }
 
@@ -147,6 +147,7 @@ public class Jukebox {
         if (bgPlayer != null) {
             bgPlayer.stop();
             bgPlayer.release();
+            bgPlayer = null;
         }
     }
 
@@ -201,7 +202,7 @@ public class Jukebox {
     public void destroy() {
         unloadSounds();
         unloadMusic();
-        bgPlayer = null;
+        jukebox = null;
     }
 }
 

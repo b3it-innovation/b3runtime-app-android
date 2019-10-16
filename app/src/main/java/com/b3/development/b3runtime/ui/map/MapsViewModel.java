@@ -6,7 +6,9 @@ import androidx.lifecycle.LiveData;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseViewModel;
+import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
+import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
@@ -23,17 +25,20 @@ public class MapsViewModel extends BaseViewModel {
 
     LiveData<Checkpoint> nextCheckpoint;
     public LiveData<List<Checkpoint>> allCheckpoints;
+    public LiveData<Attendee> currentAttendee;
     private CheckpointRepository checkpointRepository;
     private ResultRepository resultRepository;
+    private AttendeeRepository attendeeRepository;
     private GeofenceManager geofenceManager;
     public boolean isLatestAnsweredCorrect = false;
     public boolean isResponseOnScreen = false;
     private Context context;
 
     public MapsViewModel(CheckpointRepository checkpointRepository, ResultRepository resultRepository,
-                         GeofenceManager geofenceManager, Context context, String trackKey) {
+                         AttendeeRepository attendeeRepository, GeofenceManager geofenceManager, Context context, String trackKey) {
         this.checkpointRepository = checkpointRepository;
         this.resultRepository = resultRepository;
+        this.attendeeRepository = attendeeRepository;
         init(trackKey);
         this.geofenceManager = geofenceManager;
         this.context = context;
@@ -44,6 +49,10 @@ public class MapsViewModel extends BaseViewModel {
         nextCheckpoint = checkpointRepository.getCheckpoint();
         allCheckpoints = checkpointRepository.getAllCheckpoints();
         errors = checkpointRepository.getError();
+    }
+
+    public void initAttendee(String attendeeKey) {
+        currentAttendee = attendeeRepository.getAttendeeById(attendeeKey);
     }
 
     @Override
@@ -132,7 +141,7 @@ public class MapsViewModel extends BaseViewModel {
     public void removeAllCheckpoints() {
         checkpointRepository.removeAllCheckpoints();
     }
-  
+
     private Long getTotalTime() {
         Long endTime = allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime;
         Long startTime = allCheckpoints.getValue().get(0).completedTime;
@@ -140,13 +149,13 @@ public class MapsViewModel extends BaseViewModel {
     }
 
     public void saveFinalResult() {
-        resultRepository.saveResult(allCheckpoints.getValue(), getTotalTime());
+        resultRepository.saveResult(currentAttendee.getValue(), allCheckpoints.getValue(), getTotalTime());
     }
 
-    public List<String> getQuestionKeys(){
+    public List<String> getQuestionKeys() {
         List<String> questionKeys = new ArrayList<>();
-        for(Checkpoint c : allCheckpoints.getValue()){
-            if(c.questionKey != null && !c.questionKey.equals("")){
+        for (Checkpoint c : allCheckpoints.getValue()) {
+            if (c.questionKey != null && !c.questionKey.equals("")) {
                 questionKeys.add(c.questionKey);
             }
         }

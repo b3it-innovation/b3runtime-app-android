@@ -1,7 +1,6 @@
 package com.b3.development.b3runtime.ui.map;
 
 import android.Manifest;
-import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,6 +29,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
+import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
@@ -77,6 +77,7 @@ public class MapsActivity extends BaseActivity
     private QuestionFragment questionFragment;
     private boolean checkpointsDrawn = false;
     private String trackKey;
+    private String attendeeKey;
     private SharedPreferences prefs;
 
 
@@ -93,6 +94,7 @@ public class MapsActivity extends BaseActivity
         // get trackKey from intent
         Intent intent = getIntent();
         trackKey = intent.getStringExtra("trackKey");
+        attendeeKey = intent.getStringExtra("attendeeKey");
 
         //check if questionfragment is created and retained, if it is then detach from screen
         if (savedInstanceState != null) {
@@ -102,16 +104,24 @@ public class MapsActivity extends BaseActivity
                 getSupportFragmentManager().beginTransaction().detach(questionFragment).commit();
             }
         }
-        // when trackKey is null, get it from shared preference
+        // when trackKey and attendeeKey is null, get it from shared preference
         if (trackKey == null) {
             trackKey = prefs.getString("trackKey", "");
+        }
+        if (attendeeKey == null) {
+            attendeeKey = prefs.getString("attendeeKey", "");
         }
 
         //create or connect already existing viewmodel to activity
         viewModel = ViewModelProviders.of(this,
                 new MapsViewModelFactory(get(CheckpointRepository.class), get(ResultRepository.class),
-                        get(GeofenceManager.class), getApplicationContext(), trackKey))
+                        get(AttendeeRepository.class), get(GeofenceManager.class), getApplicationContext(), trackKey))
                 .get(MapsViewModel.class);
+
+        // initializes attendee data in ViewModel
+        viewModel.initAttendee(attendeeKey);
+        viewModel.currentAttendee.observe(this, attendee -> {
+        });
 
         // if the intent is come from TrackActivity remove all checkpoints to redraw them
         final String callingActivityName = intent.getStringExtra("callingActivity");
@@ -213,8 +223,8 @@ public class MapsActivity extends BaseActivity
         // save trackKey to able to open activity via notification
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("trackKey", trackKey);
+        editor.putString("attendeeKey", attendeeKey);
         editor.apply();
-
     }
 
     @Override
@@ -426,7 +436,4 @@ public class MapsActivity extends BaseActivity
         ft.commit();
     }
 
-    public Jukebox getJukebox() {
-        return jukebox;
-    }
 }

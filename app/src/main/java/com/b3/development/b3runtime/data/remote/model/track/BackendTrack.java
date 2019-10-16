@@ -1,7 +1,5 @@
 package com.b3.development.b3runtime.data.remote.model.track;
 
-import android.os.Parcel;
-
 import com.b3.development.b3runtime.data.remote.model.category.BackendCategory;
 import com.b3.development.b3runtime.ui.competition.ListItem;
 

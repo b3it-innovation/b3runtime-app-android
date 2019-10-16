@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.b3.development.b3runtime.R;
+import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
+import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
 import com.b3.development.b3runtime.ui.map.MapsActivity;
 
@@ -40,7 +42,7 @@ public class CompetitionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_competition);
         //create or connect viewmodel to activity
         viewModel = ViewModelProviders.of(this,
-                new CompetitionViewModelFactory(get(CompetitionRepository.class)))
+                new CompetitionViewModelFactory(get(CompetitionRepository.class), get(AttendeeRepository.class)))
                 .get(CompetitionViewModel.class);
 
 
@@ -89,6 +91,7 @@ public class CompetitionActivity extends AppCompatActivity {
         for (BackendCompetition bc : viewModel.competitions.getValue()) {
             if (bc.getName().equalsIgnoreCase(competitionName)) {
                 compName = bc.getName();
+                viewModel.setCompetitionKey(bc.getKey());
                 itemList.clear();
                 itemList.addAll(bc.getTracks());
                 if (itemArrayAdapter != null) {
@@ -105,9 +108,15 @@ public class CompetitionActivity extends AppCompatActivity {
             if (listItem.getName().equalsIgnoreCase(trackName)) {
                 intent.putExtra("trackKey", listItem.getKey());
                 intent.putExtra("callingActivity", TAG);
+                viewModel.setTrackKey(listItem.getKey());
+                Attendee attendee = viewModel.createAttendee();
+                String attendeeKey = viewModel.saveBackendAttendee(attendee);
+                attendee.id = attendeeKey;
+                viewModel.insertAttendee(attendee);
+                intent.putExtra("attendeeKey", attendeeKey);
+                startActivity(intent);
             }
         }
-        startActivity(intent);
     }
 
     //show or hide loading graphic
