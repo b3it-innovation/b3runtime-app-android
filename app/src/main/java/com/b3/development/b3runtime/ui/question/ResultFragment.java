@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseQuestionFragment;
+import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
@@ -66,7 +67,7 @@ public class ResultFragment extends BaseQuestionFragment {
         //create or connect viewmodel to fragment
         viewModel = ViewModelProviders.of(getActivity(),
                 new MapsViewModelFactory(get(CheckpointRepository.class), get(ResultRepository.class),
-                        get(GeofenceManager.class), getActivity().getApplicationContext(), ""))
+                        get(AttendeeRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext(), ""))
                 .get(MapsViewModel.class);
         //observe allCheckpoints and set response with the result
         viewModel.allCheckpoints.observe(this, pins -> response.setText(viewModel.getResult()));

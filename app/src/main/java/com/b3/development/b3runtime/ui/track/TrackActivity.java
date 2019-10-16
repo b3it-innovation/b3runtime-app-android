@@ -78,9 +78,10 @@ public class TrackActivity extends AppCompatActivity {
             button.setOnClickListener(v -> {
                 viewModel.setTrackKey(bt.getKey());
                 Attendee attendee = viewModel.createAttendee();
-                String key = viewModel.saveBackendAttendee(attendee);
-                attendee.id = key;
+                String attendeeKey = viewModel.saveBackendAttendee(attendee);
+                attendee.id = attendeeKey;
                 viewModel.insertAttendee(attendee);
+                intent.putExtra("attendeeKey", attendeeKey);
                 startActivity(intent);
             });
             layout.addView(button, layoutParams);

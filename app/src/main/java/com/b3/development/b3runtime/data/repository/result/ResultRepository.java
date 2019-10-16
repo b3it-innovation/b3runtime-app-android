@@ -1,5 +1,6 @@
 package com.b3.development.b3runtime.data.repository.result;
 
+import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 
 import java.util.List;
@@ -9,6 +10,6 @@ import java.util.List;
  */
 public interface ResultRepository {
 
-    void saveResult(List<Checkpoint> checkpoints, Long totalTime);
+    void saveResult(Attendee attendee, List<Checkpoint> checkpoints, Long totalTime);
 
 }
