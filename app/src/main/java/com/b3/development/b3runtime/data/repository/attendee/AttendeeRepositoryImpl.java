@@ -47,8 +47,6 @@ public class AttendeeRepositoryImpl implements AttendeeRepository {
         return attendeeDao.getAttendeeById(id);
     }
 
-    ;
-
     @Override
     public void insertAttendee(Attendee attendee) {
         AsyncTask.execute(() -> attendeeDao.insertAttendee(attendee));

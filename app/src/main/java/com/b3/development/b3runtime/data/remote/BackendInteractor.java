@@ -22,8 +22,8 @@ public interface BackendInteractor {
     LiveData<DataSnapshot> getCompetitionsDataSnapshot();
 
     String saveAttendee(BackendAttendee attendee);
-  
-    void saveResult(BackendResult result);
+
+    String saveResult(BackendResult result, String key);
 
     interface CheckpointsCallback {
         void onCheckpointsReceived(List<BackendResponseCheckpoint> checkpoints);

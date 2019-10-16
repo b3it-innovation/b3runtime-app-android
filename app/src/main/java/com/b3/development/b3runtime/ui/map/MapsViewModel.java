@@ -32,6 +32,7 @@ public class MapsViewModel extends BaseViewModel {
     private GeofenceManager geofenceManager;
     public boolean isLatestAnsweredCorrect = false;
     public boolean isResponseOnScreen = false;
+    public String resultKey;
     private Context context;
 
     public MapsViewModel(CheckpointRepository checkpointRepository, ResultRepository resultRepository,
@@ -70,9 +71,10 @@ public class MapsViewModel extends BaseViewModel {
         if (allCheckpoints.getValue().get(0).completedTime != null) {
             if (allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime == null) {
                 allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime = System.currentTimeMillis();
+                // updates completedTime in nextCheckpoint to prevent to update it in updateCheckpointCompleted()
+                nextCheckpoint.getValue().completedTime = allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime;
             }
             Long totalTime = getTotalTime();
-
             Long minutes = (totalTime / 1000) / 60;
             Long seconds = (totalTime / 1000) % 60;
 
@@ -114,7 +116,9 @@ public class MapsViewModel extends BaseViewModel {
     public void updateCheckpointCompleted() {
         Checkpoint checkpoint = nextCheckpoint.getValue();
         checkpoint.completed = true;
-        checkpoint.completedTime = System.currentTimeMillis();
+        if (checkpoint.completedTime == null) {
+            checkpoint.completedTime = System.currentTimeMillis();
+        }
         checkpointRepository.updateCheckpoint(checkpoint);
     }
 
@@ -145,11 +149,18 @@ public class MapsViewModel extends BaseViewModel {
     private Long getTotalTime() {
         Long endTime = allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime;
         Long startTime = allCheckpoints.getValue().get(0).completedTime;
-        return endTime - startTime;
+        if (endTime != null && startTime != null) {
+            return endTime - startTime;
+        } else {
+            return null;
+        }
     }
 
-    public void saveFinalResult() {
-        resultRepository.saveResult(currentAttendee.getValue(), allCheckpoints.getValue(), getTotalTime());
+    public void saveResult() {
+        if (currentAttendee.getValue() != null && allCheckpoints.getValue() != null &&
+                !allCheckpoints.getValue().isEmpty()) {
+            resultKey = resultRepository.saveResult(resultKey, currentAttendee.getValue(), allCheckpoints.getValue(), getTotalTime());
+        }
     }
 
     public List<String> getQuestionKeys() {
