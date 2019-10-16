@@ -7,5 +7,13 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:textSize="34dp"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:background="@drawable/btn_selector"
+        android:textColor="@color/colorWhite"
+        android:elevation="10dp"
+        android:stateListAnimator="@null"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"/>
 </LinearLayout>
