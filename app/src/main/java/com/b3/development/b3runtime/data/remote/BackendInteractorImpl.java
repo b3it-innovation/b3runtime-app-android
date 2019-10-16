@@ -49,7 +49,7 @@ public class BackendInteractorImpl implements BackendInteractor {
     public BackendInteractorImpl(DatabaseReference firebaseDbQuestions,
                                  DatabaseReference firebaseDbCompetitions,
                                  DatabaseReference firebaseDbTracksCheckpoints,
-                                 DatabaseReference firebaseDbAttendees, 
+                                 DatabaseReference firebaseDbAttendees,
                                  DatabaseReference firebaseDbResults) {
         this.firebaseDbQuestions = firebaseDbQuestions;
         this.firebaseDbCompetitions = firebaseDbCompetitions;
@@ -81,20 +81,21 @@ public class BackendInteractorImpl implements BackendInteractor {
         });
         return key;
     }
-  
+
     public void saveResult(BackendResult result) {
-        firebaseDbResults.push().setValue(result).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "succeeded to save result.");
-            }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "failed to save result. ", e);
-            }
-        });
+        firebaseDbResults.push().setValue(result)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "succeeded to save result.");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "failed to save result. ", e);
+                    }
+                });
     }
 
     /**

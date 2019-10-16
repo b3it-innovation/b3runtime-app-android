@@ -22,7 +22,7 @@ public interface BackendInteractor {
     LiveData<DataSnapshot> getCompetitionsDataSnapshot();
 
     String saveAttendee(BackendAttendee attendee);
-  
+
     void saveResult(BackendResult result);
 
     interface CheckpointsCallback {
