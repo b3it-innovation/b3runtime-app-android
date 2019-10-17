@@ -52,9 +52,9 @@ public class MapsRenderer {
 
         if (viewModel.isResponseOnScreen) {
             return;
-        } else if (viewModel.isLatestAnsweredCorrect) {
-            viewModel.skipCheckpoint();
-            viewModel.isLatestAnsweredCorrect = false;
+//        } else if (viewModel.isLatestAnsweredCorrect) {
+//            viewModel.skipCheckpoint();
+//            viewModel.isLatestAnsweredCorrect = false;
         } else {
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude), 15f));
             // remove all geofences

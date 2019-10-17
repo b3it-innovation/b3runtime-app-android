@@ -13,16 +13,16 @@
     <string name="somethingWentWrong">Something went wrong... Please try again</string>
     <string name="question">QUESTION</string>
     <string name="confirm">Confirm</string>
-    <string name="correctAnswer">Your answer is correct! Continue on your Quest</string>
+    <string name="correctAnswer">Your answer is correct! Continue on your Quest.</string>
     <string name="continueButtonText">Continue</string>
-    <string name="wrongAnswer">Wisdom comes with experience. Take an extra route to clear your Мind.</string>
+    <string name="wrongAnswer">Wisdom comes with experience. Experience comes with failure.</string>
     <string name="intent_failed">settings intent failed</string>
     <string name="chooseCompetition">Choose competition</string>
     <string name="chooseTrack">Choose track</string>
     <string name="channel_name">b3_runtime</string>
     <string name="channel_description">channel_description</string>
     <string name="checkpointNotificationTitle">Checkpoint Notification</string>
-    <string name="checkpointNotificationText">You are in checkpoint now. Click here to opne the app!</string>
+    <string name="checkpointNotificationText">You are in the checkpoint now.</string>
     <string name="resultText">You answered %d out of %d checkpoints correctly.\nYour total time was %d minutes and %d seconds.</string>
 
     <!-- string properties for application settings  -->
