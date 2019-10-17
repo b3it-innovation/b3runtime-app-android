@@ -13,7 +13,7 @@ public class BackendCompetition implements ListItem {
     private String key;
     private String name;
     private Long date;
-    private boolean active;
+    private Boolean active;
     private ArrayList<BackendTrack> tracks;
 
     public String getKey() {
@@ -40,11 +40,11 @@ public class BackendCompetition implements ListItem {
         this.date = date;
     }
 
-    public boolean isActive() {
+    public Boolean isActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 
