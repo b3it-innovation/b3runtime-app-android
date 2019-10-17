@@ -32,6 +32,7 @@ public class CompetitionActivity extends AppCompatActivity {
     private ItemArrayAdapter itemArrayAdapter;
     private ArrayList<ListItem> itemList = new ArrayList<>();
     private String compName;
+    private TextView headline;
 
     private CompetitionViewModel viewModel;
     public boolean firstTimeFetched = true;
@@ -99,6 +100,8 @@ public class CompetitionActivity extends AppCompatActivity {
                 }
             }
         }
+        headline = findViewById(R.id.textChooseCompetition);
+        headline.setText("Choose track");
     }
 
     //start chosen track

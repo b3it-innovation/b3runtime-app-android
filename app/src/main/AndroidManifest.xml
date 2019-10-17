@@ -49,8 +49,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.track.TrackActivity"></activity>
-
         <receiver
             android:name=".geofence.GeofenceBroadcastReceiver"
             android:enabled="true"
