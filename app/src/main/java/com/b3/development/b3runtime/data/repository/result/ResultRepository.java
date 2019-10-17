@@ -10,6 +10,6 @@ import java.util.List;
  */
 public interface ResultRepository {
 
-    void saveResult(Attendee attendee, List<Checkpoint> checkpoints, Long totalTime);
+    String saveResult(String key, Attendee attendee, List<Checkpoint> checkpoints, Long totalTime);
 
 }

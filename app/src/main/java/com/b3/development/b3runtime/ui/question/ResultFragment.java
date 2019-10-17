@@ -91,7 +91,7 @@ public class ResultFragment extends BaseQuestionFragment {
 
         confirm.setOnClickListener(v -> {
             viewModel.updateCheckpointCompleted();
-            viewModel.saveFinalResult();
+            viewModel.saveResult();
             dismiss();
         });
     }

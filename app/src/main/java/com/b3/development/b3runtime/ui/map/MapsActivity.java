@@ -131,6 +131,13 @@ public class MapsActivity extends BaseActivity
             // reset extra to avoid to trigger reset on screen rotation
             intent.putExtra("callingActivity", "");
         }
+        // if onCreate() is triggered by other cases
+        else {
+            // sets resultKey in viewModel
+            if (viewModel.resultKey == null) {
+                viewModel.resultKey = prefs.getString("resultKey", "");
+            }
+        }
 
         //observe for errors and inform user if an error occurs
         viewModel.errors.observe(this, error -> {
@@ -220,10 +227,11 @@ public class MapsActivity extends BaseActivity
         Log.d(TAG, "onPause");
         super.onPause();
 
-        // save trackKey to able to open activity via notification
+        // save trackKey and attendeeKey to able to open activity via notification
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("trackKey", trackKey);
         editor.putString("attendeeKey", attendeeKey);
+        editor.putString("resultKey", viewModel.resultKey);
         editor.apply();
     }
 
@@ -311,6 +319,11 @@ public class MapsActivity extends BaseActivity
                         //checkpointsDrawn = true;
                     }
                 });
+
+        // save result when allCheckpoints change
+        viewModel.allCheckpoints.observe(this, checkpoints -> {
+            viewModel.saveResult();
+        });
 
         //sets mocklocation of device when clicking on map todo: remove before release
         MockLocationUtil.setMockLocation(getApplicationContext(), map);

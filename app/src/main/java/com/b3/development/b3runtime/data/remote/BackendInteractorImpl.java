@@ -82,8 +82,11 @@ public class BackendInteractorImpl implements BackendInteractor {
         return key;
     }
 
-    public void saveResult(BackendResult result) {
-        firebaseDbResults.push().setValue(result)
+    public String saveResult(BackendResult result, String key) {
+        if (key == null) {
+            key = firebaseDbResults.push().getKey();
+        }
+        firebaseDbResults.child(key).setValue(result)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -96,6 +99,7 @@ public class BackendInteractorImpl implements BackendInteractor {
                         Log.d(TAG, "failed to save result. ", e);
                     }
                 });
+        return key;
     }
 
     /**

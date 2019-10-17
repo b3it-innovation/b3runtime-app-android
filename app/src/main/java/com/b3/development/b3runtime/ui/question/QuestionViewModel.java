@@ -23,11 +23,7 @@ public class QuestionViewModel extends BaseViewModel {
 
     public QuestionViewModel(QuestionRepository questionRepository) {
         this.repository = questionRepository;
-//        repository.fetch();
         showLoading.postValue(false);
-//        quest = repository.getNextQuestion();
-//        question.postValue(quest.getValue());
-//        errors = repository.getError();
     }
 
     public void init(List<String> questionKeys) {

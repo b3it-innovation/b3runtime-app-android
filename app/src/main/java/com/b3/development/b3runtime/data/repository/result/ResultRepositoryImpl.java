@@ -25,9 +25,9 @@ public class ResultRepositoryImpl implements ResultRepository {
     }
 
     @Override
-    public void saveResult(Attendee attendee, List<Checkpoint> checkpoints, Long totalTime) {
+    public String saveResult(String key, Attendee attendee, List<Checkpoint> checkpoints, Long totalTime) {
         BackendResult backendResult = convert(attendee, checkpoints, totalTime);
-        backend.saveResult(backendResult);
+        return backend.saveResult(backendResult, key);
     }
 
     /**
