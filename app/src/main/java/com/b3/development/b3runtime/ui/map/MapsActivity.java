@@ -75,7 +75,6 @@ public class MapsActivity extends BaseActivity
     private String firstCheckpointID;
     private String finalCheckpointID;
     private QuestionFragment questionFragment;
-    private boolean checkpointsDrawn = false;
     private boolean geofenceIntentHandled = true;
     private String checkpointID;
     private String trackKey;
@@ -227,9 +226,9 @@ public class MapsActivity extends BaseActivity
 
     private void setSoundModeTextInMenuItem(MenuItem menuItem) {
         if (jukebox.soundEnabled) {
-            menuItem.setTitle("Sound off");
+            menuItem.setTitle(getResources().getString(R.string.soundOffText));
         } else {
-            menuItem.setTitle("Sound on");
+            menuItem.setTitle(getResources().getString(R.string.soundOnText));
         }
     }
 
@@ -238,7 +237,7 @@ public class MapsActivity extends BaseActivity
         Log.d(TAG, "onPause");
         super.onPause();
 
-        // save trackKey and attendeeKey to able to open activity via notification
+        // save trackKey, attendeeKey and resultKey to able to open activity via notification
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("trackKey", trackKey);
         editor.putString("attendeeKey", attendeeKey);
@@ -324,7 +323,7 @@ public class MapsActivity extends BaseActivity
         // Get all checkpoints and draw / save ID of the last checkpoint
         viewModel.allCheckpoints.observe(this,
                 checkpoints -> {
-                    if (!checkpoints.isEmpty() && !checkpointsDrawn) {
+                    if (!checkpoints.isEmpty()) {
                         mapsRenderer.resetMap(map);
                         // gets first and last final checkpoint
                         firstCheckpointID = checkpoints.get(0).id;
@@ -333,8 +332,6 @@ public class MapsActivity extends BaseActivity
                         Log.d(TAG, "Final Checkpoint ID: " + finalCheckpointID);
                         // draw all checkpoints on the map
                         mapsRenderer.drawAllCheckpoints(checkpoints, viewModel, map);
-                        //set checkpointsDrawn to true to prevent redrawing of checkpoints when data is changed
-                        //checkpointsDrawn = true;
                     }
                 });
 

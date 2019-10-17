@@ -24,6 +24,8 @@
     <string name="checkpointNotificationTitle">Checkpoint Notification</string>
     <string name="checkpointNotificationText">You are in checkpoint now. Click here to opne the app!</string>
     <string name="resultText">You answered %d out of %d checkpoints correctly.\nYour total time was %d minutes and %d seconds.</string>
+    <string name="soundOnText">Sound on</string>
+    <string name="soundOffText">Sound off</string>
 
     <!-- string properties for application settings  -->
     <string name="questionFragmentAddedKey">questionAdded</string>
