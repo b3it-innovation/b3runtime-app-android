@@ -1,23 +1,25 @@
 package com.b3.development.b3runtime.ui.competition;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.ContextThemeWrapper;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.b3.development.b3runtime.R;
+import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
-import com.b3.development.b3runtime.ui.track.TrackActivity;
+import com.b3.development.b3runtime.ui.map.MapsActivity;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -26,7 +28,10 @@ public class CompetitionActivity extends AppCompatActivity {
     public static final String TAG = CompetitionActivity.class.getSimpleName();
 
     private ProgressBar pb;
-
+    private RecyclerView recyclerView;
+    private ItemArrayAdapter itemArrayAdapter;
+    private ArrayList<ListItem> itemList = new ArrayList<>();
+    private String compName;
 
     private CompetitionViewModel viewModel;
     public boolean firstTimeFetched = true;
@@ -49,20 +54,72 @@ public class CompetitionActivity extends AppCompatActivity {
 
         viewModel.competitions.observe(this, backendCompetitions -> {
             if (firstTimeFetched) {
-                createButtons(backendCompetitions);
                 firstTimeFetched = false;
+
+                //check if there's been a screen rotation and whether competition had been chosen
+                if ((savedInstanceState != null) && (savedInstanceState.getString("competitionName") != null)) {
+                    //populate list with BackendTracks
+                    showTracks(savedInstanceState.getString("competitionName"));
+                } else {
+                    //populate list with BackendCompetitions
+                    itemList.addAll(backendCompetitions);
+                }
+                //create a recyclerview and populate it with ListItems
+                itemArrayAdapter = new ItemArrayAdapter(R.layout.list_item, itemList);
+                recyclerView = findViewById(R.id.item_list);
+                recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                recyclerView.setItemAnimator(new DefaultItemAnimator());
+                recyclerView.setAdapter(itemArrayAdapter);
+
+                itemArrayAdapter.setOnItemClickListener(view -> {
+                    TextView textView = (TextView) view;
+                    if (itemList.get(0).getType() == ListItem.TYPE_TRACK) {
+                        //if list contains tracks, start chosen track
+                        startTrack(textView.getText().toString());
+                    } else {
+                        //if list contains competitions, show chosen competitions tracks
+                        showTracks(textView.getText().toString());
+                    }
+                });
                 viewModel.showLoading(false);
             }
         });
-
-
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+    //populate itemList with tracks from chosen competition
+    private void showTracks(String competitionName) {
+        for (BackendCompetition bc : viewModel.competitions.getValue()) {
+            if (bc.getName().equalsIgnoreCase(competitionName)) {
+                compName = bc.getName();
+                viewModel.setCompetitionKey(bc.getKey());
+                itemList.clear();
+                itemList.addAll(bc.getTracks());
+                if (itemArrayAdapter != null) {
+                    itemArrayAdapter.notifyDataSetChanged();
+                }
+            }
+        }
     }
 
+    //start chosen track
+    private void startTrack(String trackName) {
+        Intent intent = new Intent(this, MapsActivity.class);
+        for (ListItem listItem : itemList) {
+            if (listItem.getName().equalsIgnoreCase(trackName)) {
+                intent.putExtra("trackKey", listItem.getKey());
+                intent.putExtra("callingActivity", TAG);
+                viewModel.setTrackKey(listItem.getKey());
+                Attendee attendee = viewModel.createAttendee();
+                String attendeeKey = viewModel.saveBackendAttendee(attendee);
+                attendee.id = attendeeKey;
+                viewModel.insertAttendee(attendee);
+                intent.putExtra("attendeeKey", attendeeKey);
+                startActivity(intent);
+            }
+        }
+    }
+
+    //show or hide loading graphic
     private void showLoading(boolean b) {
         if (b) {
             pb.setVisibility(View.VISIBLE);
@@ -71,36 +128,22 @@ public class CompetitionActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
     }
 
-    private void createButtons(List<BackendCompetition> competitions) {
-
-        LinearLayout layout = findViewById(R.id.competitionLayout);
-        LinearLayout.LayoutParams layoutParams =
-                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(80, 45, 80, 10);
-        for (BackendCompetition bc : competitions) {
-            if (bc.isActive()) {
-                Button button = new Button(new ContextThemeWrapper(this, R.style.baseButton), null, R.style.baseButton);
-                button.setText(bc.getName());
-                button.setStateListAnimator(null);
-                button.setBackground(getDrawable(R.drawable.btn_selector));
-
-                //create new intent to send to next activity
-                Intent intent = new Intent(this, TrackActivity.class);
-                intent.putExtra("competitionKey", bc.getKey());
-
-                button.setOnClickListener(v -> {
-                    viewModel.setCompetitionKey(bc.getKey());
-                    startActivity(intent);
-                });
-                layout.addView(button, layoutParams);
-            }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        //save competition name if one has been chosen
+        if (itemList.get(0).getType() == ListItem.TYPE_TRACK) {
+            savedInstanceState.putString("competitionName", compName);
         }
+        super.onSaveInstanceState(savedInstanceState);
     }
 }

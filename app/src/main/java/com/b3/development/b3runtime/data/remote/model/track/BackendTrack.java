@@ -1,11 +1,12 @@
 package com.b3.development.b3runtime.data.remote.model.track;
 
 import com.b3.development.b3runtime.data.remote.model.category.BackendCategory;
+import com.b3.development.b3runtime.ui.competition.ListItem;
 
 /**
  * A model of the response from <code>firebase database</code>
  */
-public class BackendTrack {
+public class BackendTrack implements ListItem {
 
     private String key;
     private String name;
@@ -33,5 +34,10 @@ public class BackendTrack {
 
     public void setCategory(BackendCategory category) {
         this.category = category;
+    }
+
+    @Override
+    public int getType() {
+        return ListItem.TYPE_TRACK;
     }
 }
