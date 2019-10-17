@@ -56,6 +56,10 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
             for (DataSnapshot competitionSnapshot : dataSnapshot.getChildren()) {
                 //gets the BackendCompetition object
                 BackendCompetition fbCompetition = new BackendCompetition();
+                fbCompetition.setActive((Boolean) competitionSnapshot.child("active").getValue());
+                if(fbCompetition.isActive() != null && !fbCompetition.isActive()){
+                    continue;
+                }
                 fbCompetition.setKey(competitionSnapshot.getKey());
                 //gets the nested "child" object of the actual competition
                 ArrayList<BackendTrack> tracks = new ArrayList<>();
@@ -76,7 +80,6 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
                 }
                 //sets the rest of the BackendCompetition object
                 fbCompetition.setTracks(tracks);
-                fbCompetition.setActive((Boolean) competitionSnapshot.child("active").getValue());
                 fbCompetition.setName((String) competitionSnapshot.child("name").getValue());
                 //adds the object to the List of BackendResponseCheckpoint objects
                 competitions.add(fbCompetition);
