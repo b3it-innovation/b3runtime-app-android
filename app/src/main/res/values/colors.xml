@@ -9,4 +9,6 @@
     <color name="b3Blue">#0CCCCC</color>
     <color name="b3Pink">#FF4F94</color>
     <color name="b3Grey">#5C5C5C</color>
+    <color name="backGroundGrey">#828a95</color>
+    <color name="buttonBorder">#A3A3A3</color>
 </resources>
