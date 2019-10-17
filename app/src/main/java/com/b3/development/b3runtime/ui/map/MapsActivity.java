@@ -76,6 +76,8 @@ public class MapsActivity extends BaseActivity
     private String finalCheckpointID;
     private QuestionFragment questionFragment;
     private boolean checkpointsDrawn = false;
+    private boolean geofenceIntentHandled = true;
+    private String checkpointID;
     private String trackKey;
     private String attendeeKey;
     private SharedPreferences prefs;
@@ -189,6 +191,15 @@ public class MapsActivity extends BaseActivity
         requestLocationPermissions();
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(!geofenceIntentHandled){
+           handleGeofenceIntent();
+        }
+
+    }
+
     // Menu icons are inflated just as they were with actionbar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -265,32 +276,39 @@ public class MapsActivity extends BaseActivity
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                geofenceIntentHandled = false;
+                checkpointID = intent.getStringExtra("id");
                 // if the app is not in foreground, do nothing
                 if (!Util.isForeground(getApplicationContext())) return;
 
-                // Remove geofence otherwise it is still there and triggers questions on screen rotation
-                viewModel.removeGeofence();
-
-                // Check if first checkpoint is reached
-                if (intent.getStringExtra("id").equals(firstCheckpointID)) {
-                    if (getSupportFragmentManager().findFragmentByTag(CheckinFragment.TAG) == null) {
-                        CheckinFragment.newInstance().show(getSupportFragmentManager(), CheckinFragment.TAG);
-                    }
-                }
-                // Check if last checkpoint is reached
-                else if (intent.getStringExtra("id").equals(finalCheckpointID)) {
-                    // Show result
-                    if (getSupportFragmentManager().findFragmentByTag(ResultFragment.TAG) == null) {
-                        ResultFragment.newInstance().show(getSupportFragmentManager(), ResultFragment.TAG);
-                    }
-                } else { // Otherwise show new question
-
-                    showQuestion();
-                }
+                handleGeofenceIntent();
             }
         };
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter(getResources().getString(R.string.geofenceIntentName)));
+    }
+
+    private void handleGeofenceIntent(){
+        // Remove geofence otherwise it is still there and triggers questions on screen rotation
+        viewModel.removeGeofence();
+
+        // Check if first checkpoint is reached
+        if (checkpointID.equals(firstCheckpointID)) {
+            if (getSupportFragmentManager().findFragmentByTag(CheckinFragment.TAG) == null) {
+                CheckinFragment.newInstance().show(getSupportFragmentManager(), CheckinFragment.TAG);
+            }
+        }
+        // Check if last checkpoint is reached
+        else if (checkpointID.equals(finalCheckpointID)) {
+            // Show result
+            if (getSupportFragmentManager().findFragmentByTag(ResultFragment.TAG) == null) {
+                ResultFragment.newInstance().show(getSupportFragmentManager(), ResultFragment.TAG);
+            }
+        } else { // Otherwise show new question
+
+            showQuestion();
+        }
+        geofenceIntentHandled = true;
     }
 
     /**
