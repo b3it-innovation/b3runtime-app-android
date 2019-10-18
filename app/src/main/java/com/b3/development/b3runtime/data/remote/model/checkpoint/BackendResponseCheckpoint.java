@@ -10,6 +10,7 @@ public class BackendResponseCheckpoint {
     private Double longitude;
     private Long order;
     private String questionKey;
+    private Boolean penalty;
 
 
     //getters and setters because Java
@@ -60,5 +61,13 @@ public class BackendResponseCheckpoint {
 
     public void setQuestionKey(String questionKey) {
         this.questionKey = questionKey;
+    }
+
+    public Boolean isPenalty() {
+        return penalty;
+    }
+
+    public void setPenalty(Boolean penalty) {
+        this.penalty = penalty;
     }
 }

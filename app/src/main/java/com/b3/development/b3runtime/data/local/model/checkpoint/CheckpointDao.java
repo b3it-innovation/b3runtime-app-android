@@ -24,7 +24,7 @@ public interface CheckpointDao {
     @Query("SELECT * FROM Checkpoint ORDER BY `order`")
     LiveData<List<Checkpoint>> getAll();
 
-    //gets the next pin that is not completed
+    //gets the next checkpoint that is not completed
     @Query("SELECT * FROM Checkpoint WHERE completed = :isCompleted ORDER BY `order` LIMIT 1")
     LiveData<Checkpoint> getNextCheckpoint(boolean isCompleted);
 

@@ -41,4 +41,7 @@ public class Checkpoint {
     @ColumnInfo(name = "answeredCorrect")
     public boolean answeredCorrect;
 
+    @ColumnInfo(name = "penalty")
+    public boolean penalty;
+
 }

@@ -39,6 +39,7 @@ import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.competition.CompetitionActivity;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
+import com.b3.development.b3runtime.ui.question.ResponseFragment;
 import com.b3.development.b3runtime.ui.question.ResultFragment;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
 import com.b3.development.b3runtime.utils.Util;
@@ -191,10 +192,10 @@ public class MapsActivity extends BaseActivity
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
-        if(!geofenceIntentHandled){
-           handleGeofenceIntent();
+        if (!geofenceIntentHandled) {
+            handleGeofenceIntent();
         }
 
     }
@@ -287,7 +288,7 @@ public class MapsActivity extends BaseActivity
         localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter(getResources().getString(R.string.geofenceIntentName)));
     }
 
-    private void handleGeofenceIntent(){
+    private void handleGeofenceIntent() {
         // Remove geofence otherwise it is still there and triggers questions on screen rotation
         viewModel.removeGeofence();
 
@@ -303,6 +304,9 @@ public class MapsActivity extends BaseActivity
             if (getSupportFragmentManager().findFragmentByTag(ResultFragment.TAG) == null) {
                 ResultFragment.newInstance().show(getSupportFragmentManager(), ResultFragment.TAG);
             }
+        } else if (viewModel.nextCheckpoint.getValue().penalty) {
+            // todo: show fragment
+            ResponseFragment.newInstance(false).show(getSupportFragmentManager(), ResponseFragment.TAG);
         } else { // Otherwise show new question
 
             showQuestion();
@@ -333,12 +337,9 @@ public class MapsActivity extends BaseActivity
                         // draw all checkpoints on the map
                         mapsRenderer.drawAllCheckpoints(checkpoints, viewModel, map);
                     }
+                    // save result when allCheckpoints change
+                    viewModel.saveResult();
                 });
-
-        // save result when allCheckpoints change
-        viewModel.allCheckpoints.observe(this, checkpoints -> {
-            viewModel.saveResult();
-        });
 
         //sets mocklocation of device when clicking on map todo: remove before release
         MockLocationUtil.setMockLocation(getApplicationContext(), map);

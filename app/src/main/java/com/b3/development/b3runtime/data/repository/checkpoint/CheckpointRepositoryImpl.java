@@ -125,6 +125,7 @@ public class CheckpointRepositoryImpl implements CheckpointRepository {
             convertedCheckpoint.longitude = checkpoint.getLongitude();
             convertedCheckpoint.order = checkpoint.getOrder();
             convertedCheckpoint.questionKey = checkpoint.getQuestionKey();
+            convertedCheckpoint.penalty = checkpoint.isPenalty();
             convertedCheckpoint.completed = false;
             convertedCheckpoint.answeredCorrect = false;
             convertedCheckpoint.skipped = false;

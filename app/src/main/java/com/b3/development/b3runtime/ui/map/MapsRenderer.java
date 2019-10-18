@@ -45,10 +45,10 @@ public class MapsRenderer {
                 .position(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude))
                 .title(nextCheckpoint.name)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-        map.setOnMarkerClickListener(marker -> {
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-            return true;
-        });
+//        map.setOnMarkerClickListener(marker -> {
+//            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+//            return true;
+//        });
 
         if (viewModel.isResponseOnScreen) {
             return;
@@ -64,8 +64,9 @@ public class MapsRenderer {
             // draw geofence circle around nextCheckpoint
             drawGeofenceCircleAroundCheckpoint(viewModel, map);
         }
-
     }
+
+
 
     // Draw all checkpoints except for the current checkpoints if possible
     public void drawAllCheckpoints(final List<Checkpoint> allCheckpoints, final MapsViewModel viewModel, final GoogleMap map) {
@@ -75,6 +76,8 @@ public class MapsRenderer {
             // draw all checkpoints
             for (int i = 0; i < allCheckpoints.size(); i++) {
                 Checkpoint checkpoint = allCheckpoints.get(i);
+                if((checkpoint.penalty && !checkpoint.completed && !checkpoint.skipped) ||
+                        (checkpoint.penalty && checkpoint.completed && checkpoint.skipped)) continue;
                 Marker marker = map.addMarker(new MarkerOptions()
                         .position(new LatLng(checkpoint.latitude, checkpoint.longitude))
                         .title(checkpoint.name));
@@ -87,6 +90,8 @@ public class MapsRenderer {
             for (int i = 0; i < allCheckpoints.size(); i++) {
                 Checkpoint checkpoint = allCheckpoints.get(i);
                 if (!checkpoint.id.equals(viewModel.nextCheckpoint.getValue().id)) {
+                    if((checkpoint.penalty && !checkpoint.completed && !checkpoint.skipped) ||
+                            (checkpoint.penalty && checkpoint.completed && checkpoint.skipped)) continue;
                     Marker marker = map.addMarker(new MarkerOptions()
                             .position(new LatLng(checkpoint.latitude, checkpoint.longitude))
                             .title(checkpoint.name));
