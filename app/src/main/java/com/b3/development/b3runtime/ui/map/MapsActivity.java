@@ -38,6 +38,7 @@ import com.b3.development.b3runtime.sound.Jukebox;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.competition.CompetitionActivity;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
+import com.b3.development.b3runtime.ui.question.PenaltyFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
 import com.b3.development.b3runtime.ui.question.ResponseFragment;
 import com.b3.development.b3runtime.ui.question.ResultFragment;
