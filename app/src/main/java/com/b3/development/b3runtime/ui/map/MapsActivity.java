@@ -304,7 +304,7 @@ public class MapsActivity extends BaseActivity
             if (getSupportFragmentManager().findFragmentByTag(ResultFragment.TAG) == null) {
                 ResultFragment.newInstance().show(getSupportFragmentManager(), ResultFragment.TAG);
             }
-        } else if (viewModel.nextCheckpoint.getValue().penalty) {
+        } else if (viewModel.nextCheckpoint.penalty) {
             // todo: show fragment
             ResponseFragment.newInstance(false).show(getSupportFragmentManager(), ResponseFragment.TAG);
         } else { // Otherwise show new question
@@ -324,22 +324,6 @@ public class MapsActivity extends BaseActivity
         map = googleMap;
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15f));
         initializeMap();
-        // Get all checkpoints and draw / save ID of the last checkpoint
-        viewModel.allCheckpoints.observe(this,
-                checkpoints -> {
-                    if (!checkpoints.isEmpty()) {
-                        mapsRenderer.resetMap(map);
-                        // gets first and last final checkpoint
-                        firstCheckpointID = checkpoints.get(0).id;
-                        finalCheckpointID = checkpoints.get(checkpoints.size() - 1).id;
-                        Log.d(TAG, "First Checkpoint ID: " + firstCheckpointID);
-                        Log.d(TAG, "Final Checkpoint ID: " + finalCheckpointID);
-                        // draw all checkpoints on the map
-                        mapsRenderer.drawAllCheckpoints(checkpoints, viewModel, map);
-                    }
-                    // save result when allCheckpoints change
-                    viewModel.saveResult();
-                });
 
         //sets mocklocation of device when clicking on map todo: remove before release
         MockLocationUtil.setMockLocation(getApplicationContext(), map);
@@ -354,9 +338,22 @@ public class MapsActivity extends BaseActivity
             return;
         } else {
             map.setMyLocationEnabled(true);
-            //observes for change in the nextCheckpoint data and calls drawNextCheckpoint(),
-            // needs to be here to get permission before adding geofence
-            viewModel.nextCheckpoint.observe(this, checkpoint -> mapsRenderer.drawNextCheckpoint(checkpoint, viewModel, map));
+            // Get all checkpoints and draw / save ID of the last checkpoint
+            viewModel.allCheckpoints.observe(this,
+                    checkpoints -> {
+                        if (!checkpoints.isEmpty()) {
+                            mapsRenderer.resetMap(map);
+                            // gets first and last final checkpoint
+                            firstCheckpointID = checkpoints.get(0).id;
+                            finalCheckpointID = checkpoints.get(checkpoints.size() - 1).id;
+                            Log.d(TAG, "First Checkpoint ID: " + firstCheckpointID);
+                            Log.d(TAG, "Final Checkpoint ID: " + finalCheckpointID);
+                            // draw all checkpoints on the map
+                            mapsRenderer.drawAllCheckpoints(checkpoints, viewModel, map);
+                        }
+                        // save result when allCheckpoints change
+                        viewModel.saveResult();
+                    });
         }
     }
 

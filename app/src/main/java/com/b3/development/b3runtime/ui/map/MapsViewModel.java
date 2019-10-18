@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class MapsViewModel extends BaseViewModel {
 
-    LiveData<Checkpoint> nextCheckpoint;
+    public Checkpoint nextCheckpoint;
     public LiveData<List<Checkpoint>> allCheckpoints;
     public LiveData<Attendee> currentAttendee;
     private CheckpointRepository checkpointRepository;
@@ -47,7 +47,6 @@ public class MapsViewModel extends BaseViewModel {
 
     public void init(String trackKey) {
         checkpointRepository.fetch(trackKey);
-        nextCheckpoint = checkpointRepository.getCheckpoint();
         allCheckpoints = checkpointRepository.getAllCheckpoints();
         errors = checkpointRepository.getError();
     }
@@ -72,7 +71,7 @@ public class MapsViewModel extends BaseViewModel {
             if (allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime == null) {
                 allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime = System.currentTimeMillis();
                 // updates completedTime in nextCheckpoint to prevent to update it in updateCheckpointCompleted()
-                nextCheckpoint.getValue().completedTime = allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime;
+                nextCheckpoint.completedTime = allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime;
             }
             Long totalTime = getTotalTime();
             Long minutes = (totalTime / 1000) / 60;
@@ -114,26 +113,23 @@ public class MapsViewModel extends BaseViewModel {
 
     //set checkpoint to completed and update in local database
     public void updateCheckpointCompleted() {
-        Checkpoint checkpoint = nextCheckpoint.getValue();
-        checkpoint.completed = true;
-        if (checkpoint.completedTime == null) {
-            checkpoint.completedTime = System.currentTimeMillis();
+        nextCheckpoint.completed = true;
+        if (nextCheckpoint.completedTime == null) {
+            nextCheckpoint.completedTime = System.currentTimeMillis();
         }
-        checkpointRepository.updateCheckpoint(checkpoint);
+        checkpointRepository.updateCheckpoint(nextCheckpoint);
     }
 
     public void updateCheckpointCorrectAnswer() {
-        System.out.println("Before update, checkpoint order: " + nextCheckpoint.getValue().order);
-        Checkpoint checkpoint = nextCheckpoint.getValue();
-        checkpoint.answeredCorrect = true;
+        System.out.println("Before update, checkpoint order: " + nextCheckpoint.order);
+        nextCheckpoint.answeredCorrect = true;
         isLatestAnsweredCorrect = true;
         updateCheckpointCompleted();
     }
 
     public void skipCheckpoint() {
-        System.out.println("Skips checkpoint order: " + nextCheckpoint.getValue().order);
-        Checkpoint checkpoint = nextCheckpoint.getValue();
-        checkpoint.skipped = true;
+        System.out.println("Skips checkpoint order: " + nextCheckpoint.order);
+        nextCheckpoint.skipped = true;
         updateCheckpointCompleted();
     }
 

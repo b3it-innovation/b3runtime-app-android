@@ -12,8 +12,6 @@ import java.util.List;
  */
 public interface CheckpointRepository {
 
-    LiveData<Checkpoint> getCheckpoint();
-
     LiveData<List<Checkpoint>> getAllCheckpoints();
 
     LiveData<Failure> getError();
