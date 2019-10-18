@@ -91,11 +91,9 @@ public class ResponseFragment extends BaseQuestionFragment {
         //sets pin to completed and skips to next if correct answer on question
         confirm.setOnClickListener(v -> {
             if (getArguments().getBoolean(EXTRA_IS_CORRECT)) {
-                //todo update pin here
                 Log.d(TAG, "SKIP PIN CALLED IN RESPONSE FRAGMENT");
                 viewModel.updateCheckpointCorrectAnswer();
             } else {
-                //todo implement extra route
                 Log.d(TAG, "UPDATE PIN CALLED IN RESPONSE FRAGMENT");
                 viewModel.updateCheckpointCompleted();
             }

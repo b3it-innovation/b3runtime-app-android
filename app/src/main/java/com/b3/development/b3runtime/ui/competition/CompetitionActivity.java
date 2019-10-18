@@ -144,8 +144,10 @@ public class CompetitionActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         //save competition name if one has been chosen
-        if (itemList.get(0).getType() == ListItem.TYPE_TRACK) {
-            savedInstanceState.putString("competitionName", compName);
+        if(itemList != null && !itemList.isEmpty()) {
+            if (itemList.get(0).getType() == ListItem.TYPE_TRACK) {
+                savedInstanceState.putString("competitionName", compName);
+            }
         }
         super.onSaveInstanceState(savedInstanceState);
     }

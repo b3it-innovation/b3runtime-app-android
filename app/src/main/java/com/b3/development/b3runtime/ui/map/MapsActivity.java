@@ -39,6 +39,7 @@ import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.competition.CompetitionActivity;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
+import com.b3.development.b3runtime.ui.question.ResponseFragment;
 import com.b3.development.b3runtime.ui.question.ResultFragment;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
 import com.b3.development.b3runtime.utils.Util;
@@ -76,7 +77,7 @@ public class MapsActivity extends BaseActivity
     private String finalCheckpointID;
     private QuestionFragment questionFragment;
     private boolean geofenceIntentHandled = true;
-    private String checkpointID;
+    private String receivedCheckpointID;
     private String trackKey;
     private String attendeeKey;
     private SharedPreferences prefs;
@@ -191,10 +192,10 @@ public class MapsActivity extends BaseActivity
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
-        if(!geofenceIntentHandled){
-           handleGeofenceIntent();
+        if (!geofenceIntentHandled) {
+            handleGeofenceIntent();
         }
 
     }
@@ -276,7 +277,7 @@ public class MapsActivity extends BaseActivity
             @Override
             public void onReceive(Context context, Intent intent) {
                 geofenceIntentHandled = false;
-                checkpointID = intent.getStringExtra("id");
+                receivedCheckpointID = intent.getStringExtra("id");
                 // if the app is not in foreground, do nothing
                 if (!Util.isForeground(getApplicationContext())) return;
 
@@ -287,22 +288,24 @@ public class MapsActivity extends BaseActivity
         localBroadcastManager.registerReceiver(broadcastReceiver, new IntentFilter(getResources().getString(R.string.geofenceIntentName)));
     }
 
-    private void handleGeofenceIntent(){
+    private void handleGeofenceIntent() {
         // Remove geofence otherwise it is still there and triggers questions on screen rotation
         viewModel.removeGeofence();
 
         // Check if first checkpoint is reached
-        if (checkpointID.equals(firstCheckpointID)) {
+        if (receivedCheckpointID.equals(firstCheckpointID)) {
             if (getSupportFragmentManager().findFragmentByTag(CheckinFragment.TAG) == null) {
                 CheckinFragment.newInstance().show(getSupportFragmentManager(), CheckinFragment.TAG);
             }
         }
         // Check if last checkpoint is reached
-        else if (checkpointID.equals(finalCheckpointID)) {
+        else if (receivedCheckpointID.equals(finalCheckpointID)) {
             // Show result
             if (getSupportFragmentManager().findFragmentByTag(ResultFragment.TAG) == null) {
                 ResultFragment.newInstance().show(getSupportFragmentManager(), ResultFragment.TAG);
             }
+        } else if (viewModel.nextCheckpoint.penalty) {
+            PenaltyFragment.newInstance().show(getSupportFragmentManager(), PenaltyFragment.TAG);
         } else { // Otherwise show new question
 
             showQuestion();
@@ -320,25 +323,6 @@ public class MapsActivity extends BaseActivity
         map = googleMap;
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15f));
         initializeMap();
-        // Get all checkpoints and draw / save ID of the last checkpoint
-        viewModel.allCheckpoints.observe(this,
-                checkpoints -> {
-                    if (!checkpoints.isEmpty()) {
-                        mapsRenderer.resetMap(map);
-                        // gets first and last final checkpoint
-                        firstCheckpointID = checkpoints.get(0).id;
-                        finalCheckpointID = checkpoints.get(checkpoints.size() - 1).id;
-                        Log.d(TAG, "First Checkpoint ID: " + firstCheckpointID);
-                        Log.d(TAG, "Final Checkpoint ID: " + finalCheckpointID);
-                        // draw all checkpoints on the map
-                        mapsRenderer.drawAllCheckpoints(checkpoints, viewModel, map);
-                    }
-                });
-
-        // save result when allCheckpoints change
-        viewModel.allCheckpoints.observe(this, checkpoints -> {
-            viewModel.saveResult();
-        });
 
         //sets mocklocation of device when clicking on map todo: remove before release
         MockLocationUtil.setMockLocation(getApplicationContext(), map);
@@ -353,9 +337,22 @@ public class MapsActivity extends BaseActivity
             return;
         } else {
             map.setMyLocationEnabled(true);
-            //observes for change in the nextCheckpoint data and calls drawNextCheckpoint(),
-            // needs to be here to get permission before adding geofence
-            viewModel.nextCheckpoint.observe(this, checkpoint -> mapsRenderer.drawNextCheckpoint(checkpoint, viewModel, map));
+            // Get all checkpoints and draw / save ID of the last checkpoint
+            viewModel.allCheckpoints.observe(this,
+                    checkpoints -> {
+                        if (!checkpoints.isEmpty()) {
+                            mapsRenderer.resetMap(map);
+                            // gets first and last final checkpoint
+                            firstCheckpointID = checkpoints.get(0).id;
+                            finalCheckpointID = checkpoints.get(checkpoints.size() - 1).id;
+                            Log.d(TAG, "First Checkpoint ID: " + firstCheckpointID);
+                            Log.d(TAG, "Final Checkpoint ID: " + finalCheckpointID);
+                            // draw all checkpoints on the map
+                            mapsRenderer.drawAllCheckpoints(checkpoints, viewModel, map);
+                        }
+                        // save result when allCheckpoints change
+                        viewModel.saveResult();
+                    });
         }
     }
 

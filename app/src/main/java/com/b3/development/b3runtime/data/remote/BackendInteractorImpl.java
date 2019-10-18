@@ -135,6 +135,7 @@ public class BackendInteractorImpl implements BackendInteractor {
                         checkpoint.setLongitude((Double) locationSnapshot.child("longitude").getValue());
                         checkpoint.setOrder((Long) locationSnapshot.child("order").getValue());
                         checkpoint.setQuestionKey((String) locationSnapshot.child("questionKey").getValue());
+                        checkpoint.setPenalty((Boolean) locationSnapshot.child("penalty").getValue());
                         //adds the object to the List of BackendResponseCheckpoint objects
                         checkpoints.add(checkpoint);
                     }

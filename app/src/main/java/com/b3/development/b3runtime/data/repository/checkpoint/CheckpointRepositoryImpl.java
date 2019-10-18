@@ -19,9 +19,9 @@ import java.util.List;
  * An implementation of the {@link CheckpointRepository} interface
  */
 public class CheckpointRepositoryImpl implements CheckpointRepository {
+
     private CheckpointDao checkpointDao;
     private BackendInteractor backend;
-    private LiveData<Checkpoint> nextCheckpoint;
     private LiveData<List<Checkpoint>> allCheckpoints;
     private MutableLiveData<Failure> error = new MutableLiveData<>();
 
@@ -35,15 +35,6 @@ public class CheckpointRepositoryImpl implements CheckpointRepository {
         this.checkpointDao = pd;
         this.backend = bi;
         allCheckpoints = checkpointDao.getAll();
-        nextCheckpoint = checkpointDao.getNextCheckpoint(false);
-    }
-
-    /**
-     * @return nextCheckpoint <code>LiveData<Checkpoint></></code>
-     */
-    @Override
-    public LiveData<Checkpoint> getCheckpoint() {
-        return nextCheckpoint;
     }
 
     @Override
@@ -125,6 +116,7 @@ public class CheckpointRepositoryImpl implements CheckpointRepository {
             convertedCheckpoint.longitude = checkpoint.getLongitude();
             convertedCheckpoint.order = checkpoint.getOrder();
             convertedCheckpoint.questionKey = checkpoint.getQuestionKey();
+            convertedCheckpoint.penalty = checkpoint.isPenalty();
             convertedCheckpoint.completed = false;
             convertedCheckpoint.answeredCorrect = false;
             convertedCheckpoint.skipped = false;
