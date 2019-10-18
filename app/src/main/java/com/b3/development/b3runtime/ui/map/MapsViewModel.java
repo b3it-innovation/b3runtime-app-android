@@ -78,10 +78,10 @@ public class MapsViewModel extends BaseViewModel {
             Long seconds = (totalTime / 1000) % 60;
 
             for (Checkpoint checkpoint : allCheckpoints.getValue()) {
-                if (checkpoint.skipped) {
+                if (checkpoint.penalty) {
                     totalNumberOfCheckpoints--;
                 }
-                if ((!checkpoint.skipped) && checkpoint.answeredCorrect) {
+                if ((!checkpoint.penalty) && checkpoint.answeredCorrect) {
                     correctAnswers++;
                 }
             }
