@@ -90,13 +90,15 @@ public class PenaltyFragment extends BaseQuestionFragment {
             viewModel.isResponseOnScreen = false;
             dismiss();
         });
+        
+        showResponse();
 
         // Play sound effect
         Jukebox.getInstance(getContext()).playSoundForGameEvent(SoundEvent.AnswerCorrect);
     }
 
     //changes look of responsefragment depending if answered correctly
-    private void showResponse(Boolean isCorrect) {
+    private void showResponse() {
         response.setText(R.string.penaltyText);
         colorBase.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Blue));
         colorLogo.setImageResource(R.drawable.b3logo_purple);
