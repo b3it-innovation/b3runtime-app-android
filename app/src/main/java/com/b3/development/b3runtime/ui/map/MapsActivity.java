@@ -77,7 +77,7 @@ public class MapsActivity extends BaseActivity
     private String finalCheckpointID;
     private QuestionFragment questionFragment;
     private boolean geofenceIntentHandled = true;
-    private String checkpointID;
+    private String receivedCheckpointID;
     private String trackKey;
     private String attendeeKey;
     private SharedPreferences prefs;
@@ -277,7 +277,7 @@ public class MapsActivity extends BaseActivity
             @Override
             public void onReceive(Context context, Intent intent) {
                 geofenceIntentHandled = false;
-                checkpointID = intent.getStringExtra("id");
+                receivedCheckpointID = intent.getStringExtra("id");
                 // if the app is not in foreground, do nothing
                 if (!Util.isForeground(getApplicationContext())) return;
 
@@ -293,20 +293,19 @@ public class MapsActivity extends BaseActivity
         viewModel.removeGeofence();
 
         // Check if first checkpoint is reached
-        if (checkpointID.equals(firstCheckpointID)) {
+        if (receivedCheckpointID.equals(firstCheckpointID)) {
             if (getSupportFragmentManager().findFragmentByTag(CheckinFragment.TAG) == null) {
                 CheckinFragment.newInstance().show(getSupportFragmentManager(), CheckinFragment.TAG);
             }
         }
         // Check if last checkpoint is reached
-        else if (checkpointID.equals(finalCheckpointID)) {
+        else if (receivedCheckpointID.equals(finalCheckpointID)) {
             // Show result
             if (getSupportFragmentManager().findFragmentByTag(ResultFragment.TAG) == null) {
                 ResultFragment.newInstance().show(getSupportFragmentManager(), ResultFragment.TAG);
             }
         } else if (viewModel.nextCheckpoint.penalty) {
-            // todo: show fragment
-            ResponseFragment.newInstance(false).show(getSupportFragmentManager(), ResponseFragment.TAG);
+            PenaltyFragment.newInstance().show(getSupportFragmentManager(), PenaltyFragment.TAG);
         } else { // Otherwise show new question
 
             showQuestion();

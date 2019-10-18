@@ -37,10 +37,10 @@ public class MapsRenderer {
     // Draw next checkpoint on the map
     public void drawNextCheckpoint(final Checkpoint nextCheckpoint, final MapsViewModel viewModel, final GoogleMap map) {
         if (nextCheckpoint == null) return;
-        // Change color of the completed nextCheckpoint
-        if (lastMarker != null) {
-            setCompletedColorOnMarker(lastMarker);
-        }
+//        // Change color of the completed nextCheckpoint
+//        if (lastMarker != null) {
+//            setCompletedColorOnMarker(lastMarker);
+//        }
         lastMarker = map.addMarker(new MarkerOptions()
                 .position(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude))
                 .title(nextCheckpoint.name)
