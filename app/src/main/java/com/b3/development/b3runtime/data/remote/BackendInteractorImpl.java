@@ -182,7 +182,7 @@ public class BackendInteractorImpl implements BackendInteractor {
                         //todo retrieve from relation in question
                         fbQuestion.setCategoryKey((String) dataSnapshot.child("categoryKey").getValue());
                         fbQuestion.setCorrectAnswer((String) dataSnapshot.child("correctAnswer").getValue());
-                        fbQuestion.setImgUrl("imgUrl");
+                        fbQuestion.setImgUrl((String) dataSnapshot.child("imgUrl").getValue());
                         //gets the nested "options" object containing the answer options
                         //in case options are not set as mocked data in firebase varys on provided options
                         //they are manually set to hardcoded values for debug purposes
@@ -213,7 +213,7 @@ public class BackendInteractorImpl implements BackendInteractor {
                         }
                         fbQuestion.setOptions(answer);
                         //sets the rest of the BackendResponseQuestion object
-                        fbQuestion.setQuestionText((String) dataSnapshot.child("text").getValue());
+                        fbQuestion.setText((String) dataSnapshot.child("text").getValue());
                         fbQuestion.setTitle((String) dataSnapshot.child("title").getValue());
                     }
                     //returns the Callback containing the List of locations

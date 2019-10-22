@@ -177,7 +177,7 @@ public class QuestionDaoTest {
     }
 
     private Question insertOneQuestion(String id, Boolean isAnswered, String categoryKey,
-                                       String correctAnswer, String question){
+                                       String correctAnswer, String question) {
         Question q = new Question();
         q.id = id;
         q.isAnswered = isAnswered;
