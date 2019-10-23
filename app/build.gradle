@@ -11,6 +11,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -64,16 +65,8 @@ dependencies {
     implementation "com.android.support:support-compat:28.0.0"
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
 
-    // Required -- JUnit 4 framework
-    testImplementation 'junit:junit:4.12'
-    // Optional -- Robolectric environment
-    testImplementation 'androidx.test:core:1.2.0'
-    // Optional -- Mockito framework
-    testImplementation 'org.mockito:mockito-core:3.1.0'
 
-    // Optional -- Robolectric environment
-    androidTestImplementation group: 'androidx.test', name: 'core', version: '1.2.0'
-    // Optional -- Mockito framework
+    //Mockito framework
     androidTestImplementation "org.mockito:mockito-android:3.1.0"
 
     // Core library
@@ -81,8 +74,8 @@ dependencies {
     androidTestImplementation 'android.arch.core:core-testing:1.1.1'
 
     // AndroidJUnitRunner and JUnit Rules
-    androidTestImplementation 'androidx.test:runner:1.1.0'
-    androidTestImplementation 'androidx.test:rules:1.1.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

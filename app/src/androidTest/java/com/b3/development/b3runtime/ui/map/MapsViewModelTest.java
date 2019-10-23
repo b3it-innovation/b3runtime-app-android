@@ -156,7 +156,9 @@ public class MapsViewModelTest {
     @Test
     public void init() {
         Log.d(TAG, "running init() test");
-//        viewModel.init(trackKey);
+
+        //Not running init from here, since verify counts the one being run when
+        // the viewmodels constructor is being run from setUp()
         verify(checkpointRepository, atMostOnce()).fetch(trackKey);
         verify(checkpointRepository, atLeastOnce()).fetch(trackKey);
 
