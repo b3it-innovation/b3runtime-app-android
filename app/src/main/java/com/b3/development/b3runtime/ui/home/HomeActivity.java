@@ -1,4 +1,4 @@
-package com.b3.development.b3runtime.ui.main;
+package com.b3.development.b3runtime.ui.home;
 
 import android.os.Bundle;
 
@@ -7,21 +7,22 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
 
-public class MainActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity {
 
-    public static final String TAG = MainActivity.class.getSimpleName();
+    public static final String TAG = HomeActivity.class.getSimpleName();
 
-    private MainViewModel mainViewModel;
+    private HomeViewModel homeViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_competition);
-        //create or connect viewmodel to activity
-        mainViewModel = ViewModelProviders.of(this,
-                new MainViewModelFactory())
-                .get(MainViewModel.class);
 
+        //create or connect viewmodel to activity
+        homeViewModel = ViewModelProviders.of(this,
+                new HomeViewModelFactory())
+                .get(HomeViewModel.class);
+
+        setContentView(R.layout.activity_home);
     }
 
 
@@ -38,5 +39,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

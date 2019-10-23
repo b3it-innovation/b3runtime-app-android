@@ -8,8 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <!-- Only for debugging. todo: Remove before release. -->
+    <uses-permission android:name="android.permission.VIBRATE" /> <!-- Only for debugging. todo: Remove before release. -->
     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
 
     <dist:module dist:instant="true" />
@@ -23,7 +22,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -36,10 +34,12 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDi1MAiwsiJE8r5LWWvANy9JfXyXfrPjo4" />
 
+        <activity android:name=".ui.home.HomeActivity"></activity>
+
         <activity
             android:name=".ui.map.MapsActivity"
             android:label="@string/title_activity_maps"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity android:name=".ui.competition.CompetitionActivity">
             <intent-filter>
@@ -58,11 +58,10 @@
             android:name=".geofence.GeofenceTransitionsJobIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <service
             android:name=".geofence.LocationService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
     </application>
 
 </manifest>
