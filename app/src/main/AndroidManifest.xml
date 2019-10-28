@@ -49,7 +49,6 @@
             android:name=".ui.map.MapsActivity"
             android:label="@string/title_activity_maps"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ui.competition.CompetitionActivity" />
 
         <receiver
             android:name=".geofence.GeofenceBroadcastReceiver"
@@ -60,6 +59,7 @@
             android:name=".geofence.GeofenceTransitionsJobIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <service
             android:name=".geofence.LocationService"
             android:enabled="true"

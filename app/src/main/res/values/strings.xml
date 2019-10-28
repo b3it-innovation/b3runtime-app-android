@@ -27,9 +27,14 @@
     <string name="resultText">You answered %d out of %d checkpoints correctly.\nYour total time was %d minutes and %d seconds.</string>
     <string name="soundOnText">Sound on</string>
     <string name="soundOffText">Sound off</string>
+    <string name="show_profile_button_text">Show Profile</string>
+    <string name="choose_competition_button_text">Choose Competition</string>
+    <string name="sign_out_button_text">Sign out</string>
 
     <!-- string properties for application settings  -->
-    <string name="questionFragmentAddedKey">questionAdded</string>
+    <string name="question_fragment_added_key">questionAdded</string>
+    <string name="competition_fragment_added_key">competitionAdded</string>
+    <string name="profile_fragment_added_key">profileAdded</string>
     <string name="geofenceIntentName">newQuestion</string>
     <string name="correct_answer_sound_file">sfx/correct_answer.mp3</string>
     <string name="wrong_answer_sound_file">sfx/wrong_answer.mp3</string>
@@ -37,4 +42,5 @@
     <string name="track_goal_sound_file">sfx/pickup_coin.wav</string>
     <string name="sound_pref_key">sound_pref_key</string>
     <string name="music_pref_key">music_pref_key</string>
+
 </resources>
