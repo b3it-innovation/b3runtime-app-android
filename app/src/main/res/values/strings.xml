@@ -37,4 +37,7 @@
     <string name="track_goal_sound_file">sfx/pickup_coin.wav</string>
     <string name="sound_pref_key">sound_pref_key</string>
     <string name="music_pref_key">music_pref_key</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
