@@ -35,13 +35,15 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDi1MAiwsiJE8r5LWWvANy9JfXyXfrPjo4" />
 
-        <activity android:name=".ui.home.HomeActivity">
+        <activity android:name=".ui.signin.SignInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.home.HomeActivity"/>
 
         <activity
             android:name=".ui.map.MapsActivity"

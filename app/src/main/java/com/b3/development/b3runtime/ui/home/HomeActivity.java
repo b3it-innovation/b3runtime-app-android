@@ -1,13 +1,20 @@
 package com.b3.development.b3runtime.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
+import com.b3.development.b3runtime.ui.signin.SignInActivity;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.b3.development.b3runtime.ui.competition.CompetitionFragment;
 import com.b3.development.b3runtime.ui.profile.ProfileFragment;
 
@@ -29,7 +36,7 @@ public class HomeActivity extends AppCompatActivity {
                 .get(HomeViewModel.class);
 
         setContentView(R.layout.activity_home);
-
+      
         // clean up back stack
         for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); i++) {
             getSupportFragmentManager().popBackStack();
@@ -50,6 +57,18 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
     }
+  
+  public void signOut(View view) {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Intent intent = new Intent(HomeActivity.this, SignInActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+  }
 
     @Override
     protected void onStart() {
@@ -75,6 +94,11 @@ public class HomeActivity extends AppCompatActivity {
         ft.replace(R.id.home_container, profileFragment, ProfileFragment.TAG);
         ft.addToBackStack(ProfileFragment.TAG);
         ft.commit();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     @Override
