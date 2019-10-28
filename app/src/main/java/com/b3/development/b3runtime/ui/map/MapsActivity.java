@@ -36,11 +36,10 @@ import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.geofence.LocationService;
 import com.b3.development.b3runtime.sound.Jukebox;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
-import com.b3.development.b3runtime.ui.competition.CompetitionActivity;
+import com.b3.development.b3runtime.ui.home.HomeActivity;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.PenaltyFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
-import com.b3.development.b3runtime.ui.question.ResponseFragment;
 import com.b3.development.b3runtime.ui.question.ResultFragment;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
 import com.b3.development.b3runtime.utils.Util;
@@ -101,7 +100,7 @@ public class MapsActivity extends BaseActivity
 
         //check if questionfragment is created and retained, if it is then detach from screen
         if (savedInstanceState != null) {
-            if (savedInstanceState.getBoolean(getResources().getString(R.string.questionFragmentAddedKey))) {
+            if (savedInstanceState.getBoolean(getResources().getString(R.string.question_fragment_added_key))) {
                 questionFragment =
                         (QuestionFragment) getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG);
                 getSupportFragmentManager().beginTransaction().detach(questionFragment).commit();
@@ -126,9 +125,9 @@ public class MapsActivity extends BaseActivity
         viewModel.currentAttendee.observe(this, attendee -> {
         });
 
-        // if the intent is come from TrackActivity remove all checkpoints to redraw them
+        // if the intent is come from HomeActivity remove all checkpoints to redraw them
         final String callingActivityName = intent.getStringExtra("callingActivity");
-        if (callingActivityName != null && callingActivityName.equals(CompetitionActivity.TAG)) {
+        if (callingActivityName != null && callingActivityName.equals(HomeActivity.TAG)) {
             viewModel.removeAllCheckpoints();
             viewModel.init(trackKey);
             // reset extra to avoid to trigger reset on screen rotation
@@ -267,7 +266,7 @@ public class MapsActivity extends BaseActivity
     public void onSaveInstanceState(Bundle savedInstanceState) {
         //save state if questionfragment is created, to retain it during screen rotation
         savedInstanceState
-                .putBoolean(getResources().getString(R.string.questionFragmentAddedKey),
+                .putBoolean(getResources().getString(R.string.question_fragment_added_key),
                         getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG) != null);
         super.onSaveInstanceState(savedInstanceState);
     }

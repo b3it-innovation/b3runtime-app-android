@@ -22,6 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -34,20 +35,18 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDi1MAiwsiJE8r5LWWvANy9JfXyXfrPjo4" />
 
-        <activity android:name=".ui.home.HomeActivity"></activity>
-
-        <activity
-            android:name=".ui.map.MapsActivity"
-            android:label="@string/title_activity_maps"
-            android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".ui.competition.CompetitionActivity">
+        <activity android:name=".ui.home.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.map.MapsActivity"
+            android:label="@string/title_activity_maps"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver
             android:name=".geofence.GeofenceBroadcastReceiver"
@@ -58,6 +57,7 @@
             android:name=".geofence.GeofenceTransitionsJobIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <service
             android:name=".geofence.LocationService"
             android:enabled="true"
