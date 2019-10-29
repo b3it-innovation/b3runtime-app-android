@@ -24,5 +24,11 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="SignInTheme" parent="FirebaseUI">
+        <item name="colorPrimary">@color/b3Pink</item>
+        <item name="colorPrimaryDark">@color/b3Grey</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/b3Yellow</item>
+    </style>
 
 </resources>

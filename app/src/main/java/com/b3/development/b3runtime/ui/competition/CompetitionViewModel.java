@@ -24,6 +24,7 @@ public class CompetitionViewModel extends BaseViewModel {
     private Attendee currentAttendee;
     private String competitionKey;
     private String trackKey;
+    public String chosenCompetitionName;
     // mock user account todo: connect to real user account
     private String userAccountId = "fakeId";
     private String userAccountName = "fakeName";

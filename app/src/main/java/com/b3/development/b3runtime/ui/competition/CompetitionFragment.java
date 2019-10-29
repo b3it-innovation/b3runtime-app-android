@@ -6,93 +6,112 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.b3.development.b3runtime.R;
+import com.b3.development.b3runtime.base.BaseFragment;
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
+import com.b3.development.b3runtime.ui.home.HomeActivity;
 import com.b3.development.b3runtime.ui.map.MapsActivity;
 
 import java.util.ArrayList;
 
 import static org.koin.java.KoinJavaComponent.get;
 
-public class CompetitionActivity extends AppCompatActivity {
+public class CompetitionFragment extends BaseFragment {
 
-    public static final String TAG = CompetitionActivity.class.getSimpleName();
+    public static final String TAG = CompetitionFragment.class.getSimpleName();
+    private static final int layoutId = R.layout.fragment_competition;
 
+    private CompetitionViewModel competitionViewModel;
     private ProgressBar pb;
     private RecyclerView recyclerView;
     private ItemArrayAdapter itemArrayAdapter;
     private ArrayList<ListItem> itemList = new ArrayList<>();
-    private String compName;
     private TextView headline;
 
-    private CompetitionViewModel viewModel;
     public boolean firstTimeFetched = true;
 
+    public CompetitionFragment() {
+    }
+
+    public static final CompetitionFragment newInstance() {
+        CompetitionFragment fragment = new CompetitionFragment();
+        Bundle arguments = new Bundle();
+        fragment.setArguments(arguments);
+        return fragment;
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_competition);
         //create or connect viewmodel to activity
-        viewModel = ViewModelProviders.of(this,
+        competitionViewModel = ViewModelProviders.of(getActivity(),
                 new CompetitionViewModelFactory(get(CompetitionRepository.class), get(AttendeeRepository.class)))
                 .get(CompetitionViewModel.class);
+    }
 
+    @Override
+    public Integer getLayoutId() {
+        return layoutId;
+    }
 
-        pb = findViewById(R.id.progress_loader);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        pb = view.findViewById(R.id.progress_loader);
         pb.setVisibility(View.INVISIBLE);
-        viewModel.showLoading.observe(this, CompetitionActivity.this::showLoading);
-        viewModel.showLoading(true);
+        competitionViewModel.showLoading.observe(this, CompetitionFragment.this::showLoading);
+        competitionViewModel.showLoading(true);
 
-
-        viewModel.competitions.observe(this, backendCompetitions -> {
+        competitionViewModel.competitions.observe(this, backendCompetitions -> {
             if (firstTimeFetched) {
                 firstTimeFetched = false;
 
                 //check if there's been a screen rotation and whether competition had been chosen
-                if ((savedInstanceState != null) && (savedInstanceState.getString("competitionName") != null)) {
+                if (competitionViewModel.chosenCompetitionName != null) {
                     //populate list with BackendTracks
-                    showTracks(savedInstanceState.getString("competitionName"));
+                    showTracks(competitionViewModel.chosenCompetitionName, view);
                 } else {
                     //populate list with BackendCompetitions
                     itemList.addAll(backendCompetitions);
                 }
                 //create a recyclerview and populate it with ListItems
                 itemArrayAdapter = new ItemArrayAdapter(R.layout.list_item, itemList);
-                recyclerView = findViewById(R.id.item_list);
-                recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                recyclerView = view.findViewById(R.id.item_list);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                 recyclerView.setItemAnimator(new DefaultItemAnimator());
                 recyclerView.setAdapter(itemArrayAdapter);
 
-                itemArrayAdapter.setOnItemClickListener(view -> {
-                    TextView textView = (TextView) view;
+                itemArrayAdapter.setOnItemClickListener(v -> {
+                    TextView textView = (TextView) v;
                     if (itemList.get(0).getType() == ListItem.TYPE_TRACK) {
                         //if list contains tracks, start chosen track
+                        competitionViewModel.chosenCompetitionName = null;
                         startTrack(textView.getText().toString());
                     } else {
                         //if list contains competitions, show chosen competitions tracks
-                        showTracks(textView.getText().toString());
+                        competitionViewModel.chosenCompetitionName = textView.getText().toString();
+                        showTracks(textView.getText().toString(), view);
                     }
                 });
-                viewModel.showLoading(false);
+                competitionViewModel.showLoading(false);
             }
         });
     }
 
     //populate itemList with tracks from chosen competition
-    private void showTracks(String competitionName) {
-        for (BackendCompetition bc : viewModel.competitions.getValue()) {
+    private void showTracks(String competitionName, View view) {
+        for (BackendCompetition bc : competitionViewModel.competitions.getValue()) {
             if (bc.getName().equalsIgnoreCase(competitionName)) {
-                compName = bc.getName();
-                viewModel.setCompetitionKey(bc.getKey());
+                competitionViewModel.setCompetitionKey(bc.getKey());
                 itemList.clear();
                 itemList.addAll(bc.getTracks());
                 if (itemArrayAdapter != null) {
@@ -100,22 +119,22 @@ public class CompetitionActivity extends AppCompatActivity {
                 }
             }
         }
-        headline = findViewById(R.id.textChooseCompetition);
-        headline.setText("Choose track");
+        headline = view.findViewById(R.id.textChooseCompetition);
+        headline.setText(getResources().getString(R.string.chooseTrack));
     }
 
     //start chosen track
     private void startTrack(String trackName) {
-        Intent intent = new Intent(this, MapsActivity.class);
+        Intent intent = new Intent(getActivity(), MapsActivity.class);
         for (ListItem listItem : itemList) {
             if (listItem.getName().equalsIgnoreCase(trackName)) {
                 intent.putExtra("trackKey", listItem.getKey());
-                intent.putExtra("callingActivity", TAG);
-                viewModel.setTrackKey(listItem.getKey());
-                Attendee attendee = viewModel.createAttendee();
-                String attendeeKey = viewModel.saveBackendAttendee(attendee);
+                intent.putExtra("callingActivity", HomeActivity.TAG);
+                competitionViewModel.setTrackKey(listItem.getKey());
+                Attendee attendee = competitionViewModel.createAttendee();
+                String attendeeKey = competitionViewModel.saveBackendAttendee(attendee);
                 attendee.id = attendeeKey;
-                viewModel.insertAttendee(attendee);
+                competitionViewModel.insertAttendee(attendee);
                 intent.putExtra("attendeeKey", attendeeKey);
                 startActivity(intent);
             }
@@ -131,24 +150,10 @@ public class CompetitionActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        //save competition name if one has been chosen
-        if(itemList != null && !itemList.isEmpty()) {
-            if (itemList.get(0).getType() == ListItem.TYPE_TRACK) {
-                savedInstanceState.putString("competitionName", compName);
-            }
+    public void resetChosenCompetition() {
+        if (competitionViewModel != null) {
+            competitionViewModel.chosenCompetitionName = null;
         }
-        super.onSaveInstanceState(savedInstanceState);
     }
+
 }
