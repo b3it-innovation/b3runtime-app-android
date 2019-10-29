@@ -11,12 +11,12 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
+import com.b3.development.b3runtime.ui.profile.ProfileFragment;
 import com.b3.development.b3runtime.ui.signin.SignInActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.b3.development.b3runtime.ui.competition.CompetitionFragment;
-import com.b3.development.b3runtime.ui.profile.ProfileFragment;
 
 import java.util.List;
 
