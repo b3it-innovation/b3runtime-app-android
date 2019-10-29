@@ -41,5 +41,7 @@ public class HomeFragment extends BaseFragment {
                 .setOnClickListener(v -> ((HomeActivity) getActivity()).showCompetitionFragment());
         view.findViewById(R.id.profile_button)
                 .setOnClickListener(v -> ((HomeActivity) getActivity()).showProfileFragment());
+        view.findViewById(R.id.sign_out_button)
+                .setOnClickListener(v -> ((HomeActivity) getActivity()).signOut(view));
     }
 }
