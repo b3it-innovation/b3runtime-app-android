@@ -36,7 +36,7 @@ public class HomeActivity extends AppCompatActivity {
                 .get(HomeViewModel.class);
 
         setContentView(R.layout.activity_home);
-      
+        
         // clean up back stack
         for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); i++) {
             getSupportFragmentManager().popBackStack();
@@ -57,8 +57,8 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
     }
-  
-  public void signOut(View view) {
+
+    public void signOut(View view) {
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -68,7 +68,7 @@ public class HomeActivity extends AppCompatActivity {
                         finish();
                     }
                 });
-  }
+    }
 
     @Override
     protected void onStart() {
