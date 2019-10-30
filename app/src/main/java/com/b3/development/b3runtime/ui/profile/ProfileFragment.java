@@ -16,10 +16,16 @@ import android.widget.TextView;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.ui.signin.SignInActivity;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserInfo;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,7 +56,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-         user = FirebaseAuth.getInstance().getCurrentUser();
+        user = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     @Override
@@ -92,7 +98,7 @@ public class ProfileFragment extends Fragment {
     }
 
     public void deleteUser(View view) {
-
+        reauthenticate();
         user.delete()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -114,7 +120,7 @@ public class ProfileFragment extends Fragment {
     public void sendResetPasswordMail(View view) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String emailAddress = user.getEmail();
-
+//        reauthenticate();
         auth.sendPasswordResetEmail(emailAddress)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -124,5 +130,23 @@ public class ProfileFragment extends Fragment {
                         }
                     }
                 });
+    }
+
+    private void reauthenticate() {
+        if (user.getProviderData().get(user.getProviderData().size() - 1).getProviderId().equals("google.com")) {
+            // Get the account
+            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getActivity().getApplicationContext());
+            if (acct != null) {
+                AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+                user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Reauthenticated.");
+                        }
+                    }
+                });
+            }
+        }
     }
 }
