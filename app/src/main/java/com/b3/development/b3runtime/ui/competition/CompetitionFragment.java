@@ -1,6 +1,5 @@
 package com.b3.development.b3runtime.ui.competition;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -15,12 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseFragment;
-import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
-import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
 import com.b3.development.b3runtime.ui.home.HomeActivity;
-import com.b3.development.b3runtime.ui.map.MapsActivity;
 
 import java.util.ArrayList;
 
@@ -36,9 +32,6 @@ public class CompetitionFragment extends BaseFragment {
     private RecyclerView recyclerView;
     private ItemArrayAdapter itemArrayAdapter;
     private ArrayList<ListItem> itemList = new ArrayList<>();
-    private TextView headline;
-
-    public boolean firstTimeFetched = true;
 
     public CompetitionFragment() {
     }
@@ -72,73 +65,26 @@ public class CompetitionFragment extends BaseFragment {
         competitionViewModel.showLoading(true);
 
         competitionViewModel.competitions.observe(this, backendCompetitions -> {
-            if (firstTimeFetched) {
-                firstTimeFetched = false;
 
-                //check if there's been a screen rotation and whether competition had been chosen
-                if (competitionViewModel.chosenCompetitionName != null) {
-                    //populate list with BackendTracks
-                    showTracks(competitionViewModel.chosenCompetitionName, view);
-                } else {
-                    //populate list with BackendCompetitions
-                    itemList.addAll(backendCompetitions);
-                }
-                //create a recyclerview and populate it with ListItems
-                itemArrayAdapter = new ItemArrayAdapter(R.layout.list_item, itemList);
-                recyclerView = view.findViewById(R.id.item_list);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                recyclerView.setItemAnimator(new DefaultItemAnimator());
-                recyclerView.setAdapter(itemArrayAdapter);
+            //populate list with BackendCompetitions
+            itemList.clear();
+            itemList.addAll(backendCompetitions);
 
-                itemArrayAdapter.setOnItemClickListener(v -> {
-                    TextView textView = (TextView) v;
-                    if (itemList.get(0).getType() == ListItem.TYPE_TRACK) {
-                        //if list contains tracks, start chosen track
-                        competitionViewModel.chosenCompetitionName = null;
-                        startTrack(textView.getText().toString());
-                    } else {
-                        //if list contains competitions, show chosen competitions tracks
-                        competitionViewModel.chosenCompetitionName = textView.getText().toString();
-                        showTracks(textView.getText().toString(), view);
-                    }
-                });
-                competitionViewModel.showLoading(false);
-            }
+            //create a recyclerview and populate it with ListItems
+            itemArrayAdapter = new ItemArrayAdapter(R.layout.list_item, itemList);
+            recyclerView = view.findViewById(R.id.item_list);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.setAdapter(itemArrayAdapter);
+
+            itemArrayAdapter.setOnItemClickListener(v -> {
+                TextView textView = (TextView) v;
+                // show chosen competitions tracks
+                competitionViewModel.chosenCompetitionName = textView.getText().toString();
+                ((HomeActivity) getActivity()).showTrackFragment();
+            });
+            competitionViewModel.showLoading(false);
         });
-    }
-
-    //populate itemList with tracks from chosen competition
-    private void showTracks(String competitionName, View view) {
-        for (BackendCompetition bc : competitionViewModel.competitions.getValue()) {
-            if (bc.getName().equalsIgnoreCase(competitionName)) {
-                competitionViewModel.setCompetitionKey(bc.getKey());
-                itemList.clear();
-                itemList.addAll(bc.getTracks());
-                if (itemArrayAdapter != null) {
-                    itemArrayAdapter.notifyDataSetChanged();
-                }
-            }
-        }
-        headline = view.findViewById(R.id.textChooseCompetition);
-        headline.setText(getResources().getString(R.string.chooseTrack));
-    }
-
-    //start chosen track
-    private void startTrack(String trackName) {
-        Intent intent = new Intent(getActivity(), MapsActivity.class);
-        for (ListItem listItem : itemList) {
-            if (listItem.getName().equalsIgnoreCase(trackName)) {
-                intent.putExtra("trackKey", listItem.getKey());
-                intent.putExtra("callingActivity", HomeActivity.TAG);
-                competitionViewModel.setTrackKey(listItem.getKey());
-                Attendee attendee = competitionViewModel.createAttendee();
-                String attendeeKey = competitionViewModel.saveBackendAttendee(attendee);
-                attendee.id = attendeeKey;
-                competitionViewModel.insertAttendee(attendee);
-                intent.putExtra("attendeeKey", attendeeKey);
-                startActivity(intent);
-            }
-        }
     }
 
     //show or hide loading graphic
@@ -147,12 +93,6 @@ public class CompetitionFragment extends BaseFragment {
             pb.setVisibility(View.VISIBLE);
         } else {
             pb.setVisibility(View.INVISIBLE);
-        }
-    }
-
-    public void resetChosenCompetition() {
-        if (competitionViewModel != null) {
-            competitionViewModel.chosenCompetitionName = null;
         }
     }
 

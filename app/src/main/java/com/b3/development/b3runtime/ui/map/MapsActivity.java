@@ -271,7 +271,38 @@ public class MapsActivity extends BaseActivity
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    //todo: move to manifest to receive broadcasts when activity in background
+    @Override
+    public void onBackPressed() {
+        final Context context = getApplicationContext();
+        new AlertDialog.Builder(this)
+                .setTitle(getResources().getString(R.string.maps_activity_back_pressed_alert_title))
+                .setMessage(getResources().getString(R.string.maps_activity_back_pressed_alert_message))
+                .setPositiveButton(
+                        getResources().getString(R.string.maps_activity_back_pressed_alert_positive_button),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Closing all activities and go back to home activity
+                                Intent i = new Intent(context, HomeActivity.class);
+                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                i.putExtra("EXIT", true);
+                                startActivity(i);
+                                finish();
+                            }
+                        })
+                .setNegativeButton(
+                        getResources().getString(R.string.maps_activity_back_pressed_alert_negative_button),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                .show();
+
+    }
+
     private void registerReceiver() {
         broadcastReceiver = new BroadcastReceiver() {
             @Override

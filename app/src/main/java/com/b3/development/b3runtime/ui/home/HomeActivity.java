@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepository;
 import com.b3.development.b3runtime.ui.profile.ProfileFragment;
+import com.b3.development.b3runtime.ui.competition.TrackFragment;
 import com.b3.development.b3runtime.ui.signin.SignInActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,7 +21,6 @@ import com.google.android.gms.tasks.Task;
 import com.b3.development.b3runtime.ui.competition.CompetitionFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.List;
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -41,11 +41,6 @@ public class HomeActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_home);
 
-        // clean up back stack
-        for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); i++) {
-            getSupportFragmentManager().popBackStack();
-        }
-
         // sets homeFragment to container
         HomeFragment homeFragment = HomeFragment.newInstance();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -55,9 +50,17 @@ public class HomeActivity extends AppCompatActivity {
         // retain the state of fragments
         if (savedInstanceState != null) {
             if (savedInstanceState.getBoolean(getResources().getString(R.string.competition_fragment_added_key))) {
-                showCompetitionFragment();
+                CompetitionFragment fragment = (CompetitionFragment) getSupportFragmentManager().findFragmentByTag(CompetitionFragment.TAG);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.home_container, fragment, CompetitionFragment.TAG).commit();
             } else if (savedInstanceState.getBoolean(getResources().getString(R.string.profile_fragment_added_key))) {
-                showProfileFragment();
+                ProfileFragment fragment = (ProfileFragment) getSupportFragmentManager().findFragmentByTag(ProfileFragment.TAG);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.home_container, fragment, ProfileFragment.TAG).commit();
+            } else if (savedInstanceState.getBoolean(getResources().getString(R.string.track_fragment_added_key))) {
+                TrackFragment fragment = (TrackFragment) getSupportFragmentManager().findFragmentByTag(TrackFragment.TAG);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.home_container, fragment, TrackFragment.TAG).commit();
             }
         }
 
@@ -99,6 +102,14 @@ public class HomeActivity extends AppCompatActivity {
         ft.commit();
     }
 
+    public void showTrackFragment() {
+        TrackFragment trackFragment = TrackFragment.newInstance();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.home_container, trackFragment, TrackFragment.TAG);
+        ft.addToBackStack(TrackFragment.TAG);
+        ft.commit();
+    }
+
     public void showProfileFragment() {
         ProfileFragment profileFragment = ProfileFragment.newInstance();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -116,6 +127,7 @@ public class HomeActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean(getResources().getString(R.string.competition_fragment_added_key), false);
         savedInstanceState.putBoolean(getResources().getString(R.string.profile_fragment_added_key), false);
+        savedInstanceState.putBoolean(getResources().getString(R.string.track_fragment_added_key), false);
         for (Fragment f : getSupportFragmentManager().getFragments()) {
             String tag = f.getTag();
             if (tag != null) {
@@ -126,6 +138,10 @@ public class HomeActivity extends AppCompatActivity {
                 } else if (tag.equals(ProfileFragment.TAG)) {
                     if (f.isVisible() && !f.isDetached()) {
                         savedInstanceState.putBoolean(getResources().getString(R.string.profile_fragment_added_key), true);
+                    }
+                } else if (tag.equals(TrackFragment.TAG)) {
+                    if (f.isVisible() && !f.isDetached()) {
+                        savedInstanceState.putBoolean(getResources().getString(R.string.track_fragment_added_key), true);
                     }
                 }
             }
@@ -138,24 +154,4 @@ public class HomeActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    @Override
-    public void onBackPressed() {
-        // resets chosen competition on CompetitionFragment
-        List<Fragment> frags = getSupportFragmentManager().getFragments();
-        Fragment lastfrag = getLastNotNull(frags);
-        if (lastfrag instanceof CompetitionFragment) {
-            ((CompetitionFragment) lastfrag).resetChosenCompetition();
-        }
-        super.onBackPressed();
-    }
-
-    private Fragment getLastNotNull(List<Fragment> list) {
-        for (int i = list.size() - 1; i >= 0; i--) {
-            Fragment frag = list.get(i);
-            if (frag != null) {
-                return frag;
-            }
-        }
-        return null;
-    }
 }
