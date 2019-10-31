@@ -49,5 +49,6 @@
     <string name="track_goal_sound_file">sfx/pickup_coin.wav</string>
     <string name="sound_pref_key">sound_pref_key</string>
     <string name="music_pref_key">music_pref_key</string>
+    <string name="continue_track_button_text">Continue track</string>
 
 </resources>
