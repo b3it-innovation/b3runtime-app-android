@@ -11,14 +11,18 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
+import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepository;
+import com.b3.development.b3runtime.ui.profile.ProfileFragment;
 import com.b3.development.b3runtime.ui.competition.TrackFragment;
 import com.b3.development.b3runtime.ui.signin.SignInActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.b3.development.b3runtime.ui.competition.CompetitionFragment;
-import com.b3.development.b3runtime.ui.profile.ProfileFragment;
+import com.google.firebase.auth.FirebaseAuth;
 
+
+import static org.koin.java.KoinJavaComponent.get;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -32,7 +36,7 @@ public class HomeActivity extends AppCompatActivity {
 
         //create or connect viewmodel to activity
         homeViewModel = ViewModelProviders.of(this,
-                new HomeViewModelFactory())
+                new HomeViewModelFactory(get(UserAccountRepository.class)))
                 .get(HomeViewModel.class);
 
         setContentView(R.layout.activity_home);
@@ -59,6 +63,8 @@ public class HomeActivity extends AppCompatActivity {
                         .replace(R.id.home_container, fragment, TrackFragment.TAG).commit();
             }
         }
+
+        saveUserAccount();
     }
 
     public void signOut(View view) {
@@ -71,6 +77,11 @@ public class HomeActivity extends AppCompatActivity {
                         finish();
                     }
                 });
+    }
+
+    private void saveUserAccount() {
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        homeViewModel.saveUserAccount(uid);
     }
 
     @Override

@@ -1,22 +1,67 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/profile_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ui.profile.ProfileFragment">
+
+    <ImageView
+        android:id="@+id/imageViewProfile"
+        android:layout_width="145dp"
+        android:layout_height="145dp"
+        android:layout_gravity="center"
+        android:layout_margin="50dp"
+        android:layout_weight="0"
+        android:background="@mipmap/ic_launcher" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="User Profile"
-            android:textSize="24sp" />
+            android:id="@+id/editTextName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:layout_weight="0.5"
+            android:hint="Name"
+            android:textAlignment="center"
+            android:textSize="34sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnEditName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:layout_weight="0.5"
+            android:text="@string/change_name_button_text"
+            android:textSize="24sp"
+            android:textStyle="italic" />
 
     </LinearLayout>
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/textViewMail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="0"
+        android:hint="Mail"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btn_reset_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="10dp"
+        android:layout_weight="0"
+        android:text="@string/reset_password_button_text" />
+
+</LinearLayout>

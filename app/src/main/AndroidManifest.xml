@@ -50,6 +50,9 @@
             android:label="@string/title_activity_maps"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
+
         <receiver
             android:name=".geofence.GeofenceBroadcastReceiver"
             android:enabled="true"
