@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="geofenceRadius">150</integer>
+    <integer name="geofenceRadius">80</integer>
     <integer name="mocklockationAccuracy">10</integer>
     <integer name="geofenceExpirationDuration">1500000</integer>
     <integer name="circleStroke">2</integer>

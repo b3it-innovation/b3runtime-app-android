@@ -25,6 +25,8 @@ public interface BackendInteractor {
 
     String saveResult(BackendResult result, String key);
 
+    void saveUserAccount(String uid);
+
     interface CheckpointsCallback {
         void onCheckpointsReceived(List<BackendResponseCheckpoint> checkpoints);
 

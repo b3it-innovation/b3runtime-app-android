@@ -30,6 +30,8 @@
     <string name="show_profile_button_text">Show Profile</string>
     <string name="choose_competition_button_text">Choose Competition</string>
     <string name="sign_out_button_text">Sign out</string>
+    <string name="change_name_button_text">Change name</string>
+    <string name="reset_password_button_text">Send reset password mail</string>
 
     <!-- string properties for application settings  -->
     <string name="question_fragment_added_key">questionAdded</string>
