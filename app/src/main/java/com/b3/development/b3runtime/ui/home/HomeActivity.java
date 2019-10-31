@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
+import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepository;
 import com.b3.development.b3runtime.ui.profile.ProfileFragment;
 import com.b3.development.b3runtime.ui.competition.TrackFragment;
@@ -36,7 +37,7 @@ public class HomeActivity extends AppCompatActivity {
 
         //create or connect viewmodel to activity
         homeViewModel = ViewModelProviders.of(this,
-                new HomeViewModelFactory(get(UserAccountRepository.class)))
+                new HomeViewModelFactory(get(UserAccountRepository.class), get(CheckpointRepository.class)))
                 .get(HomeViewModel.class);
 
         setContentView(R.layout.activity_home);
@@ -82,6 +83,11 @@ public class HomeActivity extends AppCompatActivity {
     private void saveUserAccount() {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         homeViewModel.saveUserAccount(uid);
+    }
+
+    public boolean isTrackUnfinished() {
+        boolean trackUnfinished = homeViewModel.isTrackUnfinished();
+        return trackUnfinished;
     }
 
     @Override
