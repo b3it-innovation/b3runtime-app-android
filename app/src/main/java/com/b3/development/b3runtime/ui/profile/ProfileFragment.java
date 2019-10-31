@@ -2,8 +2,6 @@ package com.b3.development.b3runtime.ui.profile;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -29,6 +27,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,6 +36,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -53,14 +54,16 @@ public class ProfileFragment extends BaseFragment {
     private static final int layoutId = R.layout.fragment_profile;
     private static final int RC_PHOTO_PICKER = 2;
 
+    private String profileImageFileName;
+
     private FirebaseStorage storage;
     private StorageReference profilePhotoReference;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser currentUser;
-    private ImageView imageView;
+    private ImageView profileImageView;
 
     public ProfileFragment() {
-        // Required empty public constructor
+
     }
 
     @Override
@@ -86,15 +89,14 @@ public class ProfileFragment extends BaseFragment {
         profilePhotoReference = storage.getReference().child("profile_images");
         firebaseAuth = FirebaseAuth.getInstance();
         currentUser = firebaseAuth.getCurrentUser();
+        profileImageFileName = getResources().getString(R.string.profile_image_file_name);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        imageView = view.findViewById(R.id.imageViewProfile);
-        imageView.setOnClickListener(v -> pickUpImage(v));
-        Glide.with(imageView.getContext())
-                .load(currentUser.getPhotoUrl())
-                .into(imageView);
+        profileImageView = view.findViewById(R.id.imageViewProfile);
+        profileImageView.setOnClickListener(v -> pickUpImage(v));
+        showProfileImage(profileImageView);
 
         Button btnResetPassword = view.findViewById(R.id.btn_reset_password);
         Button btnChangeName = view.findViewById(R.id.btnEditName);
@@ -105,7 +107,6 @@ public class ProfileFragment extends BaseFragment {
                 sendResetPasswordMail(view);
             }
         });
-
         btnChangeName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,10 +128,8 @@ public class ProfileFragment extends BaseFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
-
-            Uri selectedImageUri = data.getData();
             // Call Crop Activity from fragment (DO NOT use `getActivity()`)
-            CropImage.activity(selectedImageUri)
+            CropImage.activity(data.getData())
                     .setAspectRatio(1, 1)
                     .start(getContext(), this);
         }
@@ -138,50 +137,95 @@ public class ProfileFragment extends BaseFragment {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
-                Uri selectedImageUri = result.getUri();
-                StorageReference photoRef = profilePhotoReference.child(selectedImageUri.getLastPathSegment());
-                UploadTask uploadTask = photoRef.putFile(selectedImageUri);
-                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                    @Override
-                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                        if (!task.isSuccessful()) {
-                            throw task.getException();
-                        }
-                        // Continue with the task to get the download URL
-                        return photoRef.getDownloadUrl();
-                    }
-                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        if (task.isSuccessful()) {
-                            Uri downloadUri = task.getResult();
-                            // update user profile image in Firebase Authentication
-                            UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
-                                    .setPhotoUri(downloadUri)
-                                    .build();
-                            currentUser.updateProfile(profileChangeRequest)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Glide.with(imageView.getContext())
-                                                        .load(currentUser.getPhotoUrl())
-                                                        .into(imageView);
-                                            } else {
-                                                // todo: Handle failures
-                                            }
-                                        }
-                                    });
-                        } else {
-                            // todo: Handle failures
-                            // ...
-                        }
-                    }
-                });
+                deleteProfileImage();
+                uploadProfileImage(result.getUri());
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
         }
+    }
+
+    private void uploadProfileImage(Uri imageUri) {
+        StorageReference photoRef =
+                profilePhotoReference.child(currentUser.getUid() + "/" + profileImageFileName);
+        UploadTask uploadTask = photoRef.putFile(imageUri);
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+                // Continue with the task to get the download URL
+                return photoRef.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    updateProfileImage(downloadUri);
+                } else {
+                    // todo: Handle failures
+                }
+            }
+        });
+    }
+
+    private void updateProfileImage(Uri uri) {
+        // update user profile image in Firebase Authentication
+        UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
+                .setPhotoUri(uri)
+                .build();
+        currentUser.updateProfile(profileChangeRequest)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            showProfileImage(profileImageView);
+                        } else {
+                            // todo: Handle failures
+                        }
+                    }
+                });
+    }
+
+    private void deleteProfileImage() {
+        // Checks if the profile image already exists
+        StorageReference uidRef = profilePhotoReference.child(currentUser.getUid());
+        uidRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+            @Override
+            public void onSuccess(ListResult listResult) {
+                for (StorageReference item : listResult.getItems()) {
+                    // deletes the image file if it exists
+                    if (item.getName().equals(profileImageFileName)) {
+                        StorageReference deleteRef =
+                                profilePhotoReference.child(currentUser.getUid() + "/" + profileImageFileName);
+                        deleteRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "Deleted the old profile image");
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                Log.d(TAG, exception.getMessage());
+                            }
+                        });
+                    }
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, e.getMessage());
+            }
+        });
+    }
+
+    private void showProfileImage(ImageView imageView) {
+        Glide.with(imageView.getContext())
+                .load(currentUser.getPhotoUrl())
+                .into(imageView);
     }
 
     private void drawProfile(View view) {
