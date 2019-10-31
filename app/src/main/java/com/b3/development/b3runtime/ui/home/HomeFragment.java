@@ -25,8 +25,9 @@ public class HomeFragment extends BaseFragment {
         return fragment;
     }
 
-    private boolean checkForUnfinishedTrack() {
-        return true;
+    public boolean checkForUnfinishedTrack() {
+        HomeActivity activity = (HomeActivity) getActivity();
+        return activity.isTrackUnfinished();
     }
 
     @Override
