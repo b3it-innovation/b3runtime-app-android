@@ -2,6 +2,7 @@ package com.b3.development.b3runtime.ui.home;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +25,10 @@ public class HomeFragment extends BaseFragment {
         return fragment;
     }
 
+    private boolean checkForUnfinishedTrack() {
+        return true;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,5 +48,15 @@ public class HomeFragment extends BaseFragment {
                 .setOnClickListener(v -> ((HomeActivity) getActivity()).showProfileFragment());
         view.findViewById(R.id.sign_out_button)
                 .setOnClickListener(v -> ((HomeActivity) getActivity()).signOut(view));
+        if (checkForUnfinishedTrack()) {
+            view.findViewById(R.id.continue_button).setEnabled(true);
+            view.findViewById(R.id.continue_button)
+                    .setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Toast.makeText(getContext(), "You're continued!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 }
