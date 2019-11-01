@@ -1,9 +1,14 @@
 package com.b3.development.b3runtime.ui.profile;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
@@ -18,10 +23,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseFragment;
+import com.b3.development.b3runtime.utils.Util;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -41,6 +49,11 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import static android.app.Activity.RESULT_OK;
 
 /**
@@ -52,7 +65,10 @@ public class ProfileFragment extends BaseFragment {
 
     public static final String TAG = ProfileFragment.class.getSimpleName();
     private static final int layoutId = R.layout.fragment_profile;
-    private static final int RC_PHOTO_PICKER = 2;
+    private static final int RC_PHOTO_PICKER = 1;
+    private static final int REQUEST_IMAGE_CAPTURE = 2;
+    private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 3;
+    private static final int PERMISSIONS_REQUEST_CAMERA_AND_WRITE_EXTERNAL_STORAGE = 4;
 
     private String profileImageFileName;
 
@@ -61,6 +77,7 @@ public class ProfileFragment extends BaseFragment {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser currentUser;
     private ImageView profileImageView;
+    private String currentPhotoPath;
 
     public ProfileFragment() {
 
@@ -95,7 +112,10 @@ public class ProfileFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         profileImageView = view.findViewById(R.id.imageViewProfile);
-        profileImageView.setOnClickListener(v -> pickUpImage(v));
+        profileImageView.setOnClickListener(v -> {
+            requestWriteExternalStoragePermissions();
+            pickUpImage(v);
+        });
         showProfileImage(profileImageView);
 
         Button btnResetPassword = view.findViewById(R.id.btn_reset_password);
@@ -115,13 +135,45 @@ public class ProfileFragment extends BaseFragment {
         });
 
         drawProfile(view);
+
+        view.findViewById(R.id.btn_camera).setOnClickListener(v -> {
+            requestCameraAndWriteExternalStoragePermissions();
+            dispatchTakePictureIntent();
+        });
     }
 
-    public void pickUpImage(View view) {
+    private void pickUpImage(View view) {
+        if (getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/jpeg");
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
         startActivityForResult(Intent.createChooser(intent, "Complete action using"), RC_PHOTO_PICKER);
+    }
+
+    private void dispatchTakePictureIntent() {
+        if (getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                getActivity().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                ex.printStackTrace();
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
     }
 
     @Override
@@ -142,6 +194,13 @@ public class ProfileFragment extends BaseFragment {
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
+        }
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            galleryAddPic();
+            CropImage.activity(Uri.fromFile(new File(currentPhotoPath)))
+                    .setAspectRatio(1, 1)
+                    .start(getContext(), this);
         }
     }
 
@@ -335,4 +394,108 @@ public class ProfileFragment extends BaseFragment {
             // todo: check if registered with mail and reauthenticate
         }
     }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures/b3runtime");
+
+        if (!storageDir.exists()) {
+            storageDir.mkdir();
+        }
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(currentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        getActivity().sendBroadcast(mediaScanIntent);
+    }
+
+    private void requestWriteExternalStoragePermissions() {
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+        }
+    }
+
+    private void requestCameraAndWriteExternalStoragePermissions() {
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSIONS_REQUEST_CAMERA_AND_WRITE_EXTERNAL_STORAGE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                pickUpImage(profileImageView);
+            } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                //showPermissionDeniedDialog();
+            } else if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                AlertDialog doNotAskAgainClickedDialog = Util.createDialog(
+                        getString(R.string.deniedPermissionsDialogTitle),
+                        getString(R.string.changePermissionsInSettingsMessage),
+                        getString(R.string.goToSettingsButtonText),
+                        (dialog, which) -> {
+                            dialog.dismiss();
+                            //opens settings of the app to manually allow permissions
+                            Intent intent = new Intent();
+                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
+                            intent.setData(uri);
+                            try {
+                                startActivity(intent);
+                            } catch (Exception e) {
+                                Log.d(TAG, getString(R.string.intent_failed));
+                                Toast.makeText(getActivity().getApplicationContext(),
+                                        getString(R.string.somethingWentWrong),
+                                        Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+                            getActivity().finish();
+                        },
+                        getString(R.string.negativeButtonText),
+                        (dialog, which) -> {
+                            dialog.dismiss();
+                            getActivity().finish();
+                        },
+                        false,
+                        getActivity());
+                doNotAskAgainClickedDialog.show();
+            }
+        }
+
+        if (requestCode == PERMISSIONS_REQUEST_CAMERA_AND_WRITE_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                dispatchTakePictureIntent();
+            } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                //showPermissionDeniedDialog();
+            } else if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+            }
+        }
+    }
+
+
 }
