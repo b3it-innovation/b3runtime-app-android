@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
+import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
@@ -21,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * An implementation of the {@link BackendInteractor} interface
@@ -37,6 +39,9 @@ public class BackendInteractorImpl implements BackendInteractor {
     private DatabaseReference firebaseDbUserAccounts;
 
     private final QueryLiveData competitionsLiveDataSnapshot;
+
+    private List<BackendAttendee> attendees;
+    private List<BackendResult> attendeeResults;
 
     /**
      * A public constructor for {@link BackendInteractor}
@@ -190,6 +195,99 @@ public class BackendInteractorImpl implements BackendInteractor {
             }
         });
     }
+
+    @Override
+    public void getAttendeesByUserAccount(AttendeeCallback attendeeCallback, String userAccountKey) {
+        // create query to fetch attendess related to a useraccount
+        Query query = firebaseDbAttendees.orderByChild("userAccountKey").equalTo(userAccountKey);
+
+        //sets listener on the data in firebase
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            /**
+             * Contains the logic on handling a data change in the remote database
+             * @param dataSnapshot a snapshot of the data in control_points after the change
+             */
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                System.out.println("data change in attendees");
+                attendees = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    for (DataSnapshot attendeeSnapshot : snapshot.child("attendees").getChildren()) {
+                        //gets the Attendee object
+                        BackendAttendee attendee = new BackendAttendee();
+                        attendee.setUserAccountKey((String) snapshot.child("userAccountKey").getValue());
+                        attendee.setCompetitionKey((String) snapshot.child("competitionKey").getValue());
+                        attendee.setTrackKey((String) snapshot.child("trackKey").getValue());
+                        attendee.setKey(snapshot.getKey());
+
+                        //adds the object to the List of BackendAttendee objects
+                        attendees.add(attendee);
+//                    }
+                }
+                //returns the Callback containing the List of attendees
+                attendeeCallback.onAttendeesReceived(attendees);
+                //debug log
+                Log.d(TAG, "Attendees read: " + attendees.size());
+            }
+
+            /**
+             * Contains logic for handling possible database errors
+             *
+             * @param error the error recieved
+             */
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                attendeeCallback.onError();
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    @Override
+    public void getResultsByUserAccount(ResultCallback resultCallback, String userAccountKey) {
+        // create query to fetch results related to a useraccount
+
+        Query allResults = firebaseDbResults;
+
+        //sets listener on the data in firebase
+        allResults.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            /**
+             * Contains the logic on handling a data change in the remote database
+             *
+             * @param dataSnapshot a snapshot of the data in control_points after the change
+             */
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                System.out.println("data change in attendees");
+                attendeeResults = new ArrayList<>();
+                List<String> a = attendees.stream().map(BackendAttendee::getKey).collect(Collectors.toList());
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String attendeeKey = (String) snapshot.child("attendeeKey").getValue();
+                    if (a.contains(attendeeKey)) {
+                        BackendResult result = snapshot.getValue(BackendResult.class);
+                        result.setKey(snapshot.getKey());
+//                        result.setAttendeeKey(attendeeKey);
+                        //todo lind warning translate objects
+//                        result.setResults((List<Checkpoint>) snapshot.child("results").getValue());
+//                        result.setTotalTime((Long) snapshot.child("totalTime").getValue());
+
+                        attendeeResults.add(result);
+                    }
+                }
+                resultCallback.onResultssReceived(attendeeResults);
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                //todo .....
+            }
+
+        });
+    }
+
 
     @Override
     public void getQuestions(QuestionsCallback questionCallback, List<String> questionKeys) {

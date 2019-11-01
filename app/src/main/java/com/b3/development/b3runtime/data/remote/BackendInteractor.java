@@ -2,6 +2,7 @@ package com.b3.development.b3runtime.data.remote;
 
 import androidx.lifecycle.LiveData;
 
+import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
@@ -17,7 +18,11 @@ public interface BackendInteractor {
 
     void getCheckpoints(CheckpointsCallback checkpointsCallback, String trackKey);
 
+    void getResultsByUserAccount(ResultCallback resultCallback, String userAccountKey);
+
     void getQuestions(QuestionsCallback questionCallback, List<String> keys);
+
+    void getAttendeesByUserAccount(AttendeeCallback attendeeCallback, String userAccountKey);
 
     LiveData<DataSnapshot> getCompetitionsDataSnapshot();
 
@@ -35,6 +40,18 @@ public interface BackendInteractor {
 
     interface QuestionsCallback {
         void onQuestionsReceived(BackendResponseQuestion question);
+
+        void onError();
+    }
+
+    interface AttendeeCallback {
+        void onAttendeesReceived(List<BackendAttendee> attendees);
+
+        void onError();
+    }
+
+    interface ResultCallback {
+        void onResultssReceived(List<BackendResult> attendees);
 
         void onError();
     }
