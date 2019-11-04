@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class BackendInteractorImplTest {
@@ -66,10 +67,6 @@ public class BackendInteractorImplTest {
     }
 
     @Test
-    public void getCompetitionsDataSnapshot() {
-    }
-
-    @Test
     public void saveAttendee() throws InterruptedException {
         BackendAttendee backendAttendee = new BackendAttendee();
         backendAttendee.setName("testName");
@@ -83,16 +80,16 @@ public class BackendInteractorImplTest {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    assertTrue(dataSnapshot.getKey().equals(key));
-                    assertTrue(dataSnapshot.child("name").getValue().equals(backendAttendee.getName()));
-                    assertTrue(dataSnapshot.child("trackKey").getValue().equals(backendAttendee.getTrackKey()));
-                    assertTrue(dataSnapshot.child("competitionKey").getValue().equals(backendAttendee.getCompetitionKey()));
-                    assertTrue(dataSnapshot.child("userAccountKey").getValue().equals(backendAttendee.getUserAccountKey()));
-                    // remove saved test data
-                    attendeesTestRef.setValue(null);
-                    Log.d(testName.getMethodName(), "test completed!");
-                }
+                assertNotNull(dataSnapshot);
+                assertTrue(dataSnapshot.getKey().equals(key));
+                assertTrue(dataSnapshot.child("name").getValue().equals(backendAttendee.getName()));
+                assertTrue(dataSnapshot.child("trackKey").getValue().equals(backendAttendee.getTrackKey()));
+                assertTrue(dataSnapshot.child("competitionKey").getValue().equals(backendAttendee.getCompetitionKey()));
+                assertTrue(dataSnapshot.child("userAccountKey").getValue().equals(backendAttendee.getUserAccountKey()));
+                // remove saved test data
+                attendeesTestRef.setValue(null);
+                Log.d(testName.getMethodName(), "test completed!");
+
             }
 
             @Override
@@ -121,15 +118,15 @@ public class BackendInteractorImplTest {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    assertTrue(dataSnapshot.child("attendeeKey").getValue().equals(backendResult.getAttendeeKey()));
-                    assertTrue(((Long) dataSnapshot.child("totalTime").getValue()).equals(backendResult.getTotalTime()));
-                    Map resultMap = ((Map) (dataSnapshot.child("results").child("0").getValue()));
-                    assertTrue((resultMap.get("id").equals(checkpoint.id)));
-                    // remove saved test data
-                    resultsTestRef.setValue(null);
-                    Log.d(testName.getMethodName(), "test completed!");
-                }
+                assertNotNull(dataSnapshot);
+                assertTrue(dataSnapshot.child("attendeeKey").getValue().equals(backendResult.getAttendeeKey()));
+                assertTrue(((Long) dataSnapshot.child("totalTime").getValue()).equals(backendResult.getTotalTime()));
+                Map resultMap = ((Map) (dataSnapshot.child("results").child("0").getValue()));
+                assertTrue((resultMap.get("id").equals(checkpoint.id)));
+                // remove saved test data
+                resultsTestRef.setValue(null);
+                Log.d(testName.getMethodName(), "test completed!");
+
             }
 
             @Override
@@ -152,21 +149,20 @@ public class BackendInteractorImplTest {
         backendInteractor.getCheckpoints(new BackendInteractor.CheckpointsCallback() {
             @Override
             public void onCheckpointsReceived(List<BackendResponseCheckpoint> checkpoints) {
-                if (checkpoints != null && !checkpoints.isEmpty()) {
-                    assertTrue(checkpoints.get(0).getOrder().equals(checkpoint1.getOrder()));
-                    assertTrue(checkpoints.get(0).getLabel().equals(checkpoint1.getLabel()));
-                    assertTrue(checkpoints.get(0).getLatitude().equals(checkpoint1.getLatitude()));
-                    assertTrue(checkpoints.get(0).getLongitude().equals(checkpoint1.getLongitude()));
-                    assertTrue(checkpoints.get(0).getQuestionKey().equals(checkpoint1.getQuestionKey()));
-                    assertTrue(checkpoints.get(1).getOrder().equals(checkpoint2.getOrder()));
-                    assertTrue(checkpoints.get(1).getLabel().equals(checkpoint2.getLabel()));
-                    assertTrue(checkpoints.get(1).getLatitude().equals(checkpoint2.getLatitude()));
-                    assertTrue(checkpoints.get(1).getLongitude().equals(checkpoint2.getLongitude()));
-                    assertTrue(checkpoints.get(1).getQuestionKey().equals(checkpoint2.getQuestionKey()));
-                    // remove saved test data
-                    tracksCheckpointsTestRef.setValue(null);
-                    Log.d(testName.getMethodName(), "test completed!");
-                }
+                assertNotNull(checkpoints);
+                assertTrue(checkpoints.get(0).getOrder().equals(checkpoint1.getOrder()));
+                assertTrue(checkpoints.get(0).getLabel().equals(checkpoint1.getLabel()));
+                assertTrue(checkpoints.get(0).getLatitude().equals(checkpoint1.getLatitude()));
+                assertTrue(checkpoints.get(0).getLongitude().equals(checkpoint1.getLongitude()));
+                assertTrue(checkpoints.get(0).getQuestionKey().equals(checkpoint1.getQuestionKey()));
+                assertTrue(checkpoints.get(1).getOrder().equals(checkpoint2.getOrder()));
+                assertTrue(checkpoints.get(1).getLabel().equals(checkpoint2.getLabel()));
+                assertTrue(checkpoints.get(1).getLatitude().equals(checkpoint2.getLatitude()));
+                assertTrue(checkpoints.get(1).getLongitude().equals(checkpoint2.getLongitude()));
+                assertTrue(checkpoints.get(1).getQuestionKey().equals(checkpoint2.getQuestionKey()));
+                // remove saved test data
+                tracksCheckpointsTestRef.setValue(null);
+                Log.d(testName.getMethodName(), "test completed!");
             }
 
             @Override
@@ -194,21 +190,20 @@ public class BackendInteractorImplTest {
         backendInteractor.getQuestions(new BackendInteractor.QuestionsCallback() {
             @Override
             public void onQuestionsReceived(BackendResponseQuestion question) {
-                if (question != null) {
-                    assertTrue(question.getTitle().equals(question1.getTitle()));
-                    assertTrue(question.getCategoryKey().equals(question1.getCategoryKey()));
-                    assertTrue(question.getCorrectAnswer().equals(question1.getCorrectAnswer()));
-                    assertTrue(question.getImgUrl().equals(question1.getImgUrl()));
-                    assertTrue(question.getText().equals(question1.getText()));
-                    // todo: consider to change data structure in BackendAnswerOption to match database
-                    assertTrue(question.getOptions().getA().equals("unassigned optionA"));
-                    assertTrue(question.getOptions().getB().equals("unassigned optionB"));
-                    assertTrue(question.getOptions().getC().equals("unassigned optionC"));
-                    assertTrue(question.getOptions().getD().equals("unassigned optionD"));
-                    // remove saved test data
-                    questionsTestRef.setValue(null);
-                    Log.d(testName.getMethodName(), "test completed!");
-                }
+                assertNotNull(question);
+                assertTrue(question.getTitle().equals(question1.getTitle()));
+                assertTrue(question.getCategoryKey().equals(question1.getCategoryKey()));
+                assertTrue(question.getCorrectAnswer().equals(question1.getCorrectAnswer()));
+                assertTrue(question.getImgUrl().equals(question1.getImgUrl()));
+                assertTrue(question.getText().equals(question1.getText()));
+                // todo: consider to change data structure in BackendAnswerOption to match database
+                assertTrue(question.getOptions().getA().equals("unassigned optionA"));
+                assertTrue(question.getOptions().getB().equals("unassigned optionB"));
+                assertTrue(question.getOptions().getC().equals("unassigned optionC"));
+                assertTrue(question.getOptions().getD().equals("unassigned optionD"));
+                // remove saved test data
+                questionsTestRef.setValue(null);
+                Log.d(testName.getMethodName(), "test completed!");
             }
 
             @Override
