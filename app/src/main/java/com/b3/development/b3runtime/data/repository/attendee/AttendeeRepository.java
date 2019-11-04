@@ -9,7 +9,7 @@ public interface AttendeeRepository {
 
     LiveData<Failure> getError();
 
-    Attendee getAttendeeByUserAccountKey(String userAccountKey);
+    LiveData<Attendee> getAttendeeByUserAccountKey(String userAccountKey);
 
     LiveData<Attendee> getAttendeeById(String id);
 

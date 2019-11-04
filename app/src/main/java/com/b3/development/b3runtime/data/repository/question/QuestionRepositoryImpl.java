@@ -88,7 +88,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         convertedQuestion.id = backendResponseQuestion.getKey();
         convertedQuestion.categoryKey = backendResponseQuestion.getCategoryKey();
         convertedQuestion.correctAnswer = backendResponseQuestion.getCorrectAnswer();
-        convertedQuestion.question = backendResponseQuestion.getQuestionText();
+        convertedQuestion.question = backendResponseQuestion.getText();
         convertedQuestion.optionA = backendResponseQuestion.getOptions().getA();
         convertedQuestion.optionB = backendResponseQuestion.getOptions().getB();
         convertedQuestion.optionC = backendResponseQuestion.getOptions().getC();
@@ -107,7 +107,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
             convertedQuestion.id = question.getKey();
             convertedQuestion.categoryKey = question.getCategoryKey();
             convertedQuestion.correctAnswer = question.getCorrectAnswer();
-            convertedQuestion.question = question.getQuestionText();
+            convertedQuestion.question = question.getText();
             convertedQuestion.optionA = question.getOptions().getA();
             convertedQuestion.optionB = question.getOptions().getB();
             convertedQuestion.optionC = question.getOptions().getC();
