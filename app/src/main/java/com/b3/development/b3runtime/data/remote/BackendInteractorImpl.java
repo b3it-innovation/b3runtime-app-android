@@ -34,6 +34,7 @@ public class BackendInteractorImpl implements BackendInteractor {
     private DatabaseReference firebaseDbTracksCheckpoints;
     private DatabaseReference firebaseDbAttendees;
     private DatabaseReference firebaseDbResults;
+    private DatabaseReference firebaseDbUserAccounts;
 
     private final QueryLiveData competitionsLiveDataSnapshot;
 
@@ -50,12 +51,14 @@ public class BackendInteractorImpl implements BackendInteractor {
                                  DatabaseReference firebaseDbCompetitions,
                                  DatabaseReference firebaseDbTracksCheckpoints,
                                  DatabaseReference firebaseDbAttendees,
-                                 DatabaseReference firebaseDbResults) {
+                                 DatabaseReference firebaseDbResults,
+                                 DatabaseReference firebaseDbUserAccounts) {
         this.firebaseDbQuestions = firebaseDbQuestions;
         this.firebaseDbCompetitions = firebaseDbCompetitions;
         this.firebaseDbTracksCheckpoints = firebaseDbTracksCheckpoints;
         this.firebaseDbAttendees = firebaseDbAttendees;
         this.firebaseDbResults = firebaseDbResults;
+        this.firebaseDbUserAccounts = firebaseDbUserAccounts;
         this.competitionsLiveDataSnapshot = new QueryLiveData(this.firebaseDbCompetitions);
     }
 
@@ -100,6 +103,35 @@ public class BackendInteractorImpl implements BackendInteractor {
                     }
                 });
         return key;
+    }
+
+    public void saveUserAccount(String uid) {
+        Query query = firebaseDbUserAccounts.orderByKey().equalTo(uid);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    Log.d(TAG, uid);
+                    System.out.println(uid);
+                    firebaseDbUserAccounts.child(uid).setValue("uid").addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "succeeded to save user.");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "failed to save user. ", e);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "database error. ", databaseError.toException());
+            }
+        });
     }
 
     /**

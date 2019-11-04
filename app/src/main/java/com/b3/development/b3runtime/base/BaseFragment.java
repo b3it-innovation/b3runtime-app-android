@@ -11,9 +11,9 @@ import androidx.fragment.app.Fragment;
  * Gives all app Fragments a standardised implementation of methods and handling errors.
  * All specific Fragments extend from {@link BaseFragment}
  */
-abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
 
-    abstract Integer getLayoutId();
+    public abstract Integer getLayoutId();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
