@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.b3.development.b3runtime.R;
@@ -106,7 +107,7 @@ public class ProfileFragment extends BaseFragment {
         profilePhotoReference = storage.getReference().child("profile_images");
         firebaseAuth = FirebaseAuth.getInstance();
         currentUser = firebaseAuth.getCurrentUser();
-        profileImageFileName = getResources().getString(R.string.profile_image_file_name);
+        profileImageFileName = getString(R.string.profile_image_file_name);
     }
 
     @Override
@@ -170,7 +171,9 @@ public class ProfileFragment extends BaseFragment {
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                Uri uri = FileProvider.getUriForFile(
+                        getContext(), getActivity().getApplicationContext().getPackageName() + ".provider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
@@ -189,7 +192,6 @@ public class ProfileFragment extends BaseFragment {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
-                deleteProfileImage();
                 uploadProfileImage(result.getUri());
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
@@ -225,6 +227,7 @@ public class ProfileFragment extends BaseFragment {
                     updateProfileImage(downloadUri);
                 } else {
                     // todo: Handle failures
+                    Log.d(TAG, task.getException().getMessage());
                 }
             }
         });
@@ -246,39 +249,6 @@ public class ProfileFragment extends BaseFragment {
                         }
                     }
                 });
-    }
-
-    private void deleteProfileImage() {
-        // Checks if the profile image already exists
-        StorageReference uidRef = profilePhotoReference.child(currentUser.getUid());
-        uidRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
-            @Override
-            public void onSuccess(ListResult listResult) {
-                for (StorageReference item : listResult.getItems()) {
-                    // deletes the image file if it exists
-                    if (item.getName().equals(profileImageFileName)) {
-                        StorageReference deleteRef =
-                                profilePhotoReference.child(currentUser.getUid() + "/" + profileImageFileName);
-                        deleteRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d(TAG, "Deleted the old profile image");
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
-                                Log.d(TAG, exception.getMessage());
-                            }
-                        });
-                    }
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, e.getMessage());
-            }
-        });
     }
 
     private void showProfileImage(ImageView imageView) {
@@ -397,9 +367,9 @@ public class ProfileFragment extends BaseFragment {
 
     private File createImageFile() throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat(getString(R.string.image_file_date_format)).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures/b3runtime");
+        File storageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + getResources().getString(R.string.external_storage_image_path));
 
         if (!storageDir.exists()) {
             storageDir.mkdir();
@@ -417,7 +387,8 @@ public class ProfileFragment extends BaseFragment {
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(currentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
+        Uri contentUri = FileProvider.getUriForFile(
+                getContext(), getActivity().getApplicationContext().getPackageName() + ".provider", f);
         mediaScanIntent.setData(contentUri);
         getActivity().sendBroadcast(mediaScanIntent);
     }
@@ -451,35 +422,7 @@ public class ProfileFragment extends BaseFragment {
             } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 //showPermissionDeniedDialog();
             } else if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                AlertDialog doNotAskAgainClickedDialog = Util.createDialog(
-                        getString(R.string.deniedPermissionsDialogTitle),
-                        getString(R.string.changePermissionsInSettingsMessage),
-                        getString(R.string.goToSettingsButtonText),
-                        (dialog, which) -> {
-                            dialog.dismiss();
-                            //opens settings of the app to manually allow permissions
-                            Intent intent = new Intent();
-                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
-                            intent.setData(uri);
-                            try {
-                                startActivity(intent);
-                            } catch (Exception e) {
-                                Log.d(TAG, getString(R.string.intent_failed));
-                                Toast.makeText(getActivity().getApplicationContext(),
-                                        getString(R.string.somethingWentWrong),
-                                        Toast.LENGTH_SHORT)
-                                        .show();
-                            }
-                            getActivity().finish();
-                        },
-                        getString(R.string.negativeButtonText),
-                        (dialog, which) -> {
-                            dialog.dismiss();
-                            getActivity().finish();
-                        },
-                        false,
-                        getActivity());
+                AlertDialog doNotAskAgainClickedDialog = createDoNotAskAgainClickedDialog();
                 doNotAskAgainClickedDialog.show();
             }
         }
@@ -492,10 +435,42 @@ public class ProfileFragment extends BaseFragment {
             } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 //showPermissionDeniedDialog();
             } else if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
+                AlertDialog doNotAskAgainClickedDialog = createDoNotAskAgainClickedDialog();
+                doNotAskAgainClickedDialog.show();
             }
         }
     }
 
+    private AlertDialog createDoNotAskAgainClickedDialog() {
+        AlertDialog doNotAskAgainClickedDialog = Util.createDialog(
+                getString(R.string.deniedPermissionsDialogTitle),
+                getString(R.string.changePermissionsInSettingsMessage_not_specific),
+                getString(R.string.goToSettingsButtonText),
+                (dialog, which) -> {
+                    dialog.dismiss();
+                    //opens settings of the app to manually allow permissions
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
+                    intent.setData(uri);
+                    try {
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        Log.d(TAG, getString(R.string.intent_failed));
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                getString(R.string.somethingWentWrong),
+                                Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                    getActivity().finish();
+                },
+                getString(R.string.no_text),
+                (dialog, which) -> {
+                    dialog.dismiss();
+                },
+                false,
+                getActivity());
+        return doNotAskAgainClickedDialog;
+    }
 
 }

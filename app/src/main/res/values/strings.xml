@@ -36,6 +36,9 @@
     <string name="maps_activity_back_pressed_alert_message">All your progress will be deleted.</string>
     <string name="maps_activity_back_pressed_alert_positive_button">Yes</string>
     <string name="maps_activity_back_pressed_alert_negative_button">No</string>
+    <string name="no_text">No</string>
+    <string name="changePermissionsInSettingsMessage_not_specific">To change this please go to App Settings >
+        Permissions and grant needed Permissions</string>
 
     <!-- string properties for application settings  -->
     <string name="question_fragment_added_key">questionAdded</string>
@@ -50,5 +53,7 @@
     <string name="sound_pref_key">sound_pref_key</string>
     <string name="music_pref_key">music_pref_key</string>
     <string name="profile_image_file_name">avatar.jpg</string>
+    <string name="external_storage_image_path">/Pictures/b3runtime</string>
+    <string name="image_file_date_format">yyyyMMdd_HHmmss</string>
 
 </resources>
