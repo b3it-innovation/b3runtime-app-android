@@ -9,8 +9,14 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <!-- Only for debugging. todo: Remove before release. -->
     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
+
+    <uses-feature android:name="android.hardware.camera"
+        android:required="false" />
 
     <dist:module dist:instant="true" />
 
@@ -70,12 +76,17 @@
         <service
             android:name=".geofence.LocationService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
-        <!-- You don't need to include android:required="false" if your app's
-     minSdkVersion is 28 or higher. -->
-        <uses-library android:name="android.test.runner"
-            android:required="false" />
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
 
     </application>
 
