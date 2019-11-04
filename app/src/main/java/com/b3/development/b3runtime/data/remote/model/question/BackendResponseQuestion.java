@@ -5,8 +5,8 @@ public class BackendResponseQuestion {
     private String categoryKey;
     private String correctAnswer;
     private String imgUrl;
-    private BackendAnswerOption options;
-    private String questionText;
+    private BackendAnswerOption options; // todo: consider to change data structure in BackendAnswerOption to match database
+    private String text;
     private String title;
 
     //getters and setters because Java
@@ -51,12 +51,12 @@ public class BackendResponseQuestion {
         this.options = options;
     }
 
-    public String getQuestionText() {
-        return questionText;
+    public String getText() {
+        return text;
     }
 
-    public void setQuestionText(String questionText) {
-        this.questionText = questionText;
+    public void setText(String text) {
+        this.text = text;
     }
 
     public String getTitle() {

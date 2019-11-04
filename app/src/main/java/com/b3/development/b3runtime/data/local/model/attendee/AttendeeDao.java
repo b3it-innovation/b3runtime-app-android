@@ -20,10 +20,10 @@ public interface AttendeeDao {
     void insertAttendee(Attendee attendee);
 
     @Query("SELECT * FROM Attendee")
-    List<Attendee> getAll();
+    LiveData<List<Attendee>> getAll();
 
     @Query("SELECT * FROM Attendee WHERE userAccountKey = :userAccountKey")
-    Attendee getAttendeeByUserAccountId(String userAccountKey);
+    LiveData<Attendee> getAttendeeByUserAccountId(String userAccountKey);
 
     @Query("SELECT * FROM Attendee WHERE id = :id")
     LiveData<Attendee> getAttendeeById(String id);
