@@ -45,6 +45,7 @@ public class BackendInteractorImplTest {
     private DatabaseReference tracksCheckpointsTestRef = null;
     private DatabaseReference resultsTestRef = null;
     private DatabaseReference questionsTestRef = null;
+    private DatabaseReference userAccountsTestRef = null;
 
 
     @Before
@@ -58,8 +59,9 @@ public class BackendInteractorImplTest {
         tracksCheckpointsTestRef = firebaseDatabase.getReference("tracksCheckpointsTest");
         resultsTestRef = firebaseDatabase.getReference("resultsTest");
         questionsTestRef = firebaseDatabase.getReference("questionsTest");
+        userAccountsTestRef = firebaseDatabase.getReference("userAccountsTest");
         backendInteractor = new BackendInteractorImpl(questionsTestRef, competitionsTestRef, tracksCheckpointsTestRef,
-                attendeesTestRef, resultsTestRef);
+                attendeesTestRef, resultsTestRef, userAccountsTestRef);
     }
 
     @After
