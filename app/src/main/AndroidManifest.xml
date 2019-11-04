@@ -35,6 +35,11 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDi1MAiwsiJE8r5LWWvANy9JfXyXfrPjo4" />
 
+        <uses-library android:name="android.test.runner"
+            android:required="false" />
+
+        <activity android:name=".ui.competition.CompetitionActivity">
+
         <activity android:name=".ui.signin.SignInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -18,6 +18,8 @@ import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepos
 import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepositoryImpl
 import com.b3.development.b3runtime.geofence.GeofenceManager
 import com.b3.development.b3runtime.geofence.GeofenceManagerImpl
+import com.b3.development.b3runtime.ui.map.MapsActivity
+import com.b3.development.b3runtime.ui.map.MapsViewModel
 import com.google.firebase.database.FirebaseDatabase
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
