@@ -4,16 +4,22 @@
 implementation of **orientering** game, adding a **biathlon** angle to it, where the user shoots answers to questions 
 within their category - area of work, education or challenge.
 
+<img src="https://firebasestorage.googleapis.com/v0/b/b3runtimedev-cc9d4.appspot.com/o/runtime_files%2FreadyToStart.png?alt=media&token=e1ced99c-bed1-4e31-b89f-e0d285b99c62" width="250">
+
 ### How it works
-//todo add photos
-When the app is started, (//this needs to be changed when sing in/login is added) the *game* starts immediately. 
-It shows a map and a marker of the first challenge location. Once the user is within a range of the checkpoint a notification
-is triggered and a question within user's category pops up. After user chooses and confirms their answer a response 
+When the app is started, the user is presented with a sign in screen. After creating an account and signing in
+the user is taken to the home screen. From here you can access your profile, where you can change your name,
+profile picture and password. You are also able to sign out with the sign out button, or start playing by clicking choose competition.
+When the user wants to start a competition they get to choose a track and then the app
+shows a map with checkpoints and the first challenge location is marked with a pulsating circle.
+Once the user is within range of the checkpoint a notification is triggered and a question pops up.
+After the user chooses and confirms their answer a response
 popup informs user of their result. Depending on the result an additional route (if answer is wrong) or next challenge 
-location (if answer is correct) are suggested and game continues.
+location (if answer is correct) are presented and the game continues.
 
 #### Authentication
-//to be added
+***b3Runtime*** uses Firebase Authentication for registration and sign in of users. Users are at the moment able to create an account
+using their Google account, or using their email.
 
 #### Permissions
 ***b3Runtime*** requires *Location permissions* and it is not possible to use the app without them. 
@@ -21,11 +27,14 @@ Every time the app is started it checks for permissions and requires them again 
 meanwhile. It makes sure user is informed as well as assisted into granting location permissions.
 
 #### Network
-At the moment the app requires the user to have internet connection, at least on start up in order to 
-update locations and questions. Then one can play offline.
+At the moment the app requires the user to have internet connection. On start up in order to
+update checkpoints and questions, when entering the starting checkpoint for fetching the questions and
+on every checkpoint for saving result to the Firebase realtime database. It's also required for signing in,
+fetching competitions and for updating the profile.
 
 ## Code
-***b3Runtime*** is written in Java 8, with an exception of two classes written in Kotlin. 
+***b3Runtime*** is written in Java 8, with an exception of two classes written in Kotlin.
+Minimum SDK version is at the moment 24.
 
 ### Project Structure
 To achieve a standardised implementation of methods and handling errors in all *Views* and *ViewModels*,
@@ -40,7 +49,10 @@ Subpackages are divided by topic/feature.
 
 **geofence package** contains *GeofenceManager interface* and *GeofenceManagerImpl* class implementing geofence adding
  and removing logic, as well as *GeofenceBroadcastReciver* thet handles incoming intents, and *GeofencetransitionsJobIntentService*
- that handles the *Jobs* related to geofences
+ that handles the *Jobs* related to geofences. It also contains *LocationService* which is a class that shows a foreground notification
+ and keeps track of the users whereabouts while the app is in the background.
+
+**sound package** contains *Jukebox* class and *SoundEvent* class to play sound effects for different events in the game.
 
 **ui package** contains the Views and ViewModels of all features that are shown to the user. Subpackages 
 are divided by topic/feature.
@@ -74,16 +86,18 @@ changes in data in real time
 **Room** ensures constant and timely flow of data by providing *LiveData* every time data is changed in the remote storage
 
 #### Dependency Injection
-For supporting the *clean MVVM pattern* and keeping the code decoupled, we use a *dependency injection library Koin*. 
+**Koin** For supporting the *clean MVVM pattern* and keeping the code decoupled, we use a *dependency injection library Koin*.
 With it *Interactors, Managers* and other logic containing classes that our *ViewModel* is dependent on, are injected
 as singleton instances instead of the *VM* holding references to them. In the same way the *ViewModel* is injected in the *View*.
 Other places where *koin* plays a role is in implementing *interfaces* like *Repositories* and *Interactors*,
 and by that injecting the implementation class wherever needed. This is secured by the binding in *Modules.kt class*.
 
+#### Other
+**Android Image Cropper**
+Android Image Cropper is used for cropping user's image when uploading a profile picture.
+
 ### Firebase
-At the moment *Firebase* is used in our project as a database. 
-In future it will be used for signing in, authentication and possibly other services.
-// Please update this readme when this happens.
+At the moment *Firebase* is used in our project as a realtime database, for authentication and for storing user's profile pictures.
 
 ### GoogleMaps
 *GoogleMaps* is used to implement and show the user an interactive map, marking the area of the game. It requires 
