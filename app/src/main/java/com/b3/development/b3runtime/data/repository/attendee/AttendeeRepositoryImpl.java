@@ -38,7 +38,7 @@ public class AttendeeRepositoryImpl implements AttendeeRepository {
     }
 
     @Override
-    public Attendee getAttendeeByUserAccountKey(String userAccountKey) {
+    public LiveData<Attendee> getAttendeeByUserAccountKey(String userAccountKey) {
         return attendeeDao.getAttendeeByUserAccountId(userAccountKey);
     }
 

@@ -8,8 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <!-- Only for debugging. todo: Remove before release. -->
+    <uses-permission android:name="android.permission.VIBRATE" /> <!-- Only for debugging. todo: Remove before release. -->
     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
 
     <dist:module dist:instant="true" />
@@ -39,19 +38,25 @@
         <uses-library android:name="android.test.runner"
             android:required="false" />
 
-
-        <activity
-            android:name=".ui.map.MapsActivity"
-            android:label="@string/title_activity_maps"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-
         <activity android:name=".ui.competition.CompetitionActivity">
+
+        <activity android:name=".ui.signin.SignInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.home.HomeActivity"/>
+
+        <activity
+            android:name=".ui.map.MapsActivity"
+            android:label="@string/title_activity_maps"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
 
         <receiver
             android:name=".geofence.GeofenceBroadcastReceiver"
@@ -67,6 +72,12 @@
             android:name=".geofence.LocationService"
             android:enabled="true"
             android:exported="true"></service>
+
+        <!-- You don't need to include android:required="false" if your app's
+     minSdkVersion is 28 or higher. -->
+        <uses-library android:name="android.test.runner"
+            android:required="false" />
+
     </application>
 
 </manifest>

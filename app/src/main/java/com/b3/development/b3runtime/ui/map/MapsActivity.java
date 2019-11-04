@@ -3,7 +3,6 @@ package com.b3.development.b3runtime.ui.map;
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -36,11 +35,10 @@ import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.geofence.LocationService;
 import com.b3.development.b3runtime.sound.Jukebox;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
-import com.b3.development.b3runtime.ui.competition.CompetitionActivity;
+import com.b3.development.b3runtime.ui.home.HomeActivity;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.PenaltyFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
-import com.b3.development.b3runtime.ui.question.ResponseFragment;
 import com.b3.development.b3runtime.ui.question.ResultFragment;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
 import com.b3.development.b3runtime.utils.Util;
@@ -101,7 +99,7 @@ public class MapsActivity extends BaseActivity
 
         //check if questionfragment is created and retained, if it is then detach from screen
         if (savedInstanceState != null) {
-            if (savedInstanceState.getBoolean(getResources().getString(R.string.questionFragmentAddedKey))) {
+            if (savedInstanceState.getBoolean(getResources().getString(R.string.question_fragment_added_key))) {
                 questionFragment =
                         (QuestionFragment) getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG);
                 getSupportFragmentManager().beginTransaction().detach(questionFragment).commit();
@@ -126,9 +124,9 @@ public class MapsActivity extends BaseActivity
         viewModel.currentAttendee.observe(this, attendee -> {
         });
 
-        // if the intent is come from TrackActivity remove all checkpoints to redraw them
+        // if the intent is come from HomeActivity remove all checkpoints to redraw them
         final String callingActivityName = intent.getStringExtra("callingActivity");
-        if (callingActivityName != null && callingActivityName.equals(CompetitionActivity.TAG)) {
+        if (callingActivityName != null && callingActivityName.equals(HomeActivity.TAG)) {
             viewModel.removeAllCheckpoints();
             viewModel.init(trackKey);
             // reset extra to avoid to trigger reset on screen rotation
@@ -159,14 +157,15 @@ public class MapsActivity extends BaseActivity
         //gets Map asynchronously
         mapFragment.getMapAsync(this);
         //creates a dialog to inform the user that permissions are necessary for functioning of the app
-        permissionDeniedDialog = createDialog(
+        permissionDeniedDialog = Util.createDialog(
                 getString(R.string.permissionsDialogTitle),
                 getString(R.string.permissionsDialogMessage),
                 getString(R.string.okButton),
                 (dialogInterface, i) -> requestLocationPermissions(),
                 "",
                 null,
-                false);
+                false,
+                this);
         registerReceiver();
 
         // Find the toolbar view inside the activity layout
@@ -267,12 +266,35 @@ public class MapsActivity extends BaseActivity
     public void onSaveInstanceState(Bundle savedInstanceState) {
         //save state if questionfragment is created, to retain it during screen rotation
         savedInstanceState
-                .putBoolean(getResources().getString(R.string.questionFragmentAddedKey),
+                .putBoolean(getResources().getString(R.string.question_fragment_added_key),
                         getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG) != null);
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    //todo: move to manifest to receive broadcasts when activity in background
+    @Override
+    public void onBackPressed() {
+        AlertDialog confirmBackDialog = Util.createDialog(getResources().getString(R.string.maps_activity_back_pressed_alert_title),
+                getResources().getString(R.string.maps_activity_back_pressed_alert_message),
+                getResources().getString(R.string.maps_activity_back_pressed_alert_positive_button),
+                (dialog, which) -> { goBackToHomeActivity(); },
+                getResources().getString(R.string.maps_activity_back_pressed_alert_negative_button),
+                (dialog, which) -> {},
+                false,
+                this);
+        confirmBackDialog.show();
+    }
+
+    private void goBackToHomeActivity(){
+        // Closing all activities and go back to home activity
+        Intent i = new Intent(this, HomeActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.putExtra("EXIT", true);
+        startActivity(i);
+        finish();
+    }
+
     private void registerReceiver() {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -397,7 +419,7 @@ public class MapsActivity extends BaseActivity
             } else if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 showPermissionDeniedDialog();
             } else if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                AlertDialog doNotAskAgainClickedDialog = createDialog(
+                AlertDialog doNotAskAgainClickedDialog = Util.createDialog(
                         getString(R.string.deniedPermissionsDialogTitle),
                         getString(R.string.changePermissionsInSettingsMessage),
                         getString(R.string.goToSettingsButtonText),
@@ -424,26 +446,11 @@ public class MapsActivity extends BaseActivity
                             dialog.dismiss();
                             finish();
                         },
-                        false);
+                        false,
+                        this);
                 doNotAskAgainClickedDialog.show();
             }
         }
-    }
-
-    private AlertDialog createDialog(String title,
-                                     String message,
-                                     String positiveButton,
-                                     DialogInterface.OnClickListener listener,
-                                     String negativeButton,
-                                     DialogInterface.OnClickListener negativeButtonListener,
-                                     Boolean cancelable) {
-        return new AlertDialog.Builder(this)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(positiveButton, listener)
-                .setNegativeButton(negativeButton, negativeButtonListener)
-                .setCancelable(cancelable)
-                .create();
     }
 
     private void showPermissionDeniedDialog() {

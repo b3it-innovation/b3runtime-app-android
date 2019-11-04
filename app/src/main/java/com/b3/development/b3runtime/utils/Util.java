@@ -2,6 +2,9 @@ package com.b3.development.b3runtime.utils;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.DialogInterface;
+
+import androidx.appcompat.app.AlertDialog;
 
 import java.util.List;
 
@@ -25,7 +28,7 @@ public class Util {
     }
 
     // checks if the service is running
-    public static boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
+    public static boolean isMyServiceRunning(Class<?> serviceClass, final Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.getName().equals(service.service.getClassName())) {
@@ -33,5 +36,22 @@ public class Util {
             }
         }
         return false;
+    }
+
+    public static AlertDialog createDialog(final String title,
+                                           final String message,
+                                           final String positiveButton,
+                                           final DialogInterface.OnClickListener listener,
+                                           final String negativeButton,
+                                           final DialogInterface.OnClickListener negativeButtonListener,
+                                           final Boolean cancelable,
+                                           final Context context) {
+        return new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(positiveButton, listener)
+                .setNegativeButton(negativeButton, negativeButtonListener)
+                .setCancelable(cancelable)
+                .create();
     }
 }

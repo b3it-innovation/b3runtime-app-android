@@ -34,6 +34,7 @@ public class BackendInteractorImpl implements BackendInteractor {
     private DatabaseReference firebaseDbTracksCheckpoints;
     private DatabaseReference firebaseDbAttendees;
     private DatabaseReference firebaseDbResults;
+    private DatabaseReference firebaseDbUserAccounts;
 
     private final QueryLiveData competitionsLiveDataSnapshot;
 
@@ -50,12 +51,14 @@ public class BackendInteractorImpl implements BackendInteractor {
                                  DatabaseReference firebaseDbCompetitions,
                                  DatabaseReference firebaseDbTracksCheckpoints,
                                  DatabaseReference firebaseDbAttendees,
-                                 DatabaseReference firebaseDbResults) {
+                                 DatabaseReference firebaseDbResults,
+                                 DatabaseReference firebaseDbUserAccounts) {
         this.firebaseDbQuestions = firebaseDbQuestions;
         this.firebaseDbCompetitions = firebaseDbCompetitions;
         this.firebaseDbTracksCheckpoints = firebaseDbTracksCheckpoints;
         this.firebaseDbAttendees = firebaseDbAttendees;
         this.firebaseDbResults = firebaseDbResults;
+        this.firebaseDbUserAccounts = firebaseDbUserAccounts;
         this.competitionsLiveDataSnapshot = new QueryLiveData(this.firebaseDbCompetitions);
     }
 
@@ -102,6 +105,35 @@ public class BackendInteractorImpl implements BackendInteractor {
         return key;
     }
 
+    public void saveUserAccount(String uid) {
+        Query query = firebaseDbUserAccounts.orderByKey().equalTo(uid);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    Log.d(TAG, uid);
+                    System.out.println(uid);
+                    firebaseDbUserAccounts.child(uid).setValue("uid").addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "succeeded to save user.");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "failed to save user. ", e);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "database error. ", databaseError.toException());
+            }
+        });
+    }
+
     /**
      * <code>getCheckpoint()</code> is called from the repository to feed the local database with data from the remote.
      * Receives an implementation of the callback} interface
@@ -125,17 +157,10 @@ public class BackendInteractorImpl implements BackendInteractor {
                 System.out.println("data change in checkpoints");
                 List<BackendResponseCheckpoint> checkpoints = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    for (DataSnapshot locationSnapshot : snapshot.child("checkpoints").getChildren()) {
-                        //gets the BackendResponseCheckpoint object
-                        BackendResponseCheckpoint checkpoint = new BackendResponseCheckpoint();
-                        checkpoint.setKey(locationSnapshot.getKey());
-                        //checkpoint.setDraggable((Boolean) locationSnapshot.child("mapLocation").child("draggable").getValue());
-                        checkpoint.setLabel((String) locationSnapshot.child("label").getValue());
-                        checkpoint.setLatitude((Double) locationSnapshot.child("latitude").getValue());
-                        checkpoint.setLongitude((Double) locationSnapshot.child("longitude").getValue());
-                        checkpoint.setOrder((Long) locationSnapshot.child("order").getValue());
-                        checkpoint.setQuestionKey((String) locationSnapshot.child("questionKey").getValue());
-                        checkpoint.setPenalty((Boolean) locationSnapshot.child("penalty").getValue());
+                    for (DataSnapshot checkpointsSnapshot : snapshot.child("checkpoints").getChildren()) {
+                        //gets the BackendResponseCheckpoint object and convert snapshot to it
+                        BackendResponseCheckpoint checkpoint =
+                                convertDataToBackendResponseCheckpoint(checkpointsSnapshot);
                         //adds the object to the List of BackendResponseCheckpoint objects
                         checkpoints.add(checkpoint);
                     }
@@ -176,45 +201,7 @@ public class BackendInteractorImpl implements BackendInteractor {
                     System.out.println("data change in questions");
                     BackendResponseQuestion fbQuestion = null;
                     if (dataSnapshot.exists()) {
-                        fbQuestion = new BackendResponseQuestion();
-                        //gets the BackendResponseQuestion object
-                        fbQuestion.setKey(dataSnapshot.getKey());
-                        //todo retrieve from relation in question
-                        fbQuestion.setCategoryKey((String) dataSnapshot.child("categoryKey").getValue());
-                        fbQuestion.setCorrectAnswer((String) dataSnapshot.child("correctAnswer").getValue());
-                        fbQuestion.setImgUrl("imgUrl");
-                        //gets the nested "options" object containing the answer options
-                        //in case options are not set as mocked data in firebase varys on provided options
-                        //they are manually set to hardcoded values for debug purposes
-                        BackendAnswerOption answer = new BackendAnswerOption();
-                        String optionA = (String) dataSnapshot.child("options").child("0").child("text").getValue();
-                        if (optionA != null) {
-                            answer.setA(optionA);
-                        } else {
-                            answer.setA("unassigned optionA");
-                        }
-                        String optionB = (String) dataSnapshot.child("options").child("1").child("text").getValue();
-                        if (optionB != null) {
-                            answer.setB(optionB);
-                        } else {
-                            answer.setB("unassigned optionB");
-                        }
-                        String optionC = (String) dataSnapshot.child("options").child("2").child("text").getValue();
-                        if (optionC != null) {
-                            answer.setC(optionC);
-                        } else {
-                            answer.setC("unassigned optionC");
-                        }
-                        String optionD = (String) dataSnapshot.child("options").child("3").child("text").getValue();
-                        if (optionD != null) {
-                            answer.setD(optionD);
-                        } else {
-                            answer.setD("unassigned optionD");
-                        }
-                        fbQuestion.setOptions(answer);
-                        //sets the rest of the BackendResponseQuestion object
-                        fbQuestion.setQuestionText((String) dataSnapshot.child("text").getValue());
-                        fbQuestion.setTitle((String) dataSnapshot.child("title").getValue());
+                        fbQuestion = convertDataToBackendResponseQuestion(dataSnapshot);
                     }
                     //returns the Callback containing the List of locations
                     if (fbQuestion != null) {
@@ -237,6 +224,62 @@ public class BackendInteractorImpl implements BackendInteractor {
             });
 
         }
+    }
 
+    private BackendResponseCheckpoint convertDataToBackendResponseCheckpoint(DataSnapshot dataSnapshot){
+        BackendResponseCheckpoint checkpoint = new BackendResponseCheckpoint();
+        checkpoint.setKey(dataSnapshot.getKey());
+        //checkpoint.setDraggable((Boolean) locationSnapshot.child("mapLocation").child("draggable").getValue());
+        checkpoint.setLabel((String) dataSnapshot.child("label").getValue());
+        checkpoint.setLatitude((Double) dataSnapshot.child("latitude").getValue());
+        checkpoint.setLongitude((Double) dataSnapshot.child("longitude").getValue());
+        checkpoint.setOrder((Long) dataSnapshot.child("order").getValue());
+        checkpoint.setQuestionKey((String) dataSnapshot.child("questionKey").getValue());
+        checkpoint.setPenalty((Boolean) dataSnapshot.child("penalty").getValue());
+        return checkpoint;
+    }
+
+    private BackendResponseQuestion convertDataToBackendResponseQuestion(DataSnapshot dataSnapshot){
+        BackendResponseQuestion fbQuestion = new BackendResponseQuestion();
+        //gets the BackendResponseQuestion object
+        fbQuestion.setKey(dataSnapshot.getKey());
+        //todo retrieve from relation in question
+        fbQuestion.setCategoryKey((String) dataSnapshot.child("categoryKey").getValue());
+        fbQuestion.setCorrectAnswer((String) dataSnapshot.child("correctAnswer").getValue());
+        fbQuestion.setImgUrl((String) dataSnapshot.child("imgUrl").getValue());
+        //gets the nested "options" object containing the answer options
+        //in case options are not set as mocked data in firebase varys on provided options
+        //they are manually set to hardcoded values for debug purposes
+        BackendAnswerOption answer = new BackendAnswerOption();
+        String optionA = (String) dataSnapshot.child("options").child("0").child("text").getValue();
+        if (optionA != null) {
+            answer.setA(optionA);
+        } else {
+            answer.setA("unassigned optionA");
+        }
+        String optionB = (String) dataSnapshot.child("options").child("1").child("text").getValue();
+        if (optionB != null) {
+            answer.setB(optionB);
+        } else {
+            answer.setB("unassigned optionB");
+        }
+        String optionC = (String) dataSnapshot.child("options").child("2").child("text").getValue();
+        if (optionC != null) {
+            answer.setC(optionC);
+        } else {
+            answer.setC("unassigned optionC");
+        }
+        String optionD = (String) dataSnapshot.child("options").child("3").child("text").getValue();
+        if (optionD != null) {
+            answer.setD(optionD);
+        } else {
+            answer.setD("unassigned optionD");
+        }
+        fbQuestion.setOptions(answer);
+        //sets the rest of the BackendResponseQuestion object
+        fbQuestion.setText((String) dataSnapshot.child("text").getValue());
+        fbQuestion.setTitle((String) dataSnapshot.child("title").getValue());
+
+        return fbQuestion;
     }
 }
