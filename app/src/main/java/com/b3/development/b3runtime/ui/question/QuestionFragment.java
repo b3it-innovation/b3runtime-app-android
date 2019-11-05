@@ -18,7 +18,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
-import com.b3.development.b3runtime.base.BaseQuestionFragment;
+import com.b3.development.b3runtime.base.BaseDialogFragment;
 import com.b3.development.b3runtime.data.local.model.question.Question;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
@@ -30,7 +30,7 @@ import static org.koin.java.KoinJavaComponent.get;
 /**
  * Contains logic for displaying questions and handling the answer
  */
-public class QuestionFragment extends BaseQuestionFragment {
+public class QuestionFragment extends BaseDialogFragment {
 
     public static final String TAG = QuestionFragment.class.getSimpleName();
     private static final int layoutId = R.layout.fragment_question_dialog;

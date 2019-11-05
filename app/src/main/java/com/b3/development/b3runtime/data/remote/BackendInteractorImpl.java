@@ -227,15 +227,9 @@ public class BackendInteractorImpl implements BackendInteractor {
     }
 
     private BackendResponseCheckpoint convertDataToBackendResponseCheckpoint(DataSnapshot dataSnapshot){
-        BackendResponseCheckpoint checkpoint = new BackendResponseCheckpoint();
+        BackendResponseCheckpoint checkpoint = dataSnapshot.getValue(BackendResponseCheckpoint.class);
         checkpoint.setKey(dataSnapshot.getKey());
         //checkpoint.setDraggable((Boolean) locationSnapshot.child("mapLocation").child("draggable").getValue());
-        checkpoint.setLabel((String) dataSnapshot.child("label").getValue());
-        checkpoint.setLatitude((Double) dataSnapshot.child("latitude").getValue());
-        checkpoint.setLongitude((Double) dataSnapshot.child("longitude").getValue());
-        checkpoint.setOrder((Long) dataSnapshot.child("order").getValue());
-        checkpoint.setQuestionKey((String) dataSnapshot.child("questionKey").getValue());
-        checkpoint.setPenalty((Boolean) dataSnapshot.child("penalty").getValue());
         return checkpoint;
     }
 

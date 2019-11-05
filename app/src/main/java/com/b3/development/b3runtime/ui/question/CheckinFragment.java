@@ -13,7 +13,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
-import com.b3.development.b3runtime.base.BaseQuestionFragment;
+import com.b3.development.b3runtime.base.BaseDialogFragment;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
@@ -28,7 +28,7 @@ import static org.koin.java.KoinJavaComponent.get;
 /**
  * Contains logic for displaying a {@link CheckinFragment} to inform user if they want start the game
  */
-public class CheckinFragment extends BaseQuestionFragment {
+public class CheckinFragment extends BaseDialogFragment {
 
     public static final String TAG = CheckinFragment.class.getSimpleName();
     private static final int layoutId = R.layout.fragment_result_dialog;

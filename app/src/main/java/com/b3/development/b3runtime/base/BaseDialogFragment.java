@@ -12,9 +12,9 @@ import androidx.fragment.app.DialogFragment;
 /**
  * A special base class for DialogFragments.
  * Gives all app DialogFragments a standardised implementation of methods and handling errors.
- * All specific DialogFragments extend from {@link BaseQuestionFragment}
+ * All specific DialogFragments extend from {@link BaseDialogFragment}
  */
-public abstract class BaseQuestionFragment extends DialogFragment {
+public abstract class BaseDialogFragment extends DialogFragment {
 
     public abstract Integer getLayoutId();
 

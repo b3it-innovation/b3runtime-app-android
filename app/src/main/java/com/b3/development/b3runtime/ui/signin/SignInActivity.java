@@ -39,7 +39,6 @@ public class SignInActivity extends AppCompatActivity {
             if (user != null) {
                 //logged in
                 startHomeActivity();
-//                    finish();
             } else {
                 //not logged in, create sign in intent
                 createSignInIntent();

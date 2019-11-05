@@ -22,7 +22,7 @@ import java.util.HashMap;
  */
 public class Jukebox {
 
-    static final String TAG = "Jukebox";
+    static final String TAG = Jukebox.class.getSimpleName();
 
     private static String SOUNDS_PREF_KEY;
     private static String MUSIC_PREF_KEY;

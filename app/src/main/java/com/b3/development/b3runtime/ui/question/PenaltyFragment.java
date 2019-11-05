@@ -14,27 +14,24 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
-import com.b3.development.b3runtime.base.BaseQuestionFragment;
+import com.b3.development.b3runtime.base.BaseDialogFragment;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.sound.Jukebox;
 import com.b3.development.b3runtime.sound.SoundEvent;
-import com.b3.development.b3runtime.ui.map.MapsActivity;
 import com.b3.development.b3runtime.ui.map.MapsViewModel;
 import com.b3.development.b3runtime.ui.map.MapsViewModelFactory;
 import com.github.abdularis.civ.CircleImageView;
 
 import static com.b3.development.b3runtime.R.color.b3Blue;
-import static com.b3.development.b3runtime.R.color.b3Purple;
-import static com.b3.development.b3runtime.R.color.b3Yellow;
 import static org.koin.java.KoinJavaComponent.get;
 
 /**
  * Contains logic for displaying a {@link PenaltyFragment} to inform user of their result
  */
-public class PenaltyFragment extends BaseQuestionFragment {
+public class PenaltyFragment extends BaseDialogFragment {
 
     public static final String TAG = PenaltyFragment.class.getSimpleName();
     private static final int layoutId = R.layout.fragment_result_dialog;
