@@ -70,7 +70,7 @@ public class ResultFragment extends BaseQuestionFragment {
                         get(AttendeeRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext(), ""))
                 .get(MapsViewModel.class);
         //observe allCheckpoints and set response with the result
-        viewModel.allCheckpoints.observe(this, pins -> response.setText(viewModel.getResult()));
+        viewModel.allCheckpoints.observe(this, pins -> response.setText(viewModel.getResultString()));
     }
 
     @Override
