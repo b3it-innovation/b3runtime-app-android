@@ -13,15 +13,14 @@ import androidx.lifecycle.ViewModelProviders;
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepository;
-import com.b3.development.b3runtime.ui.profile.ProfileFragment;
+import com.b3.development.b3runtime.ui.competition.CompetitionFragment;
 import com.b3.development.b3runtime.ui.competition.TrackFragment;
+import com.b3.development.b3runtime.ui.profile.ProfileFragment;
 import com.b3.development.b3runtime.ui.signin.SignInActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.b3.development.b3runtime.ui.competition.CompetitionFragment;
 import com.google.firebase.auth.FirebaseAuth;
-
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -64,8 +63,17 @@ public class HomeActivity extends AppCompatActivity {
                         .replace(R.id.home_container, fragment, TrackFragment.TAG).commit();
             }
         }
-
         saveUserAccount();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     public void signOut(View view) {
@@ -88,16 +96,6 @@ public class HomeActivity extends AppCompatActivity {
     public boolean isTrackUnfinished() {
         boolean trackUnfinished = homeViewModel.isTrackUnfinished();
         return trackUnfinished;
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     public void showCompetitionFragment() {

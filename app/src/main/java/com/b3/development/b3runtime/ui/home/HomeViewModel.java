@@ -12,10 +12,9 @@ import java.util.List;
 
 public class HomeViewModel extends BaseViewModel {
 
-    UserAccountRepository userAccountRepository;
-    CheckpointRepository checkpointRepository;
+    private UserAccountRepository userAccountRepository;
+    private CheckpointRepository checkpointRepository;
     private LiveData<List<BackendResult>> results;
-
 
     public HomeViewModel(UserAccountRepository userAccountRepository, CheckpointRepository checkpointRepository) {
         this.userAccountRepository = userAccountRepository;
