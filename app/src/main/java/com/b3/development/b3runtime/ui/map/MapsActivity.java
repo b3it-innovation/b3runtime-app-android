@@ -14,6 +14,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -91,6 +92,11 @@ public class MapsActivity extends BaseActivity
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+
+        // prevents taking any screenshot on this activity
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE);
+
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         // get trackKey from intent
         Intent intent = getIntent();
