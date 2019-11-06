@@ -232,6 +232,8 @@ public class MapsActivity extends BaseActivity
                 } else {
                     map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
                 }
+            case R.id.action_dark_mode:
+                
             default:
                 return super.onOptionsItemSelected(item);
         }
