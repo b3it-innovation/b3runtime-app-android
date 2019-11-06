@@ -217,6 +217,17 @@ public class MapsActivity extends BaseActivity
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        //hide option to set dark mode when in satellite view
+        if (viewModel.isSatelliteView()) {
+            menu.findItem(R.id.action_dark_mode).setVisible(false);
+        } else {
+            menu.findItem(R.id.action_dark_mode).setVisible(true);
+        }
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_reset:
@@ -226,14 +237,31 @@ public class MapsActivity extends BaseActivity
             case R.id.action_sound_mode:
                 jukebox.toggleSoundStatus();
                 setSoundModeTextInMenuItem(item);
+                return true;
             case R.id.action_satellite_view:
-                if (map.getMapType() != GoogleMap.MAP_TYPE_HYBRID) {
-                    map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                } else {
-                    map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                }
+                toggleSatelliteView();
+                return true;
+            case R.id.action_dark_mode:
+                toggleDarkMode();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void toggleDarkMode() {
+        if (viewModel.isDarkMode()) {
+            mapsRenderer.changeToNormalMapMode(map, viewModel);
+        } else {
+            mapsRenderer.changeToDarkMapMode(map, viewModel);
+        }
+    }
+
+    public void toggleSatelliteView() {
+        if (viewModel.isSatelliteView()) {
+            mapsRenderer.changeToMapsView(map, viewModel);
+        } else {
+            mapsRenderer.changeToSatelliteView(map, viewModel);
         }
     }
 
@@ -288,15 +316,18 @@ public class MapsActivity extends BaseActivity
         AlertDialog confirmBackDialog = Util.createDialog(getResources().getString(R.string.maps_activity_back_pressed_alert_title),
                 getResources().getString(R.string.maps_activity_back_pressed_alert_message),
                 getResources().getString(R.string.maps_activity_back_pressed_alert_positive_button),
-                (dialog, which) -> { goBackToHomeActivity(); },
+                (dialog, which) -> {
+                    goBackToHomeActivity();
+                },
                 getResources().getString(R.string.maps_activity_back_pressed_alert_negative_button),
-                (dialog, which) -> {},
+                (dialog, which) -> {
+                },
                 false,
                 this);
         confirmBackDialog.show();
     }
 
-    private void goBackToHomeActivity(){
+    private void goBackToHomeActivity() {
         // Closing all activities and go back to home activity
         Intent i = new Intent(this, HomeActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -356,6 +387,15 @@ public class MapsActivity extends BaseActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+
+        //check if satellite or dark mode was enabled on screen rotation and set it accordingly
+        if (viewModel.isSatelliteView()) {
+            mapsRenderer.changeToSatelliteView(map, viewModel);
+        }
+        if (viewModel.isDarkMode()) {
+            mapsRenderer.changeToDarkMapMode(map, viewModel);
+        }
+
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15f));
         initializeMap();
 

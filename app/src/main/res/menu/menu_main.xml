@@ -18,4 +18,10 @@
         android:orderInCategory="300"
         android:title="Toggle satellite view"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_dark_mode"
+        android:orderInCategory="400"
+        android:title="Toggle dark mode"
+        app:showAsAction="never" />
 </menu>
