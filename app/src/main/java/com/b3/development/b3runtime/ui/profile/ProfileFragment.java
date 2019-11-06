@@ -1,21 +1,15 @@
 package com.b3.development.b3runtime.ui.profile;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.Settings;
-import android.text.InputFilter;
-import android.text.InputType;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,14 +24,12 @@ import androidx.fragment.app.Fragment;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseFragment;
-import com.b3.development.b3runtime.utils.Util;
+import com.b3.development.b3runtime.utils.AlertDialogUtil;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,7 +37,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -272,62 +263,28 @@ public class ProfileFragment extends BaseFragment {
     private void changeName(View view) {
         //get old name
         TextView name = view.findViewById(R.id.editTextName);
-        String newName = name.getText().toString();
+        String oldName = name.getText().toString();
 
         //create dialog, insert old name as placeholder
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Enter new name");
-        final EditText input = new EditText(getContext());
+        AlertDialogUtil.createTextInputDialogForName(this, view, oldName).show();
+    }
 
-        //filters for text
-        InputFilter[] filterArray = new InputFilter[2];
-        filterArray[0] = new InputFilter.LengthFilter(20);
-        InputFilter filter = new InputFilter() {
-            public CharSequence filter(CharSequence source, int start, int end,
-                                       Spanned dest, int dstart, int dend) {
-                for (int i = start; i < end; i++) {
-                    if (!Character.isLetterOrDigit(source.charAt(i))) {
-                        return "";
-                    }
+    public void updateDisplayName(String newName, View view) {
+        //take the new name entered and set it
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(newName)
+                .build();
+        currentUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    drawProfile(view);
+                } else {
+                    Log.d(TAG, "Couldn't set new username");
+                    Toast.makeText(getContext(), "Something went wrong.", Toast.LENGTH_SHORT);
                 }
-                return null;
-            }
-        };
-        filterArray[1] = filter;
-        input.setFilters(filterArray);
-
-        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_CLASS_TEXT);
-        input.setText(newName);
-        builder.setView(input);
-
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //take the new name entered and set it
-                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                        .setDisplayName(input.getText().toString())
-                        .build();
-                currentUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            drawProfile(view);
-                        } else {
-                            Log.d(TAG, "Couldn't set new username");
-                            Toast.makeText(getContext(), "Something went wrong.", Toast.LENGTH_SHORT);
-                        }
-                    }
-                });
             }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
     }
 
     public void sendResetPasswordMail(View view) {
@@ -422,8 +379,7 @@ public class ProfileFragment extends BaseFragment {
             } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 //showPermissionDeniedDialog();
             } else if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                AlertDialog doNotAskAgainClickedDialog = createDoNotAskAgainClickedDialog();
-                doNotAskAgainClickedDialog.show();
+                AlertDialogUtil.createDoNotAskAgainClickedDialog(getActivity()).show();
             }
         }
 
@@ -435,42 +391,9 @@ public class ProfileFragment extends BaseFragment {
             } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 //showPermissionDeniedDialog();
             } else if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                AlertDialog doNotAskAgainClickedDialog = createDoNotAskAgainClickedDialog();
-                doNotAskAgainClickedDialog.show();
+                AlertDialogUtil.createDoNotAskAgainClickedDialog(getActivity()).show();
             }
         }
-    }
-
-    private AlertDialog createDoNotAskAgainClickedDialog() {
-        AlertDialog doNotAskAgainClickedDialog = Util.createDialog(
-                getString(R.string.deniedPermissionsDialogTitle),
-                getString(R.string.changePermissionsInSettingsMessage_not_specific),
-                getString(R.string.goToSettingsButtonText),
-                (dialog, which) -> {
-                    dialog.dismiss();
-                    //opens settings of the app to manually allow permissions
-                    Intent intent = new Intent();
-                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
-                    intent.setData(uri);
-                    try {
-                        startActivity(intent);
-                    } catch (Exception e) {
-                        Log.d(TAG, getString(R.string.intent_failed));
-                        Toast.makeText(getActivity().getApplicationContext(),
-                                getString(R.string.somethingWentWrong),
-                                Toast.LENGTH_SHORT)
-                                .show();
-                    }
-                    getActivity().finish();
-                },
-                getString(R.string.no_text),
-                (dialog, which) -> {
-                    dialog.dismiss();
-                },
-                false,
-                getActivity());
-        return doNotAskAgainClickedDialog;
     }
 
 }
