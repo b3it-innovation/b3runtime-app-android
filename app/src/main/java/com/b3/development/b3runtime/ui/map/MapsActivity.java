@@ -14,6 +14,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -217,6 +218,16 @@ public class MapsActivity extends BaseActivity
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (viewModel.isSatelliteView()) {
+            menu.findItem(R.id.action_dark_mode).setVisible(false);
+        } else {
+            menu.findItem(R.id.action_dark_mode).setVisible(true);
+        }
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_reset:
@@ -305,15 +316,18 @@ public class MapsActivity extends BaseActivity
         AlertDialog confirmBackDialog = Util.createDialog(getResources().getString(R.string.maps_activity_back_pressed_alert_title),
                 getResources().getString(R.string.maps_activity_back_pressed_alert_message),
                 getResources().getString(R.string.maps_activity_back_pressed_alert_positive_button),
-                (dialog, which) -> { goBackToHomeActivity(); },
+                (dialog, which) -> {
+                    goBackToHomeActivity();
+                },
                 getResources().getString(R.string.maps_activity_back_pressed_alert_negative_button),
-                (dialog, which) -> {},
+                (dialog, which) -> {
+                },
                 false,
                 this);
         confirmBackDialog.show();
     }
 
-    private void goBackToHomeActivity(){
+    private void goBackToHomeActivity() {
         // Closing all activities and go back to home activity
         Intent i = new Intent(this, HomeActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -374,7 +388,7 @@ public class MapsActivity extends BaseActivity
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         //check if satellite or dark mode was enabled on screen rotation
-        if(viewModel.isSatelliteView()) {
+        if (viewModel.isSatelliteView()) {
             mapsRenderer.changeToSatelliteView(map, viewModel);
         }
         if (viewModel.isDarkMode()) {

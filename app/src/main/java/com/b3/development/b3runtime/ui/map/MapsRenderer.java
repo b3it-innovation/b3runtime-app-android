@@ -31,7 +31,6 @@ public class MapsRenderer {
     private Context context;
     private ValueAnimator valueAnimator;
     private GroundOverlay currentCircle;
-    private Marker lastMarker;
 
 
     public MapsRenderer(final Context context) {
@@ -42,7 +41,7 @@ public class MapsRenderer {
     public void drawNextCheckpoint(final Checkpoint nextCheckpoint, final MapsViewModel viewModel, final GoogleMap map) {
         if (nextCheckpoint == null) return;
 
-        lastMarker = map.addMarker(new MarkerOptions()
+        map.addMarker(new MarkerOptions()
                 .position(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude))
                 .title(nextCheckpoint.name)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
@@ -140,7 +139,6 @@ public class MapsRenderer {
     }
 
     public void resetMap(GoogleMap map) {
-        lastMarker = null;
         // removes all makers, polylines, polygons, overlays, etc from map (not geofences)
         map.clear();
     }
@@ -182,8 +180,8 @@ public class MapsRenderer {
     }
 
     public void changeToMapsView(GoogleMap map, MapsViewModel viewModel) {
-            map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-            viewModel.setSatelliteView(false);
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        viewModel.setSatelliteView(false);
     }
 
     public void changeToSatelliteView(GoogleMap map, MapsViewModel viewModel) {
