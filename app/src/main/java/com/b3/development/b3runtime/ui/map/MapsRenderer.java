@@ -154,6 +154,7 @@ public class MapsRenderer {
             if (!success) {
                 Log.e(TAG, "Style parsing failed.");
             } else {
+                //save state in viewmodel
                 viewModel.setDarkMode(true);
             }
         } catch (Resources.NotFoundException e) {
@@ -172,6 +173,7 @@ public class MapsRenderer {
             if (!success) {
                 Log.e(TAG, "Style parsing failed.");
             } else {
+                //save state in viewmodel
                 viewModel.setDarkMode(false);
             }
         } catch (Resources.NotFoundException e) {
@@ -181,11 +183,13 @@ public class MapsRenderer {
 
     public void changeToMapsView(GoogleMap map, MapsViewModel viewModel) {
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        //save state in viewmodel
         viewModel.setSatelliteView(false);
     }
 
     public void changeToSatelliteView(GoogleMap map, MapsViewModel viewModel) {
         map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        //save state in viewmodel
         viewModel.setSatelliteView(true);
     }
 }

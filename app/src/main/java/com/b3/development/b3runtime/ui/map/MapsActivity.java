@@ -14,7 +14,6 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -219,6 +218,7 @@ public class MapsActivity extends BaseActivity
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        //hide option to set dark mode when in satellite view
         if (viewModel.isSatelliteView()) {
             menu.findItem(R.id.action_dark_mode).setVisible(false);
         } else {
@@ -387,7 +387,8 @@ public class MapsActivity extends BaseActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        //check if satellite or dark mode was enabled on screen rotation
+
+        //check if satellite or dark mode was enabled on screen rotation and set it accordingly
         if (viewModel.isSatelliteView()) {
             mapsRenderer.changeToSatelliteView(map, viewModel);
         }
