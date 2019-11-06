@@ -220,6 +220,12 @@ public class MapsActivity extends BaseActivity
             case R.id.action_sound_mode:
                 jukebox.toggleSoundStatus();
                 setSoundModeTextInMenuItem(item);
+            case R.id.action_satellite_view:
+                if (map.getMapType() != GoogleMap.MAP_TYPE_HYBRID) {
+                    map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                } else {
+                    map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
