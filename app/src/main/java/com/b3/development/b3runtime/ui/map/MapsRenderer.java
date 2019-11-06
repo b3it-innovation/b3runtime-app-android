@@ -3,10 +3,12 @@ package com.b3.development.b3runtime.ui.map;
 import android.animation.IntEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.b3.development.b3runtime.R;
@@ -17,6 +19,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -24,6 +27,7 @@ import java.util.List;
 
 public class MapsRenderer {
 
+    public static final String TAG = MapsRenderer.class.getSimpleName();
     private Context context;
     private ValueAnimator valueAnimator;
     private GroundOverlay currentCircle;
@@ -139,5 +143,51 @@ public class MapsRenderer {
         lastMarker = null;
         // removes all makers, polylines, polygons, overlays, etc from map (not geofences)
         map.clear();
+    }
+
+    public void changeToDarkMapMode(GoogleMap map, MapsViewModel viewModel) {
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = map.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            context, R.raw.style_dark_json));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            } else {
+                viewModel.setDarkMode(true);
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
+    }
+
+    public void changeToNormalMapMode(GoogleMap map, MapsViewModel viewModel) {
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = map.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            context, R.raw.style_normal_json));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            } else {
+                viewModel.setDarkMode(false);
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
+    }
+
+    public void changeToMapsView(GoogleMap map, MapsViewModel viewModel) {
+            map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            viewModel.setSatelliteView(false);
+    }
+
+    public void changeToSatelliteView(GoogleMap map, MapsViewModel viewModel) {
+        map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        viewModel.setSatelliteView(true);
     }
 }
