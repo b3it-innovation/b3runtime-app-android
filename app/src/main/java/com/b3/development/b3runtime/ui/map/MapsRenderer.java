@@ -44,7 +44,7 @@ public class MapsRenderer {
         map.addMarker(new MarkerOptions()
                 .position(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude))
                 .title(nextCheckpoint.name)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.redcheckpointflag)));
 
         if (viewModel.isResponseOnScreen) {
             return;
@@ -81,6 +81,7 @@ public class MapsRenderer {
                 continue;
             Marker marker = map.addMarker(new MarkerOptions()
                     .position(new LatLng(checkpoint.latitude, checkpoint.longitude))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.redcheckpointflag))
                     .title(checkpoint.name));
             if (checkpoint.completed) {
                 setCompletedColorOnMarker(marker);
@@ -89,7 +90,7 @@ public class MapsRenderer {
     }
 
     private void setCompletedColorOnMarker(final Marker marker) {
-        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.redcheckbox));
     }
 
     private void drawGeofenceCircleAroundCheckpoint(final GoogleMap map, final Checkpoint checkpoint) {
