@@ -33,17 +33,19 @@ public class ResultRepositoryImpl implements ResultRepository {
 
     @Override
     public void getResultsForUser(BackendInteractor.ResultCallback callback, String key) {
+        //refreshes data in attendees to be able to get results for user
         backend.getAttendeesByUserAccount(new BackendInteractor.AttendeeCallback() {
             @Override
             public void onAttendeesReceived(List<BackendAttendee> attendees) {
+
                 backend.getResultsByUserAccount(callback, key);
             }
 
             @Override
             public void onError() {
-
+                callback.onError();
             }
-        }, "CRt81oF53mPtmQ1mRkHpc4QIBGw2");
+        }, key);
     }
 
     /**

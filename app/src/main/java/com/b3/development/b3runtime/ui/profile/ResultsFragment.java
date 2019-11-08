@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.profile;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -23,8 +24,12 @@ public class ResultsFragment extends BaseFragment {
     private static final String KEY_USER_ID = "keyUserId";
     private RecyclerView recyclerView;
 
+    //todo
+    // This is not at all a good practice and we should avoid holding references in the Views
+    // Instead we should use an observer of the data in the ViewModel
     private ResultRepository repository = get(ResultRepository.class);
 
+    //provides the user key to the fragment
     public static ResultsFragment newInstance(String uid) {
         Bundle bundle = new Bundle();
         bundle.putString(KEY_USER_ID, uid);
@@ -54,7 +59,6 @@ public class ResultsFragment extends BaseFragment {
         repository.getResultsForUser(new BackendInteractor.ResultCallback() {
             @Override
             public void onResultsReceived(List<BackendResult> results) {
-                System.out.println("HERE: " + results.size());
                 if (!isDetached()) {
                     adapter.setResults(results);
                 }
@@ -62,8 +66,7 @@ public class ResultsFragment extends BaseFragment {
 
             @Override
             public void onError() {
-                System.out.println("HERE ERROR");
-                //todo
+                Log.d(TAG, "Error in loading results...");
             }
         }, getArguments().getString(KEY_USER_ID));
     }

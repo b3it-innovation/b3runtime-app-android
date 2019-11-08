@@ -51,7 +51,11 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultVi
         }
 
         public void setup(BackendResult backendResult) {
-            result.setText(backendResult.getTotalTime() + "");
+            if (backendResult.getTotalTime() == null) {
+                result.setText(R.string.track_unfinished);
+            } else {
+                result.setText(backendResult.getTotalTime() + "");
+            }
         }
     }
 }

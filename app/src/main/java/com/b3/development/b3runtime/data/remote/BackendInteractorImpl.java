@@ -29,16 +29,13 @@ import java.util.stream.Collectors;
 public class BackendInteractorImpl implements BackendInteractor {
 
     private static final String TAG = BackendInteractor.class.getSimpleName();
-
+    private final QueryLiveData competitionsLiveDataSnapshot;
     private DatabaseReference firebaseDbQuestions;
     private DatabaseReference firebaseDbCompetitions;
     private DatabaseReference firebaseDbTracksCheckpoints;
     private DatabaseReference firebaseDbAttendees;
     private DatabaseReference firebaseDbResults;
     private DatabaseReference firebaseDbUserAccounts;
-
-    private final QueryLiveData competitionsLiveDataSnapshot;
-
     private List<BackendAttendee> attendees = new ArrayList<>();
     private List<BackendResult> attendeeResults;
 
@@ -149,7 +146,6 @@ public class BackendInteractorImpl implements BackendInteractor {
     public void getCheckpoints(final CheckpointsCallback checkpointsCallback, String trackKey) {
         // create query to fetch checkpoints related to certain trackKey
         Query query = firebaseDbTracksCheckpoints.orderByKey().equalTo(trackKey);
-        //sets listener on the data in firebase
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             /**
@@ -169,9 +165,7 @@ public class BackendInteractorImpl implements BackendInteractor {
                         checkpoints.add(checkpoint);
                     }
                 }
-                //returns the Callback containing the List of locations
                 checkpointsCallback.onCheckpointsReceived(checkpoints);
-                //debug log
                 Log.d(TAG, "Checkpoints read: " + checkpoints.size());
             }
 
@@ -205,15 +199,15 @@ public class BackendInteractorImpl implements BackendInteractor {
                 System.out.println("data change in attendees");
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 //                    for (DataSnapshot attendeeSnapshot : snapshot.child("attendees").getChildren()) {
-                        //gets the Attendee object
-                        BackendAttendee attendee = new BackendAttendee();
-                        attendee.setUserAccountKey((String) snapshot.child("userAccountKey").getValue());
-                        attendee.setCompetitionKey((String) snapshot.child("competitionKey").getValue());
-                        attendee.setTrackKey((String) snapshot.child("trackKey").getValue());
-                        attendee.setKey(snapshot.getKey());
+                    //gets the Attendee object
+                    BackendAttendee attendee = new BackendAttendee();
+                    attendee.setUserAccountKey((String) snapshot.child("userAccountKey").getValue());
+                    attendee.setCompetitionKey((String) snapshot.child("competitionKey").getValue());
+                    attendee.setTrackKey((String) snapshot.child("trackKey").getValue());
+                    attendee.setKey(snapshot.getKey());
 
-                        //adds the object to the List of BackendAttendee objects
-                        attendees.add(attendee);
+                    //adds the object to the List of BackendAttendee objects
+                    attendees.add(attendee);
 //                    }
                 }
                 //returns the Callback containing the List of attendees
@@ -272,12 +266,11 @@ public class BackendInteractorImpl implements BackendInteractor {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                //todo .....
+                Log.e(TAG, databaseError.getMessage());
             }
 
         });
     }
-
 
     @Override
     public void getQuestions(QuestionsCallback questionCallback, List<String> questionKeys) {
@@ -298,11 +291,9 @@ public class BackendInteractorImpl implements BackendInteractor {
                     if (dataSnapshot.exists()) {
                         fbQuestion = convertDataToBackendResponseQuestion(dataSnapshot);
                     }
-                    //returns the Callback containing the List of locations
                     if (fbQuestion != null) {
                         questionCallback.onQuestionsReceived(fbQuestion);
                     }
-                    //removes the listener
                     firebaseDbQuestions.removeEventListener(this);
                 }
 
@@ -317,7 +308,6 @@ public class BackendInteractorImpl implements BackendInteractor {
                     Log.w(TAG, "Failed to read value.", error.toException());
                 }
             });
-
         }
     }
 
