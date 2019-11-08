@@ -3,6 +3,7 @@ package com.b3.development.b3runtime.data.repository.result;
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 import com.b3.development.b3runtime.data.remote.BackendInteractor;
+import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 
@@ -28,6 +29,21 @@ public class ResultRepositoryImpl implements ResultRepository {
     public String saveResult(String key, Attendee attendee, List<Checkpoint> checkpoints, Long totalTime) {
         BackendResult backendResult = convert(attendee, checkpoints, totalTime);
         return backend.saveResult(backendResult, key);
+    }
+
+    @Override
+    public void getResultsForUser(BackendInteractor.ResultCallback callback, String key) {
+        backend.getAttendeesByUserAccount(new BackendInteractor.AttendeeCallback() {
+            @Override
+            public void onAttendeesReceived(List<BackendAttendee> attendees) {
+                backend.getResultsByUserAccount(callback, key);
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        }, "CRt81oF53mPtmQ1mRkHpc4QIBGw2");
     }
 
     /**

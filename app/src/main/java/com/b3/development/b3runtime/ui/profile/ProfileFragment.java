@@ -152,7 +152,7 @@ public class ProfileFragment extends BaseFragment {
     }
 
     private void showResultsFragment() {
-        ResultsFragment profileFragment = ResultsFragment.newInstance();
+        ResultsFragment profileFragment = ResultsFragment.newInstance(currentUser.getUid());
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.home_container, profileFragment, ProfileFragment.TAG);
         ft.addToBackStack(null);

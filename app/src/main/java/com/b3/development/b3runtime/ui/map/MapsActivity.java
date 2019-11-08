@@ -40,7 +40,7 @@ import com.b3.development.b3runtime.ui.home.HomeActivity;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.PenaltyFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
-import com.b3.development.b3runtime.ui.question.ResultFragment;
+import com.b3.development.b3runtime.ui.question.ResultDialogFragment;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
 import com.b3.development.b3runtime.utils.Util;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -367,8 +367,8 @@ public class MapsActivity extends BaseActivity
         // Check if last checkpoint is reached
         else if (receivedCheckpointID.equals(finalCheckpointID)) {
             // Show result
-            if (getSupportFragmentManager().findFragmentByTag(ResultFragment.TAG) == null) {
-                ResultFragment.newInstance().show(getSupportFragmentManager(), ResultFragment.TAG);
+            if (getSupportFragmentManager().findFragmentByTag(ResultDialogFragment.TAG) == null) {
+                ResultDialogFragment.newInstance().show(getSupportFragmentManager(), ResultDialogFragment.TAG);
             }
         } else if (viewModel.nextCheckpoint.penalty) {
             PenaltyFragment.newInstance().show(getSupportFragmentManager(), PenaltyFragment.TAG);

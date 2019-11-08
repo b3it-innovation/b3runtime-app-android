@@ -11,7 +11,6 @@ import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponse
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -40,7 +39,7 @@ public class BackendInteractorImpl implements BackendInteractor {
 
     private final QueryLiveData competitionsLiveDataSnapshot;
 
-    private List<BackendAttendee> attendees;
+    private List<BackendAttendee> attendees = new ArrayList<>();
     private List<BackendResult> attendeeResults;
 
     /**
@@ -204,7 +203,6 @@ public class BackendInteractorImpl implements BackendInteractor {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 System.out.println("data change in attendees");
-                attendees = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 //                    for (DataSnapshot attendeeSnapshot : snapshot.child("attendees").getChildren()) {
                         //gets the Attendee object
@@ -240,7 +238,6 @@ public class BackendInteractorImpl implements BackendInteractor {
     @Override
     public void getResultsByUserAccount(ResultCallback resultCallback, String userAccountKey) {
         // create query to fetch results related to a useraccount
-
         Query allResults = firebaseDbResults;
 
         //sets listener on the data in firebase
@@ -261,15 +258,15 @@ public class BackendInteractorImpl implements BackendInteractor {
                     if (a.contains(attendeeKey)) {
                         BackendResult result = snapshot.getValue(BackendResult.class);
                         result.setKey(snapshot.getKey());
-//                        result.setAttendeeKey(attendeeKey);
+                        result.setAttendeeKey(attendeeKey);
                         //todo lind warning translate objects
-//                        result.setResults((List<Checkpoint>) snapshot.child("results").getValue());
-//                        result.setTotalTime((Long) snapshot.child("totalTime").getValue());
+                        result.setResults((List<Checkpoint>) snapshot.child("results").getValue());
+                        result.setTotalTime((Long) snapshot.child("totalTime").getValue());
 
                         attendeeResults.add(result);
                     }
                 }
-                resultCallback.onResultssReceived(attendeeResults);
+                resultCallback.onResultsReceived(attendeeResults);
             }
 
 
