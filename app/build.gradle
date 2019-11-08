@@ -30,6 +30,11 @@ android {
         }
     }
 
+    lintOptions {
+        abortOnError false
+    }
+
+
     // Gradle automatically adds 'android.test.runner' as a dependency.
     useLibrary 'android.test.runner'
     useLibrary 'android.test.base'
@@ -89,3 +94,22 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
+
+apply plugin: 'checkstyle'
+task checkstyletask(type: Checkstyle) {
+    description 'Check code standard'
+    group 'verification'
+    configFile file('./code_quality_tools/checkstyle.xml')
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+    classpath = files()
+    ignoreFailures = false
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        html.enabled = true
+        html.destination rootProject.file("build/reports/checkstyle.html")
+    }
+}
