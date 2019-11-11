@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <!-- Only for debugging. todo: Remove before release. -->
-    <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
 
     <uses-feature android:name="android.hardware.camera"
         android:required="false" />
@@ -66,7 +65,7 @@
         <receiver
             android:name=".geofence.GeofenceBroadcastReceiver"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <service
             android:name=".geofence.GeofenceTransitionsJobIntentService"
@@ -76,7 +75,7 @@
         <service
             android:name=".geofence.LocationService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -314,7 +314,7 @@ public class ProfileFragment extends BaseFragment {
                             drawProfile(view);
                         } else {
                             Log.d(TAG, "Couldn't set new username");
-                            Toast.makeText(getContext(), "Something went wrong.", Toast.LENGTH_SHORT);
+                            Toast.makeText(getContext(), "Something went wrong.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

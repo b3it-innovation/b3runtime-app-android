@@ -25,7 +25,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_weight="0"
-        android:text="take photo" />
+        android:text="@string/take_photo" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +38,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="end"
             android:layout_weight="0.5"
-            android:hint="Name"
+            android:hint="@string/profile_name_hint"
             android:textAlignment="center"
             android:textSize="34sp"
             android:textStyle="bold" />
@@ -61,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:layout_weight="0"
-        android:hint="Mail"
+        android:hint="@string/profile_mail_hint"
         android:textAlignment="center"
         android:textSize="24sp"
         android:textStyle="bold" />

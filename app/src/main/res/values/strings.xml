@@ -10,7 +10,7 @@
     <string name="permissionsDialogTitle">Location Permission Needed</string>
     <string name="permissionsDialogMessage">This app needs the Location permission, please accept to be able to use app</string>
     <string name="okButton">OK</string>
-    <string name="somethingWentWrong">Something went wrong... Please try again</string>
+    <string name="somethingWentWrong">Something went wrong… Please try again</string>
     <string name="question">QUESTION</string>
     <string name="confirm">Confirm</string>
     <string name="correctAnswer">Your answer is correct! Continue on your Quest.</string>
@@ -55,5 +55,14 @@
     <string name="profile_image_file_name">avatar.jpg</string>
     <string name="external_storage_image_path">/Pictures/b3runtime</string>
     <string name="image_file_date_format">yyyyMMdd_HHmmss</string>
+    <string name="home_title">B3runtime</string>
+    <string name="take_photo">take photo</string>
+    <string name="profile_name_hint">Name</string>
+    <string name="profile_mail_hint">Mail</string>
+    <string name="result_answer_correct_hint">YOUR ANSWER IS CORRECT....</string>
+    <string name="menu_main_reset_track">Reset Track</string>
+    <string name="menu_main_sound_on">Sound on</string>
+    <string name="menu_main_toggle_satellite">Toggle satellite view</string>
+    <string name="menu_main_toggle_dark_mode">Toggle dark mode</string>
 
 </resources>
