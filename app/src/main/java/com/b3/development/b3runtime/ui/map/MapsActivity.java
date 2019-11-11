@@ -184,7 +184,7 @@ public class MapsActivity extends BaseActivity
 
         mapsRenderer = new MapsRenderer(getApplicationContext());
 
-        jukebox = Jukebox.getInstance(getApplicationContext());
+        jukebox = new Jukebox(getApplicationContext());
 
     }
 
@@ -521,4 +521,7 @@ public class MapsActivity extends BaseActivity
         ft.commit();
     }
 
+    public Jukebox getJukebox() {
+        return jukebox;
+    }
 }

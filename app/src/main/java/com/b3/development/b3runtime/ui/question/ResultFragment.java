@@ -86,7 +86,7 @@ public class ResultFragment extends BaseDialogFragment {
 
         colorBase.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
         colorLogo.setImageResource(R.drawable.b3logo_yellow);
-        confirm.setText("Close App");
+        confirm.setText(getString(R.string.close_text));
         confirm.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
 
         confirm.setOnClickListener(v -> {
