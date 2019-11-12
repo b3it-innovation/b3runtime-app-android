@@ -43,10 +43,14 @@ public class MapsRenderer {
             return;
         }
 
-        map.addMarker(new MarkerOptions()
+        Marker marker = map.addMarker(new MarkerOptions()
                 .position(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude))
-                .title(nextCheckpoint.name)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                .title(nextCheckpoint.name));
+        if (nextCheckpoint == viewModel.allCheckpoints.getValue().get(viewModel.allCheckpoints.getValue().size() - 1)) {
+            setGoalIconOnMarker(marker);
+        } else {
+            setNonCompletedIconOnMarker(marker);
+        }
 
         if (viewModel.isResponseOnScreen) {
             return;
@@ -88,13 +92,28 @@ public class MapsRenderer {
                     .position(new LatLng(checkpoint.latitude, checkpoint.longitude))
                     .title(checkpoint.name));
             if (checkpoint.completed) {
-                setCompletedColorOnMarker(marker);
+                setCompletedIconOnMarker(marker);
+            } else if (i == allCheckpoints.size() - 1) {
+                setGoalIconOnMarker(marker);
+            } else {
+                setNonCompletedIconOnMarker(marker);
             }
         }
     }
 
-    private void setCompletedColorOnMarker(final Marker marker) {
-        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+    private void setCompletedIconOnMarker(final Marker marker) {
+        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.redcheckbox));
+        marker.setAnchor(0.5F, 0.5F);
+    }
+
+    private void setGoalIconOnMarker(final Marker marker) {
+        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.yellowgoal));
+        marker.setAnchor(0.5F, 0.7F);
+    }
+
+    private void setNonCompletedIconOnMarker(final Marker marker) {
+        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.redcheckpointflag));
+        marker.setAnchor(0.2F,0.9F);
     }
 
     private void drawGeofenceCircleAroundCheckpoint(final GoogleMap map, final Checkpoint checkpoint) {

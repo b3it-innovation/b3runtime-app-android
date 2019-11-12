@@ -26,11 +26,11 @@ import static com.b3.development.b3runtime.R.color.b3Yellow;
 import static org.koin.java.KoinJavaComponent.get;
 
 /**
- * Contains logic for displaying a {@link ResultFragment} to inform user of their result
+ * Contains logic for displaying a {@link ResultDialogFragment} to inform user of their result
  */
-public class ResultFragment extends BaseDialogFragment {
+public class ResultDialogFragment extends BaseDialogFragment {
 
-    public static final String TAG = ResultFragment.class.getSimpleName();
+    public static final String TAG = ResultDialogFragment.class.getSimpleName();
 
     private MapsViewModel viewModel;
 
@@ -40,19 +40,19 @@ public class ResultFragment extends BaseDialogFragment {
     private CircleImageView colorLogo;
     private Button confirm;
 
-    public ResultFragment() {
+    public ResultDialogFragment() {
     }
 
     /**
-     * Builds the {@link ResultFragment}
+     * Builds the {@link ResultDialogFragment}
      *
      * @return responseFragment
      */
-    public static ResultFragment newInstance() {
+    public static ResultDialogFragment newInstance() {
         Bundle arguments = new Bundle();
-        ResultFragment resultFragment = new ResultFragment();
-        resultFragment.setArguments(arguments);
-        return resultFragment;
+        ResultDialogFragment resultDialogFragment = new ResultDialogFragment();
+        resultDialogFragment.setArguments(arguments);
+        return resultDialogFragment;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class ResultFragment extends BaseDialogFragment {
                         get(AttendeeRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext(), ""))
                 .get(MapsViewModel.class);
         //observe allCheckpoints and set response with the result
-        viewModel.allCheckpoints.observe(this, pins -> response.setText(viewModel.getResult()));
+        viewModel.allCheckpoints.observe(this, pins -> response.setText(viewModel.getResultString()));
     }
 
     @Override

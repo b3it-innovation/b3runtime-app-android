@@ -56,8 +56,12 @@
     <string name="track_goal_sound_file">sfx/pickup_coin.wav</string>
     <string name="sound_pref_key">sound_pref_key</string>
     <string name="music_pref_key">music_pref_key</string>
+    <string name="continue_track_button_text">Continue track</string>
+    <string name="results">Results</string>
     <string name="profile_image_file_name">avatar.jpg</string>
     <string name="external_storage_image_path">/Pictures/b3runtime</string>
     <string name="image_file_date_format">yyyyMMdd_HHmmss</string>
+    <string name="track_unfinished">Track unfinished</string>
+    <string name="total_time">Total time: </string>
 
 </resources>

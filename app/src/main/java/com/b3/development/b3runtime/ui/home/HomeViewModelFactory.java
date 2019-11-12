@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepository;
 
 /**
@@ -12,14 +13,16 @@ import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepos
 public class HomeViewModelFactory implements ViewModelProvider.Factory {
 
     UserAccountRepository userAccountRepository;
+    CheckpointRepository checkpointRepository;
 
-    public HomeViewModelFactory(UserAccountRepository userAccountRepository) {
+    public HomeViewModelFactory(UserAccountRepository userAccountRepository, CheckpointRepository checkpointRepository) {
         this.userAccountRepository = userAccountRepository;
+        this.checkpointRepository = checkpointRepository;
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new HomeViewModel(userAccountRepository);
+        return (T) new HomeViewModel(userAccountRepository, checkpointRepository);
     }
 }

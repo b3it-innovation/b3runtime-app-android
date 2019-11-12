@@ -77,4 +77,11 @@
         android:layout_weight="0"
         android:text="@string/reset_password_button_text" />
 
+    <Button
+        android:id="@+id/btn_results"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:text="@string/results" />
+
 </LinearLayout>

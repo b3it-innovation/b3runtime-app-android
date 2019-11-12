@@ -39,6 +39,13 @@ public class MapsViewModel extends BaseViewModel {
     public boolean isResponseOnScreen = false;
     public String resultKey;
     private Context context;
+
+    private Long totalTime;
+    private Long minutes;
+    private Long seconds;
+    private int numberOfCorrectAnswers;
+    private int totalNumberOfCheckpoints;
+
     private boolean darkMode = false;
     private boolean satelliteView = false;
 
@@ -69,10 +76,16 @@ public class MapsViewModel extends BaseViewModel {
     }
 
     //creates a response string that contains the result of the race
-    public String getResult() {
-        String response = "";
-        int correctAnswers = 0;
-        int totalNumberOfCheckpoints = allCheckpoints.getValue().size() - 2;
+    public String getResultString() {
+        calcResult();
+        String response = String.format(context.getResources().getString(R.string.resultText),
+                numberOfCorrectAnswers, totalNumberOfCheckpoints, minutes, seconds);
+        return response;
+    }
+
+    public void calcResult() {
+        numberOfCorrectAnswers = 0;
+        totalNumberOfCheckpoints = allCheckpoints.getValue().size() - 2;
 
         if (allCheckpoints.getValue().get(0).completedTime != null) {
             if (allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime == null) {
@@ -80,24 +93,20 @@ public class MapsViewModel extends BaseViewModel {
                 // updates completedTime in nextCheckpoint to prevent to update it in updateCheckpointCompleted()
                 nextCheckpoint.completedTime = allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime;
             }
-            Long totalTime = getTotalTime();
-            Long minutes = (totalTime / THOUSAND) / SIXTY;
-            Long seconds = (totalTime / THOUSAND) % SIXTY;
+
+            totalTime = calcTotalTime();
+            minutes = (totalTime / THOUSAND) / SIXTY;
+            seconds = (totalTime / THOUSAND) % SIXTY;
 
             for (Checkpoint checkpoint : allCheckpoints.getValue()) {
                 if (checkpoint.penalty) {
                     totalNumberOfCheckpoints--;
                 }
                 if ((!checkpoint.penalty) && checkpoint.answeredCorrect) {
-                    correctAnswers++;
+                    numberOfCorrectAnswers++;
                 }
             }
-
-            response = String.format(context.getResources().getString(R.string.resultText),
-                    correctAnswers, totalNumberOfCheckpoints, minutes, seconds);
         }
-
-        return response;
     }
 
     public void addGeofence(Checkpoint checkpoint) {
@@ -149,7 +158,7 @@ public class MapsViewModel extends BaseViewModel {
         checkpointRepository.removeAllCheckpoints();
     }
 
-    private Long getTotalTime() {
+    private Long calcTotalTime() {
         Long endTime = allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime;
         Long startTime = allCheckpoints.getValue().get(0).completedTime;
         if (endTime != null && startTime != null) {
@@ -162,7 +171,7 @@ public class MapsViewModel extends BaseViewModel {
     public void saveResult() {
         if (currentAttendee.getValue() != null && allCheckpoints.getValue() != null &&
                 !allCheckpoints.getValue().isEmpty()) {
-            resultKey = resultRepository.saveResult(resultKey, currentAttendee.getValue(), allCheckpoints.getValue(), getTotalTime());
+            resultKey = resultRepository.saveResult(resultKey, currentAttendee.getValue(), allCheckpoints.getValue(), calcTotalTime());
         }
     }
 
@@ -174,6 +183,26 @@ public class MapsViewModel extends BaseViewModel {
             }
         }
         return questionKeys;
+    }
+
+    public Long getMinutes() {
+        return minutes;
+    }
+
+    public Long getSeconds() {
+        return seconds;
+    }
+
+    public int getNumberOfCorrectAnswers() {
+        return numberOfCorrectAnswers;
+    }
+
+    public Long getTotalTime() {
+        return totalTime;
+    }
+
+    public int getTotalNumberOfCheckpoints() {
+        return totalNumberOfCheckpoints;
     }
 
     public boolean isDarkMode() {
