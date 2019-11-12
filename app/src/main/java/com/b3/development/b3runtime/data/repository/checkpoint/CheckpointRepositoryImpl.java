@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.data.repository.checkpoint;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -19,6 +20,8 @@ import java.util.List;
  * An implementation of the {@link CheckpointRepository} interface
  */
 public class CheckpointRepositoryImpl implements CheckpointRepository {
+
+    public static final String TAG = CheckpointRepositoryImpl.class.getSimpleName();
 
     private CheckpointDao checkpointDao;
     private BackendInteractor backend;
@@ -53,7 +56,7 @@ public class CheckpointRepositoryImpl implements CheckpointRepository {
     @Override
     public void updateCheckpoint(Checkpoint checkpoint) {
         AsyncTask.execute(() -> checkpointDao.updateCheckpoint(checkpoint));
-        System.out.println("UPDATE CHECKPOINT CALLED IN REPOSITORY");
+        Log.d(TAG, "UPDATE CHECKPOINT CALLED IN REPOSITORY");
     }
 
     @Override
@@ -86,11 +89,11 @@ public class CheckpointRepositoryImpl implements CheckpointRepository {
                     error.postValue(new Failure(FailureType.SERVER));
                     return;
                 }
-                System.out.println("CHECKPOINTS RECEIVED FROM BACKEND");
+                Log.d(TAG, "CHECKPOINTS RECEIVED FROM BACKEND");
                 List<Checkpoint> checkpoints = convert(backendResponseCheckpoints);
                 //writes in local database asynchronously
                 AsyncTask.execute(() -> checkpointDao.insertCheckpoints(checkpoints));
-                System.out.println("CHECKPOINTS CONVERTED... WRITING IN DATABASE ASYNC STARTS");
+                Log.d(TAG, "CHECKPOINTS CONVERTED... WRITING IN DATABASE ASYNC STARTS");
             }
 
             @Override

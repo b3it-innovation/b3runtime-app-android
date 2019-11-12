@@ -23,6 +23,7 @@ import com.b3.development.b3runtime.ui.home.HomeActivity;
 import com.b3.development.b3runtime.ui.map.MapsActivity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -35,7 +36,7 @@ public class TrackFragment extends BaseFragment {
     private ProgressBar pb;
     private RecyclerView recyclerView;
     private ItemArrayAdapter itemArrayAdapter;
-    private ArrayList<ListItem> itemList = new ArrayList<>();
+    private List<ListItem> itemList = new ArrayList<>();
     private TextView headline;
 
     public TrackFragment() {
@@ -75,7 +76,7 @@ public class TrackFragment extends BaseFragment {
         //check if there's been a screen rotation and whether competition had been chosen
         if (competitionViewModel.chosenCompetitionName != null) {
             //populate list with BackendTracks
-            showTracks(competitionViewModel.chosenCompetitionName, view);
+            showTracks(competitionViewModel.chosenCompetitionName);
         } else {
             ((HomeActivity) getActivity()).showCompetitionFragment();
         }
@@ -97,7 +98,7 @@ public class TrackFragment extends BaseFragment {
     }
 
     //populate itemList with tracks from chosen competition
-    private void showTracks(String competitionName, View view) {
+    private void showTracks(String competitionName) {
         for (BackendCompetition bc : competitionViewModel.competitions.getValue()) {
             if (bc.getName().equalsIgnoreCase(competitionName)) {
                 competitionViewModel.setCompetitionKey(bc.getKey());

@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.map;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -22,6 +23,10 @@ import java.util.List;
  * Contains data to be displayed in the {@link MapsActivity} and handles its lifecycle securely
  */
 public class MapsViewModel extends BaseViewModel {
+
+    public static final String TAG = MapsViewModel.class.getSimpleName();
+    private static final int THOUSAND = 1000;
+    private static final int SIXTY = 60;
 
     public Checkpoint nextCheckpoint;
     public LiveData<List<Checkpoint>> allCheckpoints;
@@ -47,7 +52,7 @@ public class MapsViewModel extends BaseViewModel {
         this.context = context;
     }
 
-    public void init(String trackKey) {
+    public final void init(String trackKey) {
         checkpointRepository.fetch(trackKey);
         allCheckpoints = checkpointRepository.getAllCheckpoints();
         errors = checkpointRepository.getError();
@@ -76,8 +81,8 @@ public class MapsViewModel extends BaseViewModel {
                 nextCheckpoint.completedTime = allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime;
             }
             Long totalTime = getTotalTime();
-            Long minutes = (totalTime / 1000) / 60;
-            Long seconds = (totalTime / 1000) % 60;
+            Long minutes = (totalTime / THOUSAND) / SIXTY;
+            Long seconds = (totalTime / THOUSAND) % SIXTY;
 
             for (Checkpoint checkpoint : allCheckpoints.getValue()) {
                 if (checkpoint.penalty) {
@@ -123,14 +128,14 @@ public class MapsViewModel extends BaseViewModel {
     }
 
     public void updateCheckpointCorrectAnswer() {
-        System.out.println("Before update, checkpoint order: " + nextCheckpoint.order);
+        Log.d(TAG, "Before update, checkpoint order: " + nextCheckpoint.order);
         nextCheckpoint.answeredCorrect = true;
         isLatestAnsweredCorrect = true;
         updateCheckpointCompleted();
     }
 
     public void skipCheckpoint() {
-        System.out.println("Skips checkpoint order: " + nextCheckpoint.order);
+        Log.d(TAG, "Skips checkpoint order: " + nextCheckpoint.order);
         nextCheckpoint.skipped = true;
         updateCheckpointCompleted();
     }

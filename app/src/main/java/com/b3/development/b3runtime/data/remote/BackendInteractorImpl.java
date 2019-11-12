@@ -79,7 +79,7 @@ public class BackendInteractorImpl implements BackendInteractor {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "failed to save attendee " + e);
+                Log.e(TAG, "failed to save attendee " + e);
             }
         });
         return key;
@@ -99,7 +99,7 @@ public class BackendInteractorImpl implements BackendInteractor {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "failed to save result. ", e);
+                        Log.e(TAG, "failed to save result. ", e);
                     }
                 });
         return key;
@@ -112,7 +112,6 @@ public class BackendInteractorImpl implements BackendInteractor {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
                     Log.d(TAG, uid);
-                    System.out.println(uid);
                     firebaseDbUserAccounts.child(uid).setValue("uid").addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -121,7 +120,7 @@ public class BackendInteractorImpl implements BackendInteractor {
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Log.d(TAG, "failed to save user. ", e);
+                            Log.e(TAG, "failed to save user. ", e);
                         }
                     });
                 }
@@ -129,7 +128,7 @@ public class BackendInteractorImpl implements BackendInteractor {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, "database error. ", databaseError.toException());
+                Log.e(TAG, "database error. ", databaseError.toException());
             }
         });
     }
@@ -154,7 +153,7 @@ public class BackendInteractorImpl implements BackendInteractor {
              */
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                System.out.println("data change in checkpoints");
+                Log.d(TAG, "data change in checkpoints");
                 List<BackendResponseCheckpoint> checkpoints = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     for (DataSnapshot checkpointsSnapshot : snapshot.child("checkpoints").getChildren()) {
@@ -179,7 +178,7 @@ public class BackendInteractorImpl implements BackendInteractor {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 checkpointsCallback.onError();
-                Log.w(TAG, "Failed to read value.", error.toException());
+                Log.e(TAG, "Failed to read value.", error.toException());
             }
         });
     }
@@ -198,7 +197,7 @@ public class BackendInteractorImpl implements BackendInteractor {
                  */
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    System.out.println("data change in questions");
+                    Log.d(TAG, "data change in questions");
                     BackendResponseQuestion fbQuestion = null;
                     if (dataSnapshot.exists()) {
                         fbQuestion = convertDataToBackendResponseQuestion(dataSnapshot);
@@ -218,22 +217,20 @@ public class BackendInteractorImpl implements BackendInteractor {
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     questionCallback.onError();
-                    System.out.println("canceled");
-                    Log.w(TAG, "Failed to read value.", error.toException());
+                    Log.e(TAG, "Canceled. Failed to read value.", error.toException());
                 }
             });
-
         }
     }
 
-    private BackendResponseCheckpoint convertDataToBackendResponseCheckpoint(DataSnapshot dataSnapshot){
+    private BackendResponseCheckpoint convertDataToBackendResponseCheckpoint(DataSnapshot dataSnapshot) {
         BackendResponseCheckpoint checkpoint = dataSnapshot.getValue(BackendResponseCheckpoint.class);
         checkpoint.setKey(dataSnapshot.getKey());
         //checkpoint.setDraggable((Boolean) locationSnapshot.child("mapLocation").child("draggable").getValue());
         return checkpoint;
     }
 
-    private BackendResponseQuestion convertDataToBackendResponseQuestion(DataSnapshot dataSnapshot){
+    private BackendResponseQuestion convertDataToBackendResponseQuestion(DataSnapshot dataSnapshot) {
         BackendResponseQuestion fbQuestion = new BackendResponseQuestion();
         //gets the BackendResponseQuestion object
         fbQuestion.setKey(dataSnapshot.getKey());

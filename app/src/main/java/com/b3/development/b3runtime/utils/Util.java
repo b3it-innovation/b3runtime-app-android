@@ -8,7 +8,11 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.util.List;
 
-public class Util {
+public final class Util {
+
+    // prevents public default constructor to get called
+    private Util() {
+    }
 
     // checks if this app is in foreground
     public static boolean isForeground(final Context context) {

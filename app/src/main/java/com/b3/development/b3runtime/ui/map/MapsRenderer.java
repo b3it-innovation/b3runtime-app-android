@@ -39,7 +39,9 @@ public class MapsRenderer {
 
     // Draw next checkpoint on the map
     public void drawNextCheckpoint(final Checkpoint nextCheckpoint, final MapsViewModel viewModel, final GoogleMap map) {
-        if (nextCheckpoint == null) return;
+        if (nextCheckpoint == null) {
+            return;
+        }
 
         map.addMarker(new MarkerOptions()
                 .position(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude))
@@ -64,7 +66,9 @@ public class MapsRenderer {
 
 
     public void drawAllCheckpoints(final List<Checkpoint> allCheckpoints, final MapsViewModel viewModel, final GoogleMap map) {
-        if (allCheckpoints == null || allCheckpoints.isEmpty()) return;
+        if (allCheckpoints == null || allCheckpoints.isEmpty()) {
+            return;
+        }
         boolean nextCheckpointDrawn = false;
         // draw all checkpoints except for next checkpoint
         for (int i = 0; i < allCheckpoints.size(); i++) {
@@ -77,8 +81,9 @@ public class MapsRenderer {
                 continue;
             }
             if ((checkpoint.penalty && !checkpoint.completed && !checkpoint.skipped) ||
-                    (checkpoint.penalty && checkpoint.completed && checkpoint.skipped))
+                    (checkpoint.penalty && checkpoint.completed && checkpoint.skipped)) {
                 continue;
+            }
             Marker marker = map.addMarker(new MarkerOptions()
                     .position(new LatLng(checkpoint.latitude, checkpoint.longitude))
                     .title(checkpoint.name));

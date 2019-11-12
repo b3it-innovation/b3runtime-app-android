@@ -21,7 +21,6 @@ import com.google.android.gms.tasks.Task;
 import com.b3.development.b3runtime.ui.competition.CompetitionFragment;
 import com.google.firebase.auth.FirebaseAuth;
 
-
 import static org.koin.java.KoinJavaComponent.get;
 
 public class HomeActivity extends AppCompatActivity {
@@ -131,18 +130,12 @@ public class HomeActivity extends AppCompatActivity {
         for (Fragment f : getSupportFragmentManager().getFragments()) {
             String tag = f.getTag();
             if (tag != null) {
-                if (tag.equals(CompetitionFragment.TAG)) {
-                    if (f.isVisible() && !f.isDetached()) {
-                        savedInstanceState.putBoolean(getResources().getString(R.string.competition_fragment_added_key), true);
-                    }
-                } else if (tag.equals(ProfileFragment.TAG)) {
-                    if (f.isVisible() && !f.isDetached()) {
-                        savedInstanceState.putBoolean(getResources().getString(R.string.profile_fragment_added_key), true);
-                    }
-                } else if (tag.equals(TrackFragment.TAG)) {
-                    if (f.isVisible() && !f.isDetached()) {
-                        savedInstanceState.putBoolean(getResources().getString(R.string.track_fragment_added_key), true);
-                    }
+                if (tag.equals(CompetitionFragment.TAG) && f.isVisible() && !f.isDetached()) {
+                    savedInstanceState.putBoolean(getResources().getString(R.string.competition_fragment_added_key), true);
+                } else if (tag.equals(ProfileFragment.TAG) && f.isVisible() && !f.isDetached()) {
+                    savedInstanceState.putBoolean(getResources().getString(R.string.profile_fragment_added_key), true);
+                } else if (tag.equals(TrackFragment.TAG) && f.isVisible() && !f.isDetached()) {
+                    savedInstanceState.putBoolean(getResources().getString(R.string.track_fragment_added_key), true);
                 }
             }
         }

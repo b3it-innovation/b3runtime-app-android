@@ -104,12 +104,11 @@ public class MapsActivity extends BaseActivity
         attendeeKey = intent.getStringExtra("attendeeKey");
 
         //check if questionfragment is created and retained, if it is then detach from screen
-        if (savedInstanceState != null) {
-            if (savedInstanceState.getBoolean(getResources().getString(R.string.question_fragment_added_key))) {
-                questionFragment =
-                        (QuestionFragment) getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG);
-                getSupportFragmentManager().beginTransaction().detach(questionFragment).commit();
-            }
+        if (savedInstanceState != null &&
+                savedInstanceState.getBoolean(getResources().getString(R.string.question_fragment_added_key))) {
+            questionFragment =
+                    (QuestionFragment) getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG);
+            getSupportFragmentManager().beginTransaction().detach(questionFragment).commit();
         }
         // when trackKey and attendeeKey is null, get it from shared preference
         if (trackKey == null) {
@@ -159,9 +158,11 @@ public class MapsActivity extends BaseActivity
         if (mapFragment == null) {
             Toast.makeText(this, getString(R.string.somethingWentWrong), Toast.LENGTH_SHORT)
                     .show();
+        } else {
+            //gets Map asynchronously
+            mapFragment.getMapAsync(this);
         }
-        //gets Map asynchronously
-        mapFragment.getMapAsync(this);
+
         //creates a dialog to inform the user that permissions are necessary for functioning of the app
         permissionDeniedDialog = Util.createDialog(
                 getString(R.string.permissionsDialogTitle),
@@ -345,7 +346,9 @@ public class MapsActivity extends BaseActivity
                 geofenceIntentHandled = false;
                 receivedCheckpointID = intent.getStringExtra("id");
                 // if the app is not in foreground, do nothing
-                if (!Util.isForeground(getApplicationContext())) return;
+                if (!Util.isForeground(getApplicationContext())) {
+                    return;
+                }
 
                 handleGeofenceIntent();
             }

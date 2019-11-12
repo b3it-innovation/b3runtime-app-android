@@ -13,6 +13,7 @@ import com.b3.development.b3runtime.R;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is a class for sound effect and eventually background music
@@ -31,7 +32,7 @@ public class Jukebox {
     public boolean soundEnabled;
     public boolean musicEnabled;
     private SoundPool soundPool = null;
-    private HashMap<SoundEvent, Integer> soundsMap = null;
+    private Map<SoundEvent, Integer> soundsMap = null;
     private MediaPlayer bgPlayer = null;
     private Context context = null;
 

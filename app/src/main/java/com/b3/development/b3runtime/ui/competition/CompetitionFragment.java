@@ -19,6 +19,7 @@ import com.b3.development.b3runtime.data.repository.competition.CompetitionRepos
 import com.b3.development.b3runtime.ui.home.HomeActivity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -31,7 +32,7 @@ public class CompetitionFragment extends BaseFragment {
     private ProgressBar pb;
     private RecyclerView recyclerView;
     private ItemArrayAdapter itemArrayAdapter;
-    private ArrayList<ListItem> itemList = new ArrayList<>();
+    private List<ListItem> itemList = new ArrayList<>();
 
     public CompetitionFragment() {
     }

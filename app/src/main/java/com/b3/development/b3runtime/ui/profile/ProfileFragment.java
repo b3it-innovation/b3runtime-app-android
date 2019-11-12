@@ -36,8 +36,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,7 +43,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -116,7 +113,7 @@ public class ProfileFragment extends BaseFragment {
         profileImageView = view.findViewById(R.id.imageViewProfile);
         profileImageView.setOnClickListener(v -> {
             requestWriteExternalStoragePermissions();
-            pickUpImage(v);
+            pickUpImage();
         });
         showProfileImage(profileImageView);
 
@@ -144,7 +141,7 @@ public class ProfileFragment extends BaseFragment {
         });
     }
 
-    private void pickUpImage(View view) {
+    private void pickUpImage() {
         if (getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -211,7 +208,7 @@ public class ProfileFragment extends BaseFragment {
         StorageReference photoRef =
                 profilePhotoReference.child(currentUser.getUid() + "/" + profileImageFileName);
         UploadTask uploadTask = photoRef.putFile(imageUri);
-        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                 if (!task.isSuccessful()) {
@@ -373,7 +370,10 @@ public class ProfileFragment extends BaseFragment {
         File storageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + getResources().getString(R.string.external_storage_image_path));
 
         if (!storageDir.exists()) {
-            storageDir.mkdir();
+            boolean resultOK = storageDir.mkdir();
+            if (!resultOK) {
+                throw new IOException();
+            }
         }
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
@@ -419,7 +419,7 @@ public class ProfileFragment extends BaseFragment {
         if (requestCode == PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                pickUpImage(profileImageView);
+                pickUpImage();
             } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 //showPermissionDeniedDialog();
             } else if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -457,7 +457,7 @@ public class ProfileFragment extends BaseFragment {
                     try {
                         startActivity(intent);
                     } catch (Exception e) {
-                        Log.d(TAG, getString(R.string.intent_failed));
+                        Log.e(TAG, getString(R.string.intent_failed));
                         Toast.makeText(getActivity().getApplicationContext(),
                                 getString(R.string.somethingWentWrong),
                                 Toast.LENGTH_SHORT)
