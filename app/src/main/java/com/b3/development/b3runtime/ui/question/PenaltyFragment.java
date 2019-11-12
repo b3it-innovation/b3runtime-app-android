@@ -49,8 +49,7 @@ public class PenaltyFragment extends BaseDialogFragment {
      * Builds the {@link PenaltyFragment}
      */
     public static PenaltyFragment newInstance() {
-        PenaltyFragment responseFragment = new PenaltyFragment();
-        return responseFragment;
+        return new PenaltyFragment();
     }
 
     @Override

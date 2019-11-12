@@ -33,7 +33,7 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
      */
     public CompetitionRepositoryImpl(BackendInteractor bi) {
         this.backendInteractor = bi;
-        competitionsLiveDataSnapshot = bi.getCompetitionsDataSnapshot();
+        competitionsLiveDataSnapshot = backendInteractor.getCompetitionsDataSnapshot();
         competitionsLiveData = Transformations.map(competitionsLiveDataSnapshot,
                 snapshot -> convertDatasnapshotToCompetitions(snapshot));
     }

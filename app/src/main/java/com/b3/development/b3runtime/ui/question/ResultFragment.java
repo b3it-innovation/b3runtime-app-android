@@ -36,9 +36,6 @@ public class ResultFragment extends BaseDialogFragment {
 
     private static final int layoutId = R.layout.fragment_result_dialog;
     private TextView response;
-    private ImageView colorBase;
-    private CircleImageView colorLogo;
-    private Button confirm;
 
     public ResultFragment() {
     }
@@ -76,6 +73,10 @@ public class ResultFragment extends BaseDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        ImageView colorBase;
+        CircleImageView colorLogo;
+        Button confirm;
 
         response = view.findViewById(R.id.textResult);
         response.setHeight((int) (getScreenHeightPixels() * 0.3));

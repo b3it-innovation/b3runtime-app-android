@@ -33,10 +33,8 @@ public class TrackFragment extends BaseFragment {
 
     private CompetitionViewModel competitionViewModel;
     private ProgressBar pb;
-    private RecyclerView recyclerView;
     private ItemArrayAdapter itemArrayAdapter;
     private ArrayList<ListItem> itemList = new ArrayList<>();
-    private TextView headline;
 
     public TrackFragment() {
     }
@@ -69,7 +67,7 @@ public class TrackFragment extends BaseFragment {
         competitionViewModel.showLoading.observe(this, TrackFragment.this::showLoading);
         competitionViewModel.showLoading(true);
 
-        headline = view.findViewById(R.id.textChooseCompetition);
+        TextView headline = view.findViewById(R.id.textChooseCompetition);
         headline.setText(getResources().getString(R.string.chooseTrack));
 
         //check if there's been a screen rotation and whether competition had been chosen
@@ -82,7 +80,8 @@ public class TrackFragment extends BaseFragment {
 
         //create a recyclerview and populate it with ListItems
         itemArrayAdapter = new ItemArrayAdapter(R.layout.list_item, itemList);
-        recyclerView = view.findViewById(R.id.item_list);
+
+        RecyclerView recyclerView = view.findViewById(R.id.item_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(itemArrayAdapter);

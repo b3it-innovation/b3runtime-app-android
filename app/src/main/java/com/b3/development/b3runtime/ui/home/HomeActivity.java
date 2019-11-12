@@ -128,6 +128,7 @@ public class HomeActivity extends AppCompatActivity {
         savedInstanceState.putBoolean(getResources().getString(R.string.competition_fragment_added_key), false);
         savedInstanceState.putBoolean(getResources().getString(R.string.profile_fragment_added_key), false);
         savedInstanceState.putBoolean(getResources().getString(R.string.track_fragment_added_key), false);
+
         for (Fragment f : getSupportFragmentManager().getFragments()) {
             String tag = f.getTag();
             if (tag != null) {

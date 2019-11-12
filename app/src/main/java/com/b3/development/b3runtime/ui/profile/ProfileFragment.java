@@ -96,8 +96,7 @@ public class ProfileFragment extends BaseFragment {
      * @return A new instance of fragment ProfileFragment.
      */
     public static ProfileFragment newInstance() {
-        ProfileFragment fragment = new ProfileFragment();
-        return fragment;
+        return new ProfileFragment();
     }
 
     @Override
@@ -194,7 +193,7 @@ public class ProfileFragment extends BaseFragment {
             if (resultCode == RESULT_OK) {
                 uploadProfileImage(result.getUri());
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Exception error = result.getError();
+                Log.d(TAG, result.getError().getMessage());
             }
         }
 
@@ -210,7 +209,7 @@ public class ProfileFragment extends BaseFragment {
         StorageReference photoRef =
                 profilePhotoReference.child(currentUser.getUid() + "/" + profileImageFileName);
         UploadTask uploadTask = photoRef.putFile(imageUri);
-        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                 if (!task.isSuccessful()) {
@@ -333,7 +332,6 @@ public class ProfileFragment extends BaseFragment {
     public void sendResetPasswordMail(View view) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String emailAddress = currentUser.getEmail();
-//        reauthenticate();
         auth.sendPasswordResetEmail(emailAddress)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -345,25 +343,6 @@ public class ProfileFragment extends BaseFragment {
                 });
     }
 
-    private void reauthenticate() {
-        if (currentUser.getProviderData().get(currentUser.getProviderData().size() - 1).getProviderId().equals("google.com")) {
-            // Get the account
-            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getActivity().getApplicationContext());
-            if (acct != null) {
-                AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-                currentUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "Reauthenticated.");
-                        }
-                    }
-                });
-            }
-        } else {
-            // todo: check if registered with mail and reauthenticate
-        }
-    }
 
     private File createImageFile() throws IOException {
         // Create an image file name
@@ -470,6 +449,7 @@ public class ProfileFragment extends BaseFragment {
                 },
                 false,
                 getActivity());
+
         return doNotAskAgainClickedDialog;
     }
 

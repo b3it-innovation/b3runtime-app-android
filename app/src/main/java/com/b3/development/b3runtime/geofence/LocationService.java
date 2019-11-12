@@ -23,10 +23,10 @@ import com.b3.development.b3runtime.ui.map.MapsActivity;
 public class LocationService extends Service {
 
 
-    private final String TAG = "LocationService";
+    private static final String TAG = LocationService.class.getSimpleName();
     private static final String CHANNEL_ID = "LOCATION_SERVICE_CHANNEL";
-    private final int LOCATION_INTERVAL = 500;
-    private final int LOCATION_DISTANCE = 10;
+    private static final int LOCATION_INTERVAL = 500;
+    private static final int LOCATION_DISTANCE = 10;
 
     private NotificationManager notificationManager;
     private LocationListener mLocationListener;
@@ -36,7 +36,7 @@ public class LocationService extends Service {
     private class LocationListener implements android.location.LocationListener {
 
         private Location mLastLocation;
-        private final String TAG = "LocationListener";
+        private final String TAG = LocationListener.class.getSimpleName();
 
 
         public LocationListener(String provider) {
