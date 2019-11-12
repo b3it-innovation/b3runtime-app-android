@@ -62,7 +62,7 @@ public class QuestionViewModel extends BaseViewModel {
     }
 
     private String convertSelectedAnswer(int selectedOption) {
-        String selectedAnswer = "selected";
+        String selectedAnswer;
         switch (selectedOption) {
             case R.id.optionA:
                 selectedAnswer = "A";
@@ -77,7 +77,7 @@ public class QuestionViewModel extends BaseViewModel {
                 selectedAnswer = "D";
                 break;
             default:
-                selectedAnswer = "";
+                selectedAnswer = "selected";
                 break;
         }
         return selectedAnswer;

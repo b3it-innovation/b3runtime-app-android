@@ -144,7 +144,7 @@ public class QuestionFragment extends BaseDialogFragment {
     }
 
     private void showResponse(Boolean isCorrect) {
-        ResponseFragment.newInstance(isCorrect).show(getFragmentManager(), ResponseFragment.TAG);
+        ResponseFragment.newInstance(isCorrect).show(getActivity().getSupportFragmentManager(), ResponseFragment.TAG);
         //remove observer and recreate MutableLiveData to prevent showing of response more than once
         viewModel.getValidated().removeObservers(this);
         viewModel.setValidated(new MutableLiveData<>());

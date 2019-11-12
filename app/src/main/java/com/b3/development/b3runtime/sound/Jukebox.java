@@ -35,7 +35,7 @@ public class Jukebox {
     private SoundPool soundPool = null;
     private Map<SoundEvent, Integer> soundsMap = null;
     private MediaPlayer bgPlayer = null;
-    private Context context = null;
+    private Context context;
 
     public Jukebox(final Context context) {
         this.context = context;
@@ -61,7 +61,6 @@ public class Jukebox {
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void createSoundPool() {
         AudioAttributes attr = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_GAME)

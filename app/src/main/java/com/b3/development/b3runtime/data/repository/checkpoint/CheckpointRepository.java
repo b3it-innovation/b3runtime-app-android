@@ -20,8 +20,6 @@ public interface CheckpointRepository {
 
     void updateCheckpoint(Checkpoint checkpoint);
 
-    void skipCheckpoint(long pinOrder);
-
     void resetCheckpointsCompleted();
 
     void removeAllCheckpoints();

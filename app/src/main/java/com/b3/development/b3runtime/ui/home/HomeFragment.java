@@ -27,15 +27,6 @@ public class HomeFragment extends BaseFragment {
         return fragment;
     }
 
-    public boolean checkForUnfinishedTrack() {
-        return true;
-    }
-
-    private void continueTrack() {
-        Intent intent = new Intent(getContext(), MapsActivity.class);
-
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +46,7 @@ public class HomeFragment extends BaseFragment {
                 .setOnClickListener(v -> ((HomeActivity) getActivity()).showProfileFragment());
         view.findViewById(R.id.sign_out_button)
                 .setOnClickListener(v -> ((HomeActivity) getActivity()).signOut(view));
-        if (checkForUnfinishedTrack()) {
+        if (true) {
             view.findViewById(R.id.continue_button).setEnabled(true);
             view.findViewById(R.id.continue_button)
                     .setOnClickListener(new View.OnClickListener() {

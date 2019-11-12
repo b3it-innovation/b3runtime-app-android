@@ -19,7 +19,6 @@ import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
-import com.b3.development.b3runtime.sound.Jukebox;
 import com.b3.development.b3runtime.sound.SoundEvent;
 import com.b3.development.b3runtime.ui.map.MapsActivity;
 import com.b3.development.b3runtime.ui.map.MapsViewModel;

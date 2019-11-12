@@ -66,16 +66,6 @@ public class HomeActivity extends AppCompatActivity {
         saveUserAccount();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
     public void signOut(View view) {
         AuthUI.getInstance()
                 .signOut(this)
@@ -91,11 +81,6 @@ public class HomeActivity extends AppCompatActivity {
     private void saveUserAccount() {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         homeViewModel.saveUserAccount(uid);
-    }
-
-    public boolean isTrackUnfinished() {
-        boolean trackUnfinished = homeViewModel.isTrackUnfinished();
-        return trackUnfinished;
     }
 
     public void showCompetitionFragment() {
@@ -120,11 +105,6 @@ public class HomeActivity extends AppCompatActivity {
         ft.replace(R.id.home_container, profileFragment, ProfileFragment.TAG);
         ft.addToBackStack(ProfileFragment.TAG);
         ft.commit();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
     }
 
     @Override
