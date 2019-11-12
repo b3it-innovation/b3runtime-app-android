@@ -127,10 +127,4 @@ public class HomeActivity extends AppCompatActivity {
         }
         super.onSaveInstanceState(savedInstanceState);
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
 }
