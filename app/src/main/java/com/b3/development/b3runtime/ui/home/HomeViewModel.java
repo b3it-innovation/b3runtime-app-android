@@ -20,17 +20,4 @@ public class HomeViewModel extends BaseViewModel {
     public void saveUserAccount(String uid) {
         userAccountRepository.saveUserAccount(uid);
     }
-
-    public boolean isTrackUnfinished() {
-        if (checkpointRepository.getAllCheckpoints().getValue() != null) {
-            List<Checkpoint> checkpointList = checkpointRepository.getAllCheckpoints().getValue();
-            if (checkpointList.get(checkpointList.size() - 1).completedTime == null) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
 }

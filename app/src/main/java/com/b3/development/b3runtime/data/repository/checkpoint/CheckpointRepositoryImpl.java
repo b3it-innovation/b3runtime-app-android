@@ -60,11 +60,6 @@ public class CheckpointRepositoryImpl implements CheckpointRepository {
     }
 
     @Override
-    public void skipCheckpoint(long checkpointOrder) {
-
-    }
-
-    @Override
     public void resetCheckpointsCompleted() {
         AsyncTask.execute(() -> checkpointDao.updateCheckpointsCompleted(false));
     }

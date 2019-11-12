@@ -66,16 +66,6 @@ public class HomeActivity extends AppCompatActivity {
         saveUserAccount();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
     public void signOut(View view) {
         AuthUI.getInstance()
                 .signOut(this)
@@ -91,11 +81,6 @@ public class HomeActivity extends AppCompatActivity {
     private void saveUserAccount() {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         homeViewModel.saveUserAccount(uid);
-    }
-
-    public boolean isTrackUnfinished() {
-        boolean trackUnfinished = homeViewModel.isTrackUnfinished();
-        return trackUnfinished;
     }
 
     public void showCompetitionFragment() {
@@ -123,11 +108,6 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean(getResources().getString(R.string.competition_fragment_added_key), false);
         savedInstanceState.putBoolean(getResources().getString(R.string.profile_fragment_added_key), false);
@@ -147,10 +127,4 @@ public class HomeActivity extends AppCompatActivity {
         }
         super.onSaveInstanceState(savedInstanceState);
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
 }

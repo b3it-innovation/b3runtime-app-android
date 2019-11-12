@@ -62,10 +62,10 @@ public class CompetitionFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         pb = view.findViewById(R.id.progress_loader);
         pb.setVisibility(View.INVISIBLE);
-        competitionViewModel.getShowLoading().observe(this, CompetitionFragment.this::showLoading);
+        competitionViewModel.getShowLoading().observe(getViewLifecycleOwner(), CompetitionFragment.this::showLoading);
         competitionViewModel.showLoading(true);
 
-        competitionViewModel.getCompetitions().observe(this, backendCompetitions -> {
+        competitionViewModel.getCompetitions().observe(getViewLifecycleOwner(), backendCompetitions -> {
 
             //populate list with BackendCompetitions
             itemList.clear();

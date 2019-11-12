@@ -55,7 +55,7 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
 
         public ViewHolder(View itemView) {
             super(itemView);
-            item = (TextView) itemView.findViewById(R.id.row_item);
+            item = itemView.findViewById(R.id.row_item);
         }
     }
 }

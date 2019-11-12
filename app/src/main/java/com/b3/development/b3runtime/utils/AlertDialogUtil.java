@@ -119,7 +119,7 @@ public class AlertDialogUtil {
 
         InputFilter[] filterArray = createInputFilters();
         input.setFilters(filterArray);
-        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_CLASS_TEXT);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
         input.setText(oldName);
         builder.setView(input);
 
