@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -106,7 +107,7 @@ public class ProfileFragment extends BaseFragment {
         profileImageView = view.findViewById(R.id.imageViewProfile);
         profileImageView.setOnClickListener(v -> {
             requestWriteExternalStoragePermissions();
-            pickUpImage(v);
+            pickUpImage();
         });
         showProfileImage(profileImageView);
 
@@ -150,7 +151,7 @@ public class ProfileFragment extends BaseFragment {
         ft.commit();
     }
 
-    private void pickUpImage(View view) {
+    private void pickUpImage() {
         if (getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -217,7 +218,7 @@ public class ProfileFragment extends BaseFragment {
         StorageReference photoRef =
                 profilePhotoReference.child(currentUser.getUid() + "/" + profileImageFileName);
         UploadTask uploadTask = photoRef.putFile(imageUri);
-        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
             @Override
             public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                 if (!task.isSuccessful()) {
@@ -340,12 +341,15 @@ public class ProfileFragment extends BaseFragment {
 
     private File createImageFile() throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat(getString(R.string.image_file_date_format)).format(new Date());
+        String timeStamp = new SimpleDateFormat(getString(R.string.image_file_date_format), Locale.US).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + getResources().getString(R.string.external_storage_image_path));
 
         if (!storageDir.exists()) {
-            storageDir.mkdir();
+            boolean resultOK = storageDir.mkdir();
+            if (!resultOK) {
+                throw new IOException();
+            }
         }
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
@@ -391,7 +395,7 @@ public class ProfileFragment extends BaseFragment {
         if (requestCode == PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                pickUpImage(profileImageView);
+                pickUpImage();
             } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 //showPermissionDeniedDialog();
             } else if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -411,5 +415,4 @@ public class ProfileFragment extends BaseFragment {
             }
         }
     }
-
 }

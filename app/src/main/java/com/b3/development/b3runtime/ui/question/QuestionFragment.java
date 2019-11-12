@@ -138,7 +138,9 @@ public class QuestionFragment extends BaseDialogFragment {
     }
 
     private void showLoading(boolean b) {
-        if (b) pb.setVisibility(View.VISIBLE);
+        if (b) {
+            pb.setVisibility(View.VISIBLE);
+        }
     }
 
     private void showResponse(Boolean isCorrect) {
