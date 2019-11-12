@@ -64,16 +64,16 @@ public class TrackFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         pb = view.findViewById(R.id.progress_loader);
         pb.setVisibility(View.INVISIBLE);
-        competitionViewModel.showLoading.observe(this, TrackFragment.this::showLoading);
+        competitionViewModel.getShowLoading().observe(this, TrackFragment.this::showLoading);
         competitionViewModel.showLoading(true);
 
         TextView headline = view.findViewById(R.id.textChooseCompetition);
         headline.setText(getResources().getString(R.string.chooseTrack));
 
         //check if there's been a screen rotation and whether competition had been chosen
-        if (competitionViewModel.chosenCompetitionName != null) {
+        if (competitionViewModel.getChosenCompetitionName() != null) {
             //populate list with BackendTracks
-            showTracks(competitionViewModel.chosenCompetitionName, view);
+            showTracks(competitionViewModel.getChosenCompetitionName(), view);
         } else {
             ((HomeActivity) getActivity()).showCompetitionFragment();
         }
@@ -89,7 +89,7 @@ public class TrackFragment extends BaseFragment {
         itemArrayAdapter.setOnItemClickListener(v -> {
             TextView textView = (TextView) v;
             //if list contains tracks, start chosen track
-            competitionViewModel.chosenCompetitionName = null;
+            competitionViewModel.setChosenCompetitionName(null);
             startTrack(textView.getText().toString());
         });
         competitionViewModel.showLoading(false);
@@ -97,7 +97,7 @@ public class TrackFragment extends BaseFragment {
 
     //populate itemList with tracks from chosen competition
     private void showTracks(String competitionName, View view) {
-        for (BackendCompetition bc : competitionViewModel.competitions.getValue()) {
+        for (BackendCompetition bc : competitionViewModel.getCompetitions().getValue()) {
             if (bc.getName().equalsIgnoreCase(competitionName)) {
                 competitionViewModel.setCompetitionKey(bc.getKey());
                 itemList.clear();

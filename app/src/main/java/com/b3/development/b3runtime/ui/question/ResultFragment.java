@@ -67,7 +67,7 @@ public class ResultFragment extends BaseDialogFragment {
                         get(AttendeeRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext(), ""))
                 .get(MapsViewModel.class);
         //observe allCheckpoints and set response with the result
-        viewModel.allCheckpoints.observe(this, pins -> response.setText(viewModel.getResult()));
+        viewModel.getAllCheckpoints().observe(this, pins -> response.setText(viewModel.getResult()));
     }
 
     @Override

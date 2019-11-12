@@ -61,10 +61,10 @@ public class CompetitionFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         pb = view.findViewById(R.id.progress_loader);
         pb.setVisibility(View.INVISIBLE);
-        competitionViewModel.showLoading.observe(this, CompetitionFragment.this::showLoading);
+        competitionViewModel.getShowLoading().observe(this, CompetitionFragment.this::showLoading);
         competitionViewModel.showLoading(true);
 
-        competitionViewModel.competitions.observe(this, backendCompetitions -> {
+        competitionViewModel.getCompetitions().observe(this, backendCompetitions -> {
 
             //populate list with BackendCompetitions
             itemList.clear();
@@ -80,7 +80,7 @@ public class CompetitionFragment extends BaseFragment {
             itemArrayAdapter.setOnItemClickListener(v -> {
                 TextView textView = (TextView) v;
                 // show chosen competitions tracks
-                competitionViewModel.chosenCompetitionName = textView.getText().toString();
+                competitionViewModel.setChosenCompetitionName(textView.getText().toString());
                 ((HomeActivity) getActivity()).showTrackFragment();
             });
             competitionViewModel.showLoading(false);

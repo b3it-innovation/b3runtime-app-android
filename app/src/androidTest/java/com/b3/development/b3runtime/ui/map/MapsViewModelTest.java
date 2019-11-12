@@ -69,8 +69,8 @@ public class MapsViewModelTest {
 
         Log.d(TAG, "running getResult() test");
 
-        viewModel.allCheckpoints = this.allCheckpoints;
-        viewModel.nextCheckpoint = this.nextCheckpoint;
+        viewModel.setAllCheckpoints(this.allCheckpoints);
+        viewModel.setNextCheckpoint(this.nextCheckpoint);
 
         Checkpoint c = new Checkpoint();
         Checkpoint c1 = new Checkpoint();
@@ -101,7 +101,7 @@ public class MapsViewModelTest {
         list.add(c4);
         list.add(c5);
 
-        when(viewModel.allCheckpoints.getValue()).thenReturn(list);
+        when(viewModel.getAllCheckpoints().getValue()).thenReturn(list);
 
         String actual = viewModel.getResult();
         int numberOfCorrect = Integer.valueOf(actual.substring(13, 14));
@@ -182,7 +182,7 @@ public class MapsViewModelTest {
     public void updateCheckpointCompleted() {
         Log.d(TAG, "running updateCheckpointCompleted() test");
 
-        viewModel.nextCheckpoint = nextCheckpoint;
+        viewModel.setNextCheckpoint(nextCheckpoint);
         viewModel.updateCheckpointCompleted();
         verify(checkpointRepository, atMostOnce()).updateCheckpoint(any());
         verify(checkpointRepository, atLeastOnce()).updateCheckpoint(any());
@@ -192,7 +192,7 @@ public class MapsViewModelTest {
     public void updateCheckpointCorrectAnswer() {
         Log.d(TAG, "running updateCheckpointCorrectAnswer() test");
 
-        viewModel.nextCheckpoint = nextCheckpoint;
+        viewModel.setNextCheckpoint(nextCheckpoint);
         viewModel.updateCheckpointCorrectAnswer();
         verify(checkpointRepository, atMostOnce()).updateCheckpoint(any());
         verify(checkpointRepository, atLeastOnce()).updateCheckpoint(any());
@@ -202,7 +202,7 @@ public class MapsViewModelTest {
     public void skipCheckpoint() {
         Log.d(TAG, "running skipCheckpoint() test");
 
-        viewModel.nextCheckpoint = nextCheckpoint;
+        viewModel.setNextCheckpoint(nextCheckpoint);
         viewModel.skipCheckpoint();
         verify(checkpointRepository, atMostOnce()).updateCheckpoint(any());
         verify(checkpointRepository, atLeastOnce()).updateCheckpoint(any());

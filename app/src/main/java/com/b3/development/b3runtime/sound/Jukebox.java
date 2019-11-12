@@ -32,8 +32,8 @@ public class Jukebox {
     private static int DEFAULT_MUSIC_VOLUME;
 
     private static Jukebox jukebox;
-    public boolean soundEnabled;
-    public boolean musicEnabled;
+    private boolean soundEnabled;
+    private boolean musicEnabled;
     private SoundPool soundPool = null;
     private HashMap<SoundEvent, Integer> soundsMap = null;
     private MediaPlayer bgPlayer = null;
@@ -203,6 +203,22 @@ public class Jukebox {
         unloadSounds();
         unloadMusic();
         jukebox = null;
+    }
+
+    public boolean isSoundEnabled() {
+        return soundEnabled;
+    }
+
+    public void setSoundEnabled(boolean soundEnabled) {
+        this.soundEnabled = soundEnabled;
+    }
+
+    public boolean isMusicEnabled() {
+        return musicEnabled;
+    }
+
+    public void setMusicEnabled(boolean musicEnabled) {
+        this.musicEnabled = musicEnabled;
     }
 }
 

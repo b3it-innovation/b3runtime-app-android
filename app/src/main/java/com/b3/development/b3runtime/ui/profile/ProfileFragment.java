@@ -166,7 +166,7 @@ public class ProfileFragment extends BaseFragment {
                 photoFile = createImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
-                ex.printStackTrace();
+                Log.e(TAG, ex.getMessage());
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
@@ -244,7 +244,7 @@ public class ProfileFragment extends BaseFragment {
                         if (task.isSuccessful()) {
                             showProfileImage(profileImageView);
                         } else {
-                            // todo: Handle failures
+                            Log.e(TAG, task.getException().getMessage());
                         }
                     }
                 });

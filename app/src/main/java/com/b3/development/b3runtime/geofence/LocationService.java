@@ -33,39 +33,6 @@ public class LocationService extends Service {
     private LocationManager mLocationManager;
 
 
-    private class LocationListener implements android.location.LocationListener {
-
-        private Location mLastLocation;
-        private final String TAG = LocationListener.class.getSimpleName();
-
-
-        public LocationListener(String provider) {
-            mLastLocation = new Location(provider);
-        }
-
-        @Override
-        public void onLocationChanged(Location location) {
-            mLastLocation = location;
-            Log.i(TAG, "LocationChanged: " + location);
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-            Log.e(TAG, "onProviderDisabled: " + provider);
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-            Log.e(TAG, "onProviderEnabled: " + provider);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.e(TAG, "onStatusChanged: " + status);
-        }
-    }
-
-
     private void initializeLocationManager() {
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
@@ -157,6 +124,38 @@ public class LocationService extends Service {
                     .setAutoCancel(false);
 
             return builder.build();
+        }
+    }
+
+    private class LocationListener implements android.location.LocationListener {
+
+        private Location mLastLocation;
+        private final String TAG = LocationListener.class.getSimpleName();
+
+
+        public LocationListener(String provider) {
+            mLastLocation = new Location(provider);
+        }
+
+        @Override
+        public void onLocationChanged(Location location) {
+            mLastLocation = location;
+            Log.i(TAG, "LocationChanged: " + location);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Log.e(TAG, "onProviderDisabled: " + provider);
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Log.e(TAG, "onProviderEnabled: " + provider);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            Log.e(TAG, "onStatusChanged: " + status);
         }
     }
 }

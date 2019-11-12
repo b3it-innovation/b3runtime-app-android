@@ -5,7 +5,7 @@ import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepos
 
 public class HomeViewModel extends BaseViewModel {
 
-    UserAccountRepository userAccountRepository;
+    private UserAccountRepository userAccountRepository;
 
     public HomeViewModel(UserAccountRepository userAccountRepository) {
         this.userAccountRepository = userAccountRepository;
