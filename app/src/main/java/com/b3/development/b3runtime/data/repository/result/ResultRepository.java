@@ -2,6 +2,7 @@ package com.b3.development.b3runtime.data.repository.result;
 
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
+import com.b3.development.b3runtime.data.remote.BackendInteractor;
 
 import java.util.List;
 
@@ -12,4 +13,5 @@ public interface ResultRepository {
 
     String saveResult(String key, Attendee attendee, List<Checkpoint> checkpoints, Long totalTime);
 
+    void getResultsForUser(BackendInteractor.ResultCallback callback, String key);
 }

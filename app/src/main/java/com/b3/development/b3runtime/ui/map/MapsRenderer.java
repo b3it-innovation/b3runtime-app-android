@@ -3,10 +3,12 @@ package com.b3.development.b3runtime.ui.map;
 import android.animation.IntEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.b3.development.b3runtime.R;
@@ -17,6 +19,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -24,10 +27,10 @@ import java.util.List;
 
 public class MapsRenderer {
 
+    public static final String TAG = MapsRenderer.class.getSimpleName();
     private Context context;
     private ValueAnimator valueAnimator;
     private GroundOverlay currentCircle;
-    private Marker lastMarker;
 
 
     public MapsRenderer(final Context context) {
@@ -38,10 +41,14 @@ public class MapsRenderer {
     public void drawNextCheckpoint(final Checkpoint nextCheckpoint, final MapsViewModel viewModel, final GoogleMap map) {
         if (nextCheckpoint == null) return;
 
-        lastMarker = map.addMarker(new MarkerOptions()
+        Marker marker = map.addMarker(new MarkerOptions()
                 .position(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude))
-                .title(nextCheckpoint.name)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                .title(nextCheckpoint.name));
+        if (nextCheckpoint == viewModel.allCheckpoints.getValue().get(viewModel.allCheckpoints.getValue().size() - 1)) {
+            setGoalIconOnMarker(marker);
+        } else {
+            setNonCompletedIconOnMarker(marker);
+        }
 
         if (viewModel.isResponseOnScreen) {
             return;
@@ -80,13 +87,28 @@ public class MapsRenderer {
                     .position(new LatLng(checkpoint.latitude, checkpoint.longitude))
                     .title(checkpoint.name));
             if (checkpoint.completed) {
-                setCompletedColorOnMarker(marker);
+                setCompletedIconOnMarker(marker);
+            } else if (i == allCheckpoints.size() - 1) {
+                setGoalIconOnMarker(marker);
+            } else {
+                setNonCompletedIconOnMarker(marker);
             }
         }
     }
 
-    private void setCompletedColorOnMarker(final Marker marker) {
-        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+    private void setCompletedIconOnMarker(final Marker marker) {
+        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.redcheckbox));
+        marker.setAnchor(0.5F, 0.5F);
+    }
+
+    private void setGoalIconOnMarker(final Marker marker) {
+        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.yellowgoal));
+        marker.setAnchor(0.5F, 0.7F);
+    }
+
+    private void setNonCompletedIconOnMarker(final Marker marker) {
+        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.redcheckpointflag));
+        marker.setAnchor(0.2F,0.9F);
     }
 
     private void drawGeofenceCircleAroundCheckpoint(final GoogleMap map, final Checkpoint checkpoint) {
@@ -136,8 +158,57 @@ public class MapsRenderer {
     }
 
     public void resetMap(GoogleMap map) {
-        lastMarker = null;
         // removes all makers, polylines, polygons, overlays, etc from map (not geofences)
         map.clear();
+    }
+
+    public void changeToDarkMapMode(GoogleMap map, MapsViewModel viewModel) {
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = map.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            context, R.raw.style_dark_json));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            } else {
+                //save state in viewmodel
+                viewModel.setDarkMode(true);
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
+    }
+
+    public void changeToNormalMapMode(GoogleMap map, MapsViewModel viewModel) {
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = map.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            context, R.raw.style_normal_json));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            } else {
+                //save state in viewmodel
+                viewModel.setDarkMode(false);
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
+    }
+
+    public void changeToMapsView(GoogleMap map, MapsViewModel viewModel) {
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        //save state in viewmodel
+        viewModel.setSatelliteView(false);
+    }
+
+    public void changeToSatelliteView(GoogleMap map, MapsViewModel viewModel) {
+        map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        //save state in viewmodel
+        viewModel.setSatelliteView(true);
     }
 }
