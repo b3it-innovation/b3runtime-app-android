@@ -34,12 +34,15 @@ public class MapsViewModel extends BaseViewModel {
     public boolean isResponseOnScreen = false;
     public String resultKey;
     private Context context;
+
     private Long totalTime;
     private Long minutes;
     private Long seconds;
     private int numberOfCorrectAnswers;
     private int totalNumberOfCheckpoints;
 
+    private boolean darkMode = false;
+    private boolean satelliteView = false;
 
     public MapsViewModel(CheckpointRepository checkpointRepository, ResultRepository resultRepository,
                          AttendeeRepository attendeeRepository, GeofenceManager geofenceManager, Context context, String trackKey) {
@@ -194,5 +197,21 @@ public class MapsViewModel extends BaseViewModel {
 
     public int getTotalNumberOfCheckpoints() {
         return totalNumberOfCheckpoints;
+    }
+
+    public boolean isDarkMode() {
+        return darkMode;
+    }
+
+    public void setDarkMode(boolean darkMode) {
+        this.darkMode = darkMode;
+    }
+
+    public boolean isSatelliteView() {
+        return satelliteView;
+    }
+
+    public void setSatelliteView(boolean satelliteView) {
+        this.satelliteView = satelliteView;
     }
 }

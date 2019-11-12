@@ -14,7 +14,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
-import com.b3.development.b3runtime.base.BaseQuestionFragment;
+import com.b3.development.b3runtime.base.BaseDialogFragment;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
@@ -33,7 +33,7 @@ import static org.koin.java.KoinJavaComponent.get;
 /**
  * Contains logic for displaying a {@link ResponseFragment} to inform user of their result
  */
-public class ResponseFragment extends BaseQuestionFragment {
+public class ResponseFragment extends BaseDialogFragment {
 
     public static final String TAG = ResponseFragment.class.getSimpleName();
     private static final String EXTRA_IS_CORRECT = "extraIsCorrect";

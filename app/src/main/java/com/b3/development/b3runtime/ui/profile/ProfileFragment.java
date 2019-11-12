@@ -27,6 +27,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseFragment;
@@ -84,11 +85,6 @@ public class ProfileFragment extends BaseFragment {
 
     }
 
-    @Override
-    public Integer getLayoutId() {
-        return layoutId;
-    }
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -96,8 +92,12 @@ public class ProfileFragment extends BaseFragment {
      * @return A new instance of fragment ProfileFragment.
      */
     public static ProfileFragment newInstance() {
-        ProfileFragment fragment = new ProfileFragment();
-        return fragment;
+        return new ProfileFragment();
+    }
+
+    @Override
+    public Integer getLayoutId() {
+        return layoutId;
     }
 
     @Override
@@ -121,6 +121,7 @@ public class ProfileFragment extends BaseFragment {
 
         Button btnResetPassword = view.findViewById(R.id.btn_reset_password);
         Button btnChangeName = view.findViewById(R.id.btnEditName);
+        Button btnSeeResults = view.findViewById(R.id.btn_results);
 
         btnResetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,12 +136,27 @@ public class ProfileFragment extends BaseFragment {
             }
         });
 
+        btnSeeResults.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View f) {
+                showResultsFragment();
+            }
+        });
+
         drawProfile(view);
 
         view.findViewById(R.id.btn_camera).setOnClickListener(v -> {
             requestCameraAndWriteExternalStoragePermissions();
             dispatchTakePictureIntent();
         });
+    }
+
+    private void showResultsFragment() {
+        ResultsFragment profileFragment = ResultsFragment.newInstance(currentUser.getUid());
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.home_container, profileFragment, ProfileFragment.TAG);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     private void pickUpImage(View view) {

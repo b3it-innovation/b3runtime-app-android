@@ -14,6 +14,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -39,7 +40,7 @@ import com.b3.development.b3runtime.ui.home.HomeActivity;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.PenaltyFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
-import com.b3.development.b3runtime.ui.question.ResultFragment;
+import com.b3.development.b3runtime.ui.question.ResultDialogFragment;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
 import com.b3.development.b3runtime.utils.Util;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -91,6 +92,11 @@ public class MapsActivity extends BaseActivity
     public void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+
+        // prevents taking any screenshot on this activity
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE);
+
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         // get trackKey from intent
         Intent intent = getIntent();
@@ -211,6 +217,17 @@ public class MapsActivity extends BaseActivity
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        //hide option to set dark mode when in satellite view
+        if (viewModel.isSatelliteView()) {
+            menu.findItem(R.id.action_dark_mode).setVisible(false);
+        } else {
+            menu.findItem(R.id.action_dark_mode).setVisible(true);
+        }
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_reset:
@@ -220,8 +237,31 @@ public class MapsActivity extends BaseActivity
             case R.id.action_sound_mode:
                 jukebox.toggleSoundStatus();
                 setSoundModeTextInMenuItem(item);
+                return true;
+            case R.id.action_satellite_view:
+                toggleSatelliteView();
+                return true;
+            case R.id.action_dark_mode:
+                toggleDarkMode();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void toggleDarkMode() {
+        if (viewModel.isDarkMode()) {
+            mapsRenderer.changeToNormalMapMode(map, viewModel);
+        } else {
+            mapsRenderer.changeToDarkMapMode(map, viewModel);
+        }
+    }
+
+    public void toggleSatelliteView() {
+        if (viewModel.isSatelliteView()) {
+            mapsRenderer.changeToMapsView(map, viewModel);
+        } else {
+            mapsRenderer.changeToSatelliteView(map, viewModel);
         }
     }
 
@@ -276,15 +316,18 @@ public class MapsActivity extends BaseActivity
         AlertDialog confirmBackDialog = Util.createDialog(getResources().getString(R.string.maps_activity_back_pressed_alert_title),
                 getResources().getString(R.string.maps_activity_back_pressed_alert_message),
                 getResources().getString(R.string.maps_activity_back_pressed_alert_positive_button),
-                (dialog, which) -> { goBackToHomeActivity(); },
+                (dialog, which) -> {
+                    goBackToHomeActivity();
+                },
                 getResources().getString(R.string.maps_activity_back_pressed_alert_negative_button),
-                (dialog, which) -> {},
+                (dialog, which) -> {
+                },
                 false,
                 this);
         confirmBackDialog.show();
     }
 
-    private void goBackToHomeActivity(){
+    private void goBackToHomeActivity() {
         // Closing all activities and go back to home activity
         Intent i = new Intent(this, HomeActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -324,8 +367,8 @@ public class MapsActivity extends BaseActivity
         // Check if last checkpoint is reached
         else if (receivedCheckpointID.equals(finalCheckpointID)) {
             // Show result
-            if (getSupportFragmentManager().findFragmentByTag(ResultFragment.TAG) == null) {
-                ResultFragment.newInstance().show(getSupportFragmentManager(), ResultFragment.TAG);
+            if (getSupportFragmentManager().findFragmentByTag(ResultDialogFragment.TAG) == null) {
+                ResultDialogFragment.newInstance().show(getSupportFragmentManager(), ResultDialogFragment.TAG);
             }
         } else if (viewModel.nextCheckpoint.penalty) {
             PenaltyFragment.newInstance().show(getSupportFragmentManager(), PenaltyFragment.TAG);
@@ -344,6 +387,15 @@ public class MapsActivity extends BaseActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+
+        //check if satellite or dark mode was enabled on screen rotation and set it accordingly
+        if (viewModel.isSatelliteView()) {
+            mapsRenderer.changeToSatelliteView(map, viewModel);
+        }
+        if (viewModel.isDarkMode()) {
+            mapsRenderer.changeToDarkMapMode(map, viewModel);
+        }
+
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, 15f));
         initializeMap();
 

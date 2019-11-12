@@ -13,7 +13,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
-import com.b3.development.b3runtime.base.BaseQuestionFragment;
+import com.b3.development.b3runtime.base.BaseDialogFragment;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
@@ -26,11 +26,11 @@ import static com.b3.development.b3runtime.R.color.b3Yellow;
 import static org.koin.java.KoinJavaComponent.get;
 
 /**
- * Contains logic for displaying a {@link ResultFragment} to inform user of their result
+ * Contains logic for displaying a {@link ResultDialogFragment} to inform user of their result
  */
-public class ResultFragment extends BaseQuestionFragment {
+public class ResultDialogFragment extends BaseDialogFragment {
 
-    public static final String TAG = ResultFragment.class.getSimpleName();
+    public static final String TAG = ResultDialogFragment.class.getSimpleName();
 
     private MapsViewModel viewModel;
 
@@ -40,19 +40,19 @@ public class ResultFragment extends BaseQuestionFragment {
     private CircleImageView colorLogo;
     private Button confirm;
 
-    public ResultFragment() {
+    public ResultDialogFragment() {
     }
 
     /**
-     * Builds the {@link ResultFragment}
+     * Builds the {@link ResultDialogFragment}
      *
      * @return responseFragment
      */
-    public static ResultFragment newInstance() {
+    public static ResultDialogFragment newInstance() {
         Bundle arguments = new Bundle();
-        ResultFragment resultFragment = new ResultFragment();
-        resultFragment.setArguments(arguments);
-        return resultFragment;
+        ResultDialogFragment resultDialogFragment = new ResultDialogFragment();
+        resultDialogFragment.setArguments(arguments);
+        return resultDialogFragment;
     }
 
     @Override
