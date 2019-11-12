@@ -26,7 +26,6 @@ public abstract class BaseDialogFragment extends DialogFragment {
     protected int getScreenHeightPixels() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int y = displayMetrics.heightPixels;
-        return y;
+        return displayMetrics.heightPixels;
     }
 }

@@ -1,10 +1,7 @@
 package com.b3.development.b3runtime.ui.home;
 
-import androidx.lifecycle.LiveData;
-
 import com.b3.development.b3runtime.base.BaseViewModel;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
-import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepository;
 
@@ -14,7 +11,6 @@ public class HomeViewModel extends BaseViewModel {
 
     private UserAccountRepository userAccountRepository;
     private CheckpointRepository checkpointRepository;
-    private LiveData<List<BackendResult>> results;
 
     public HomeViewModel(UserAccountRepository userAccountRepository, CheckpointRepository checkpointRepository) {
         this.userAccountRepository = userAccountRepository;

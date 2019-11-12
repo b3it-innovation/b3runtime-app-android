@@ -123,10 +123,10 @@ public class QuestionFragment extends BaseDialogFragment {
         setCancelable(false);
 
         //observe LiveData in ViewModel
-        viewModel.showLoading.observe(this, QuestionFragment.this::showLoading);
-        viewModel.quest.observe(this, QuestionFragment.this::handleQuestion);
-        viewModel.validated.observe(this, QuestionFragment.this::showResponse);
-        viewModel.question.observe(this, QuestionFragment.this::updateQuestion);
+        viewModel.getShowLoading().observe(this, QuestionFragment.this::showLoading);
+        viewModel.getQuest().observe(this, QuestionFragment.this::handleQuestion);
+        viewModel.getValidated().observe(this, QuestionFragment.this::showResponse);
+        viewModel.getQuestion().observe(this, QuestionFragment.this::updateQuestion);
     }
 
     private void updateQuestion(Question q) {
@@ -146,8 +146,8 @@ public class QuestionFragment extends BaseDialogFragment {
     private void showResponse(Boolean isCorrect) {
         ResponseFragment.newInstance(isCorrect).show(getFragmentManager(), ResponseFragment.TAG);
         //remove observer and recreate MutableLiveData to prevent showing of response more than once
-        viewModel.validated.removeObservers(this);
-        viewModel.validated = new MutableLiveData<>();
+        viewModel.getValidated().removeObservers(this);
+        viewModel.setValidated(new MutableLiveData<>());
     }
 
     //changes text in questionfragment to current question

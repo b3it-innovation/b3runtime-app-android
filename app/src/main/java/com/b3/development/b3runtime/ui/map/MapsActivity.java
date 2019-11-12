@@ -126,7 +126,7 @@ public class MapsActivity extends BaseActivity
 
         // initializes attendee data in ViewModel
         viewModel.initAttendee(attendeeKey);
-        viewModel.currentAttendee.observe(this, attendee -> {
+        viewModel.getCurrentAttendee().observe(this, attendee -> {
         });
 
         // if the intent is come from HomeActivity remove all checkpoints to redraw them
@@ -140,8 +140,8 @@ public class MapsActivity extends BaseActivity
         // if onCreate() is triggered by other cases
         else {
             // sets resultKey in viewModel
-            if (viewModel.resultKey == null) {
-                viewModel.resultKey = prefs.getString("resultKey", "");
+            if (viewModel.getResultKey() == null) {
+                viewModel.setResultKey(prefs.getString("resultKey", ""));
             }
         }
 
@@ -261,7 +261,7 @@ public class MapsActivity extends BaseActivity
     }
 
     private void setSoundModeTextInMenuItem(MenuItem menuItem) {
-        if (jukebox.soundEnabled) {
+        if (jukebox.isSoundEnabled()) {
             menuItem.setTitle(getResources().getString(R.string.soundOffText));
         } else {
             menuItem.setTitle(getResources().getString(R.string.soundOnText));
@@ -277,7 +277,7 @@ public class MapsActivity extends BaseActivity
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("trackKey", trackKey);
         editor.putString("attendeeKey", attendeeKey);
-        editor.putString("resultKey", viewModel.resultKey);
+        editor.putString("resultKey", viewModel.getResultKey());
         editor.apply();
     }
 
@@ -358,7 +358,7 @@ public class MapsActivity extends BaseActivity
             if (getSupportFragmentManager().findFragmentByTag(ResultDialogFragment.TAG) == null) {
                 ResultDialogFragment.newInstance().show(getSupportFragmentManager(), ResultDialogFragment.TAG);
             }
-        } else if (viewModel.nextCheckpoint.penalty) {
+        } else if (viewModel.getNextCheckpoint().penalty) {
             PenaltyFragment.newInstance().show(getSupportFragmentManager(), PenaltyFragment.TAG);
         } else { // Otherwise show new question
 
@@ -401,10 +401,10 @@ public class MapsActivity extends BaseActivity
         } else {
             map.setMyLocationEnabled(true);
             // Get all checkpoints and draw / save ID of the last checkpoint
-            if (viewModel.allCheckpoints.hasObservers()) {
-                viewModel.allCheckpoints.removeObservers(this);
+            if (viewModel.getAllCheckpoints().hasObservers()) {
+                viewModel.getAllCheckpoints().removeObservers(this);
             }
-            viewModel.allCheckpoints.observe(this,
+            viewModel.getAllCheckpoints().observe(this,
                     checkpoints -> {
                         if (!checkpoints.isEmpty()) {
                             mapsRenderer.resetMap(map);

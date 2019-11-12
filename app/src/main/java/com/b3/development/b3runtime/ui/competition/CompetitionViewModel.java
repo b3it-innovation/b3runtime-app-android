@@ -18,14 +18,14 @@ import java.util.List;
  */
 public class CompetitionViewModel extends BaseViewModel {
 
-    public LiveData<List<BackendCompetition>> competitions;
+    private LiveData<List<BackendCompetition>> competitions;
     private CompetitionRepository repository;
     private AttendeeRepository attendeeRepository;
-    MutableLiveData<Boolean> showLoading = new MutableLiveData<>();
+    private MutableLiveData<Boolean> showLoading = new MutableLiveData<>();
     private Attendee currentAttendee;
     private String competitionKey;
     private String trackKey;
-    public String chosenCompetitionName;
+    private String chosenCompetitionName;
 
     public CompetitionViewModel(CompetitionRepository competitionRepository, AttendeeRepository attendeeRepository) {
         this.repository = competitionRepository;
@@ -73,5 +73,29 @@ public class CompetitionViewModel extends BaseViewModel {
 
     public void insertAttendee(Attendee attendee) {
         attendeeRepository.insertAttendee(currentAttendee);
+    }
+
+    public LiveData<List<BackendCompetition>> getCompetitions() {
+        return competitions;
+    }
+
+    public void setCompetitions(LiveData<List<BackendCompetition>> competitions) {
+        this.competitions = competitions;
+    }
+
+    public MutableLiveData<Boolean> getShowLoading() {
+        return showLoading;
+    }
+
+    public void setShowLoading(MutableLiveData<Boolean> showLoading) {
+        this.showLoading = showLoading;
+    }
+
+    public String getChosenCompetitionName() {
+        return chosenCompetitionName;
+    }
+
+    public void setChosenCompetitionName(String chosenCompetitionName) {
+        this.chosenCompetitionName = chosenCompetitionName;
     }
 }

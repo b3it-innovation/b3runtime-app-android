@@ -28,16 +28,17 @@ public class MapsViewModel extends BaseViewModel {
     private static final int THOUSAND = 1000;
     private static final int SIXTY = 60;
 
-    public Checkpoint nextCheckpoint;
-    public LiveData<List<Checkpoint>> allCheckpoints;
-    public LiveData<Attendee> currentAttendee;
+    private Checkpoint nextCheckpoint;
+    private LiveData<List<Checkpoint>> allCheckpoints;
+    private LiveData<Attendee> currentAttendee;
     private CheckpointRepository checkpointRepository;
     private ResultRepository resultRepository;
     private AttendeeRepository attendeeRepository;
+
     private GeofenceManager geofenceManager;
-    public boolean isLatestAnsweredCorrect = false;
-    public boolean isResponseOnScreen = false;
-    public String resultKey;
+    private boolean isLatestAnsweredCorrect = false;
+    private boolean isResponseOnScreen = false;
+    private String resultKey;
     private Context context;
 
     private Long totalTime;
@@ -219,5 +220,53 @@ public class MapsViewModel extends BaseViewModel {
 
     public void setSatelliteView(boolean satelliteView) {
         this.satelliteView = satelliteView;
+    }
+
+    public Checkpoint getNextCheckpoint() {
+        return nextCheckpoint;
+    }
+
+    public void setNextCheckpoint(Checkpoint nextCheckpoint) {
+        this.nextCheckpoint = nextCheckpoint;
+    }
+
+    public LiveData<List<Checkpoint>> getAllCheckpoints() {
+        return allCheckpoints;
+    }
+
+    public void setAllCheckpoints(LiveData<List<Checkpoint>> allCheckpoints) {
+        this.allCheckpoints = allCheckpoints;
+    }
+
+    public LiveData<Attendee> getCurrentAttendee() {
+        return currentAttendee;
+    }
+
+    public void setCurrentAttendee(LiveData<Attendee> currentAttendee) {
+        this.currentAttendee = currentAttendee;
+    }
+
+    public boolean isLatestAnsweredCorrect() {
+        return isLatestAnsweredCorrect;
+    }
+
+    public void setLatestAnsweredCorrect(boolean latestAnsweredCorrect) {
+        isLatestAnsweredCorrect = latestAnsweredCorrect;
+    }
+
+    public boolean isResponseOnScreen() {
+        return isResponseOnScreen;
+    }
+
+    public void setResponseOnScreen(boolean responseOnScreen) {
+        isResponseOnScreen = responseOnScreen;
+    }
+
+    public String getResultKey() {
+        return resultKey;
+    }
+
+    public void setResultKey(String resultKey) {
+        this.resultKey = resultKey;
     }
 }

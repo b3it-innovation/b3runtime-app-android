@@ -5,23 +5,23 @@
     <item
         android:id="@+id/action_reset"
         android:orderInCategory="100"
-        android:title="Reset Track"
+        android:title="@string/menu_main_reset_track"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_sound_mode"
         android:orderInCategory="200"
-        android:title="Sound on"
+        android:title="@string/menu_main_sound_on"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_satellite_view"
         android:orderInCategory="300"
-        android:title="Toggle satellite view"
+        android:title="@string/menu_main_toggle_satellite"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_dark_mode"
         android:orderInCategory="400"
-        android:title="Toggle dark mode"
+        android:title="@string/menu_main_toggle_dark_mode"
         app:showAsAction="never" />
 </menu>

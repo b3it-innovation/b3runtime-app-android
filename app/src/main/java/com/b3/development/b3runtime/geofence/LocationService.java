@@ -21,6 +21,7 @@ import com.b3.development.b3runtime.ui.map.MapsActivity;
 
 
 public class LocationService extends Service {
+
     private static final String TAG = LocationService.class.getSimpleName();
     private static final String CHANNEL_ID = "LOCATION_SERVICE_CHANNEL";
     private static final int SERVICE_ID = 12345678;
@@ -30,40 +31,6 @@ public class LocationService extends Service {
     private NotificationManager notificationManager;
     private LocationListener mLocationListener;
     private LocationManager mLocationManager;
-
-
-    private static class LocationListener implements android.location.LocationListener {
-
-        private Location mLastLocation;
-        private final static String TAG = LocationListener.class.getSimpleName();
-
-
-        public LocationListener(String provider) {
-            mLastLocation = new Location(provider);
-        }
-
-        @Override
-        public void onLocationChanged(Location location) {
-            mLastLocation = location;
-            Log.i(TAG, "LocationChanged: " + location);
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-            Log.e(TAG, "onProviderDisabled: " + provider);
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-            Log.e(TAG, "onProviderEnabled: " + provider);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.e(TAG, "onStatusChanged: " + status);
-        }
-    }
-
 
     private void initializeLocationManager() {
         if (mLocationManager == null) {
@@ -91,7 +58,6 @@ public class LocationService extends Service {
         return null;
     }
 
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //start service in foreground to allow frequent location updates when app in background
@@ -117,7 +83,6 @@ public class LocationService extends Service {
             }
         }
     }
-
 
     private Notification getNotification() {
 
@@ -156,6 +121,38 @@ public class LocationService extends Service {
                     .setAutoCancel(false);
 
             return builder.build();
+        }
+    }
+
+    private static class LocationListener implements android.location.LocationListener {
+
+        private Location mLastLocation;
+        private static final String TAG = LocationListener.class.getSimpleName();
+
+
+        public LocationListener(String provider) {
+            mLastLocation = new Location(provider);
+        }
+
+        @Override
+        public void onLocationChanged(Location location) {
+            mLastLocation = location;
+            Log.i(TAG, "LocationChanged: " + location);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Log.e(TAG, "onProviderDisabled: " + provider);
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Log.e(TAG, "onProviderEnabled: " + provider);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            Log.e(TAG, "onStatusChanged: " + status);
         }
     }
 }

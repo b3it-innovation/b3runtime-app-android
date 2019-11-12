@@ -5,12 +5,11 @@ import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 import com.b3.development.b3runtime.data.remote.BackendInteractor;
 import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
-import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 
 import java.util.List;
 
 /**
- * An implementation of the {@link CheckpointRepository} interface
+ * An implementation of the {@link ResultRepository} interface
  */
 public class ResultRepositoryImpl implements ResultRepository {
 

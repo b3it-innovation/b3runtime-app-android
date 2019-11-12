@@ -20,10 +20,10 @@ public class QuestionViewModel extends BaseViewModel {
 
     public static final String TAG = QuestionViewModel.class.getSimpleName();
 
-    public LiveData<Question> quest;
-    public MutableLiveData<Question> question = new MutableLiveData<>();
-    MutableLiveData<Boolean> validated = new MutableLiveData<>();
-    MutableLiveData<Boolean> showLoading = new MutableLiveData<>();
+    private LiveData<Question> quest;
+    private MutableLiveData<Question> question = new MutableLiveData<>();
+    private MutableLiveData<Boolean> validated = new MutableLiveData<>();
+    private MutableLiveData<Boolean> showLoading = new MutableLiveData<>();
     private QuestionRepository repository;
 
     public QuestionViewModel(QuestionRepository questionRepository) {
@@ -86,5 +86,33 @@ public class QuestionViewModel extends BaseViewModel {
     //sets all question to not answered
     public void resetQuestionsIsAnswered() {
         repository.resetQuestionIsAnswered();
+    }
+
+    public LiveData<Question> getQuest() {
+        return quest;
+    }
+
+    public MutableLiveData<Question> getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(MutableLiveData<Question> question) {
+        this.question = question;
+    }
+
+    public MutableLiveData<Boolean> getValidated() {
+        return validated;
+    }
+
+    public void setValidated(MutableLiveData<Boolean> validated) {
+        this.validated = validated;
+    }
+
+    public MutableLiveData<Boolean> getShowLoading() {
+        return showLoading;
+    }
+
+    public void setShowLoading(MutableLiveData<Boolean> showLoading) {
+        this.showLoading = showLoading;
     }
 }

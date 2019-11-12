@@ -34,10 +34,8 @@ public class TrackFragment extends BaseFragment {
 
     private CompetitionViewModel competitionViewModel;
     private ProgressBar pb;
-    private RecyclerView recyclerView;
     private ItemArrayAdapter itemArrayAdapter;
     private List<ListItem> itemList = new ArrayList<>();
-    private TextView headline;
 
     public TrackFragment() {
     }
@@ -67,23 +65,24 @@ public class TrackFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         pb = view.findViewById(R.id.progress_loader);
         pb.setVisibility(View.INVISIBLE);
-        competitionViewModel.showLoading.observe(this, TrackFragment.this::showLoading);
+        competitionViewModel.getShowLoading().observe(this, TrackFragment.this::showLoading);
         competitionViewModel.showLoading(true);
 
-        headline = view.findViewById(R.id.textChooseCompetition);
+        TextView headline = view.findViewById(R.id.textChooseCompetition);
         headline.setText(getResources().getString(R.string.chooseTrack));
 
         //check if there's been a screen rotation and whether competition had been chosen
-        if (competitionViewModel.chosenCompetitionName != null) {
+        if (competitionViewModel.getChosenCompetitionName() != null) {
             //populate list with BackendTracks
-            showTracks(competitionViewModel.chosenCompetitionName);
+            showTracks(competitionViewModel.getChosenCompetitionName());
         } else {
             ((HomeActivity) getActivity()).showCompetitionFragment();
         }
 
         //create a recyclerview and populate it with ListItems
         itemArrayAdapter = new ItemArrayAdapter(R.layout.list_item, itemList);
-        recyclerView = view.findViewById(R.id.item_list);
+
+        RecyclerView recyclerView = view.findViewById(R.id.item_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(itemArrayAdapter);
@@ -91,7 +90,7 @@ public class TrackFragment extends BaseFragment {
         itemArrayAdapter.setOnItemClickListener(v -> {
             TextView textView = (TextView) v;
             //if list contains tracks, start chosen track
-            competitionViewModel.chosenCompetitionName = null;
+            competitionViewModel.setChosenCompetitionName(null);
             startTrack(textView.getText().toString());
         });
         competitionViewModel.showLoading(false);
@@ -99,7 +98,7 @@ public class TrackFragment extends BaseFragment {
 
     //populate itemList with tracks from chosen competition
     private void showTracks(String competitionName) {
-        for (BackendCompetition bc : competitionViewModel.competitions.getValue()) {
+        for (BackendCompetition bc : competitionViewModel.getCompetitions().getValue()) {
             if (bc.getName().equalsIgnoreCase(competitionName)) {
                 competitionViewModel.setCompetitionKey(bc.getKey());
                 itemList.clear();

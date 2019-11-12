@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -27,15 +26,11 @@ import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseFragment;
 import com.b3.development.b3runtime.utils.AlertDialogUtil;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -175,7 +170,7 @@ public class ProfileFragment extends BaseFragment {
                 photoFile = createImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
-                ex.printStackTrace();
+                Log.e(TAG, ex.getMessage());
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
@@ -202,7 +197,7 @@ public class ProfileFragment extends BaseFragment {
             if (resultCode == RESULT_OK) {
                 uploadProfileImage(result.getUri());
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Exception error = result.getError();
+                Log.d(TAG, result.getError().getMessage());
             }
         }
 
@@ -253,7 +248,7 @@ public class ProfileFragment extends BaseFragment {
                         if (task.isSuccessful()) {
                             showProfileImage(profileImageView);
                         } else {
-                            // todo: Handle failures
+                            Log.e(TAG, task.getException().getMessage());
                         }
                     }
                 });
@@ -307,7 +302,6 @@ public class ProfileFragment extends BaseFragment {
     public void sendResetPasswordMail(View view) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String emailAddress = currentUser.getEmail();
-//        reauthenticate();
         auth.sendPasswordResetEmail(emailAddress)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -319,25 +313,6 @@ public class ProfileFragment extends BaseFragment {
                 });
     }
 
-    private void reauthenticate() {
-        if (currentUser.getProviderData().get(currentUser.getProviderData().size() - 1).getProviderId().equals("google.com")) {
-            // Get the account
-            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getActivity().getApplicationContext());
-            if (acct != null) {
-                AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-                currentUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "Reauthenticated.");
-                        }
-                    }
-                });
-            }
-        } else {
-            // todo: check if registered with mail and reauthenticate
-        }
-    }
 
     private File createImageFile() throws IOException {
         // Create an image file name

@@ -17,5 +17,5 @@
         android:gravity="center"
         android:stateListAnimator="@null"
         android:textColor="@color/colorWhite"
-        android:textSize="24dp" />
+        android:textSize="24sp" />
 </LinearLayout>

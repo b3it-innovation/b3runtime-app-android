@@ -46,17 +46,17 @@ public class MapsRenderer {
         Marker marker = map.addMarker(new MarkerOptions()
                 .position(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude))
                 .title(nextCheckpoint.name));
-        if (nextCheckpoint == viewModel.allCheckpoints.getValue().get(viewModel.allCheckpoints.getValue().size() - 1)) {
+        if (nextCheckpoint == viewModel.getAllCheckpoints().getValue().get(viewModel.getAllCheckpoints().getValue().size() - 1)) {
             setGoalIconOnMarker(marker);
         } else {
             setNonCompletedIconOnMarker(marker);
         }
 
-        if (viewModel.isResponseOnScreen) {
+        if (viewModel.isResponseOnScreen()) {
             return;
-        } else if (viewModel.isLatestAnsweredCorrect) {
+        } else if (viewModel.isLatestAnsweredCorrect()) {
             viewModel.skipCheckpoint();
-            viewModel.isLatestAnsweredCorrect = false;
+            viewModel.setLatestAnsweredCorrect(false);
         } else {
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude), 15f));
             // remove all geofences
@@ -79,7 +79,7 @@ public class MapsRenderer {
             Checkpoint checkpoint = allCheckpoints.get(i);
             // checks if it is next checkpoint
             if (!checkpoint.completed && !nextCheckpointDrawn) {
-                viewModel.nextCheckpoint = checkpoint;
+                viewModel.setNextCheckpoint(checkpoint);
                 drawNextCheckpoint(checkpoint, viewModel, map);
                 nextCheckpointDrawn = true;
                 continue;

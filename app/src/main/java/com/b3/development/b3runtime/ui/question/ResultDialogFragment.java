@@ -36,9 +36,6 @@ public class ResultDialogFragment extends BaseDialogFragment {
 
     private static final int layoutId = R.layout.fragment_result_dialog;
     private TextView response;
-    private ImageView colorBase;
-    private CircleImageView colorLogo;
-    private Button confirm;
 
     public ResultDialogFragment() {
     }
@@ -70,12 +67,16 @@ public class ResultDialogFragment extends BaseDialogFragment {
                         get(AttendeeRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext(), ""))
                 .get(MapsViewModel.class);
         //observe allCheckpoints and set response with the result
-        viewModel.allCheckpoints.observe(this, pins -> response.setText(viewModel.getResultString()));
+        viewModel.getAllCheckpoints().observe(this, pins -> response.setText(viewModel.getResultString()));
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        ImageView colorBase;
+        CircleImageView colorLogo;
+        Button confirm;
 
         response = view.findViewById(R.id.textResult);
         response.setHeight((int) (getScreenHeightPixels() * 0.3));
