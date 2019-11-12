@@ -3,7 +3,7 @@ package com.b3.development.b3runtime.data.remote.model.competition;
 import com.b3.development.b3runtime.data.remote.model.track.BackendTrack;
 import com.b3.development.b3runtime.ui.competition.ListItem;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A model of the response from <code>firebase database</code>
@@ -14,7 +14,7 @@ public class BackendCompetition implements ListItem {
     private String name;
     private Long date;
     private Boolean active;
-    private ArrayList<BackendTrack> tracks;
+    private List<BackendTrack> tracks;
 
     public String getKey() {
         return key;
@@ -48,11 +48,11 @@ public class BackendCompetition implements ListItem {
         this.active = active;
     }
 
-    public ArrayList<BackendTrack> getTracks() {
+    public List<BackendTrack> getTracks() {
         return tracks;
     }
 
-    public void setTracks(ArrayList<BackendTrack> tracks) {
+    public void setTracks(List<BackendTrack> tracks) {
         this.tracks = tracks;
     }
 

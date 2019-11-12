@@ -8,6 +8,7 @@
 
     <ImageView
         android:id="@+id/imageViewProfile"
+        android:contentDescription="@string/description_profile_image"
         android:layout_width="145dp"
         android:layout_height="145dp"
         android:layout_gravity="center"
@@ -75,5 +76,12 @@
         android:layout_marginRight="10dp"
         android:layout_weight="0"
         android:text="@string/reset_password_button_text" />
+
+    <Button
+        android:id="@+id/btn_results"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:text="@string/results" />
 
 </LinearLayout>

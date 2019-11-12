@@ -65,9 +65,9 @@ public class MapsViewModelTest {
     }
 
     @Test
-    public void getResult() {
+    public void getResultString() {
 
-        Log.d(TAG, "running getResult() test");
+        Log.d(TAG, "running getResultString() test");
 
         viewModel.setAllCheckpoints(this.allCheckpoints);
         viewModel.setNextCheckpoint(this.nextCheckpoint);
@@ -103,7 +103,7 @@ public class MapsViewModelTest {
 
         when(viewModel.getAllCheckpoints().getValue()).thenReturn(list);
 
-        String actual = viewModel.getResult();
+        String actual = viewModel.getResultString();
         int numberOfCorrect = Integer.valueOf(actual.substring(13, 14));
         int minutes = Integer.valueOf(actual.substring(67, 68));
         int seconds = Integer.valueOf(actual.substring(81, 83));
@@ -115,6 +115,56 @@ public class MapsViewModelTest {
         //Completion time, seconds
         assertEquals("Number of seconds not correct", 50, seconds, 3);
 
+    }
+
+    @Test
+    public void calcResult() {
+        Log.d(TAG, "running calcResult() test");
+
+        viewModel.allCheckpoints = this.allCheckpoints;
+        viewModel.nextCheckpoint = this.nextCheckpoint;
+
+        Checkpoint c = new Checkpoint();
+        Checkpoint c1 = new Checkpoint();
+        Checkpoint c2 = new Checkpoint();
+        Checkpoint c3 = new Checkpoint();
+        Checkpoint c4 = new Checkpoint();
+        Checkpoint c5 = new Checkpoint();
+
+        c.completedTime = System.currentTimeMillis() - 50000;
+        c1.completedTime = c.completedTime + 10000;
+        c2.completedTime = c1.completedTime + 10000;
+        c3.completedTime = c2.completedTime + 10000;
+        c4.completedTime = c3.completedTime + 10000;
+        c5.completedTime = null;
+
+        c.answeredCorrect = false;
+        c1.answeredCorrect = false;
+        c2.answeredCorrect = false;
+        c3.answeredCorrect = true;
+        c4.answeredCorrect = false;
+        c5.answeredCorrect = false;
+
+        List<Checkpoint> list = new ArrayList<>();
+        list.add(c);
+        list.add(c1);
+        list.add(c2);
+        list.add(c3);
+        list.add(c4);
+        list.add(c5);
+
+        when(viewModel.allCheckpoints.getValue()).thenReturn(list);
+
+        viewModel.calcResult();
+
+        Long expectedMinutes = 0L;
+        Long expectedSeconds = 50L;
+        int expectedCorrectAnswers = 1;
+        int expectedTotalNumberOfCheckpoints = 4;
+        assertEquals(expectedMinutes, viewModel.getMinutes());
+        assertEquals(expectedSeconds, viewModel.getSeconds(), 3);
+        assertEquals(expectedCorrectAnswers, viewModel.getNumberOfCorrectAnswers());
+        assertEquals(expectedTotalNumberOfCheckpoints, viewModel.getTotalNumberOfCheckpoints());
     }
 
     @Test

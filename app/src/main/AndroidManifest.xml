@@ -12,8 +12,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <!-- Only for debugging. todo: Remove before release. -->
-
     <uses-feature android:name="android.hardware.camera"
         android:required="false" />
 

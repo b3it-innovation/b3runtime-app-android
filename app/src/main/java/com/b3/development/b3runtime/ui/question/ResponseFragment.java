@@ -105,10 +105,11 @@ public class ResponseFragment extends BaseDialogFragment {
         }
         // Play sound effect
         final MapsActivity mapsActivity = (MapsActivity) getActivity();
+        final Jukebox jukebox = mapsActivity.getJukebox();
         if (getArguments().getBoolean(EXTRA_IS_CORRECT)) {
-            Jukebox.getInstance(getContext()).playSoundForGameEvent(SoundEvent.AnswerCorrect);
+            jukebox.playSoundForGameEvent(SoundEvent.AnswerCorrect);
         } else {
-            Jukebox.getInstance(getContext()).playSoundForGameEvent(SoundEvent.AnswerWrong);
+            jukebox.playSoundForGameEvent(SoundEvent.AnswerWrong);
         }
     }
 

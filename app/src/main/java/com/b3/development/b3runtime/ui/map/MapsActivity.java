@@ -7,10 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,9 +38,11 @@ import com.b3.development.b3runtime.ui.home.HomeActivity;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.PenaltyFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
-import com.b3.development.b3runtime.ui.question.ResultFragment;
+import com.b3.development.b3runtime.utils.AlertDialogUtil;
+import com.b3.development.b3runtime.ui.question.ResultDialogFragment;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
 import com.b3.development.b3runtime.utils.Util;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -104,12 +104,11 @@ public class MapsActivity extends BaseActivity
         attendeeKey = intent.getStringExtra("attendeeKey");
 
         //check if questionfragment is created and retained, if it is then detach from screen
-        if (savedInstanceState != null) {
-            if (savedInstanceState.getBoolean(getResources().getString(R.string.question_fragment_added_key))) {
-                questionFragment =
-                        (QuestionFragment) getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG);
-                getSupportFragmentManager().beginTransaction().detach(questionFragment).commit();
-            }
+        if (savedInstanceState != null &&
+                savedInstanceState.getBoolean(getResources().getString(R.string.question_fragment_added_key))) {
+            questionFragment =
+                    (QuestionFragment) getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG);
+            getSupportFragmentManager().beginTransaction().detach(questionFragment).commit();
         }
         // when trackKey and attendeeKey is null, get it from shared preference
         if (trackKey == null) {
@@ -159,19 +158,14 @@ public class MapsActivity extends BaseActivity
         if (mapFragment == null) {
             Toast.makeText(this, getString(R.string.somethingWentWrong), Toast.LENGTH_SHORT)
                     .show();
+        } else {
+            //gets Map asynchronously
+            mapFragment.getMapAsync(this);
         }
-        //gets Map asynchronously
-        mapFragment.getMapAsync(this);
+
         //creates a dialog to inform the user that permissions are necessary for functioning of the app
-        permissionDeniedDialog = Util.createDialog(
-                getString(R.string.permissionsDialogTitle),
-                getString(R.string.permissionsDialogMessage),
-                getString(R.string.okButton),
-                (dialogInterface, i) -> requestLocationPermissions(),
-                "",
-                null,
-                false,
-                this);
+        permissionDeniedDialog = AlertDialogUtil.createLocationPermissionDeniedDialog(
+                this, (dialogInterface, i) -> requestLocationPermissions());
         registerReceiver();
 
         // Find the toolbar view inside the activity layout
@@ -184,7 +178,7 @@ public class MapsActivity extends BaseActivity
 
         mapsRenderer = new MapsRenderer(getApplicationContext());
 
-        jukebox = Jukebox.getInstance(getApplicationContext());
+        jukebox = new Jukebox(getApplicationContext());
 
     }
 
@@ -200,6 +194,7 @@ public class MapsActivity extends BaseActivity
     @Override
     public void onResume() {
         super.onResume();
+        initializeMap();
         if (!geofenceIntentHandled) {
             handleGeofenceIntent();
         }
@@ -313,17 +308,8 @@ public class MapsActivity extends BaseActivity
 
     @Override
     public void onBackPressed() {
-        AlertDialog confirmBackDialog = Util.createDialog(getResources().getString(R.string.maps_activity_back_pressed_alert_title),
-                getResources().getString(R.string.maps_activity_back_pressed_alert_message),
-                getResources().getString(R.string.maps_activity_back_pressed_alert_positive_button),
-                (dialog, which) -> {
-                    goBackToHomeActivity();
-                },
-                getResources().getString(R.string.maps_activity_back_pressed_alert_negative_button),
-                (dialog, which) -> {
-                },
-                false,
-                this);
+        AlertDialog confirmBackDialog = AlertDialogUtil.createConfirmOnBackPressedDialog(
+                this, (dialog, which) -> goBackToHomeActivity());
         confirmBackDialog.show();
     }
 
@@ -345,7 +331,9 @@ public class MapsActivity extends BaseActivity
                 geofenceIntentHandled = false;
                 receivedCheckpointID = intent.getStringExtra("id");
                 // if the app is not in foreground, do nothing
-                if (!Util.isForeground(getApplicationContext())) return;
+                if (!Util.isForeground(getApplicationContext())) {
+                    return;
+                }
 
                 handleGeofenceIntent();
             }
@@ -367,8 +355,8 @@ public class MapsActivity extends BaseActivity
         // Check if last checkpoint is reached
         else if (receivedCheckpointID.equals(finalCheckpointID)) {
             // Show result
-            if (getSupportFragmentManager().findFragmentByTag(ResultFragment.TAG) == null) {
-                ResultFragment.newInstance().show(getSupportFragmentManager(), ResultFragment.TAG);
+            if (getSupportFragmentManager().findFragmentByTag(ResultDialogFragment.TAG) == null) {
+                ResultDialogFragment.newInstance().show(getSupportFragmentManager(), ResultDialogFragment.TAG);
             }
         } else if (viewModel.getNextCheckpoint().penalty) {
             PenaltyFragment.newInstance().show(getSupportFragmentManager(), PenaltyFragment.TAG);
@@ -413,6 +401,9 @@ public class MapsActivity extends BaseActivity
         } else {
             map.setMyLocationEnabled(true);
             // Get all checkpoints and draw / save ID of the last checkpoint
+            if (viewModel.getAllCheckpoints().hasObservers()) {
+                viewModel.getAllCheckpoints().removeObservers(this);
+            }
             viewModel.getAllCheckpoints().observe(this,
                     checkpoints -> {
                         if (!checkpoints.isEmpty()) {
@@ -471,36 +462,7 @@ public class MapsActivity extends BaseActivity
             } else if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 showPermissionDeniedDialog();
             } else if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                AlertDialog doNotAskAgainClickedDialog = Util.createDialog(
-                        getString(R.string.deniedPermissionsDialogTitle),
-                        getString(R.string.changePermissionsInSettingsMessage),
-                        getString(R.string.goToSettingsButtonText),
-                        (dialog, which) -> {
-                            dialog.dismiss();
-                            //opens settings of the app to manually allow permissions
-                            Intent intent = new Intent();
-                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            Uri uri = Uri.fromParts("package", getPackageName(), null);
-                            intent.setData(uri);
-                            try {
-                                startActivity(intent);
-                            } catch (Exception e) {
-                                Log.d(TAG, getString(R.string.intent_failed));
-                                Toast.makeText(getApplicationContext(),
-                                        getString(R.string.somethingWentWrong),
-                                        Toast.LENGTH_SHORT)
-                                        .show();
-                            }
-                            finish();
-                        },
-                        getString(R.string.negativeButtonText),
-                        (dialog, which) -> {
-                            dialog.dismiss();
-                            finish();
-                        },
-                        false,
-                        this);
-                doNotAskAgainClickedDialog.show();
+                AlertDialogUtil.createDoNotAskAgainClickedDialogForLocation(this).show();
             }
         }
     }
@@ -521,4 +483,7 @@ public class MapsActivity extends BaseActivity
         ft.commit();
     }
 
+    public Jukebox getJukebox() {
+        return jukebox;
+    }
 }

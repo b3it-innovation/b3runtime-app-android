@@ -22,16 +22,15 @@ import com.b3.development.b3runtime.ui.map.MapsActivity;
 
 public class LocationService extends Service {
 
-
     private static final String TAG = LocationService.class.getSimpleName();
     private static final String CHANNEL_ID = "LOCATION_SERVICE_CHANNEL";
+    private static final int SERVICE_ID = 12345678;
     private static final int LOCATION_INTERVAL = 500;
     private static final int LOCATION_DISTANCE = 10;
 
     private NotificationManager notificationManager;
     private LocationListener mLocationListener;
     private LocationManager mLocationManager;
-
 
     private void initializeLocationManager() {
         if (mLocationManager == null) {
@@ -47,9 +46,9 @@ public class LocationService extends Service {
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE, mLocationListener);
 
         } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "failed to request location update", ex);
+            Log.e(TAG, "failed to request location update", ex);
         } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+            Log.e(TAG, "gps provider does not exist " + ex.getMessage());
         }
 
     }
@@ -59,11 +58,10 @@ public class LocationService extends Service {
         return null;
     }
 
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         //start service in foreground to allow frequent location updates when app in background
-        startForeground(12345678, getNotification());
+        startForeground(SERVICE_ID, getNotification());
         initializeLocationManager();
         startTracking();
         super.onStartCommand(intent, flags, startId);
@@ -81,11 +79,10 @@ public class LocationService extends Service {
             try {
                 mLocationManager.removeUpdates(mLocationListener);
             } catch (Exception ex) {
-                Log.i(TAG, "failed to remove location listners", ex);
+                Log.e(TAG, "failed to remove location listners", ex);
             }
         }
     }
-
 
     private Notification getNotification() {
 
@@ -127,10 +124,10 @@ public class LocationService extends Service {
         }
     }
 
-    private class LocationListener implements android.location.LocationListener {
+    private static class LocationListener implements android.location.LocationListener {
 
         private Location mLastLocation;
-        private final String TAG = LocationListener.class.getSimpleName();
+        private static final String TAG = LocationListener.class.getSimpleName();
 
 
         public LocationListener(String provider) {

@@ -32,6 +32,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
 
     private static final int JOB_ID = 100;
     private static final String CHANNEL_ID = "CHANNEL_ID";
+    private static final long VIBRATION_INTERVAL = 1000;
 
     public static void enqueueWork(Context context, Intent intent) {
         enqueueWork(context, GeofenceTransitionsJobIntentService.class, JOB_ID, intent);
@@ -74,7 +75,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
                 // Set the level of detail visible in the notification from the lock screen
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setAutoCancel(true)
-                .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000, 1000, 1000})
+                .setVibrate(new long[]{VIBRATION_INTERVAL, VIBRATION_INTERVAL, VIBRATION_INTERVAL, VIBRATION_INTERVAL, VIBRATION_INTERVAL})
                 .setDefaults(Notification.DEFAULT_SOUND);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);

@@ -16,8 +16,7 @@ import com.google.android.gms.location.LocationServices;
  */
 public class GeofenceManagerImpl implements GeofenceManager {
 
-    static final String TAG = GeofenceManager.class.getSimpleName();
-
+    public static final String TAG = GeofenceManagerImpl.class.getSimpleName();
 
     private GeofencingClient client;
     private PendingIntent geofencePendingIntent;
@@ -36,7 +35,7 @@ public class GeofenceManagerImpl implements GeofenceManager {
         builder.addGeofence(geofence);
 
         client.addGeofences(builder.build(), geofencePendingIntent)
-                .addOnSuccessListener(aVoid -> System.out.println("Succeeded to add geofence to the Google map"))
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Succeeded to add geofence to the Google map"))
                 .addOnFailureListener(e -> Log.e(TAG, "Failed to add geofence to the Google map"));
     }
 

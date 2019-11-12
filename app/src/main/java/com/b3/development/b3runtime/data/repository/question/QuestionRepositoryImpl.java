@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.data.repository.question;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -12,13 +13,15 @@ import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQu
 import com.b3.development.b3runtime.utils.failure.Failure;
 import com.b3.development.b3runtime.utils.failure.FailureType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * An implementation of the {@link QuestionRepository} interface
  */
 public class QuestionRepositoryImpl implements QuestionRepository {
+
+    public static final String TAG = QuestionRepositoryImpl.class.getSimpleName();
+
     private QuestionDao questionDao;
     private BackendInteractor backendInteractor;
     private LiveData<Question> nextQuestion;
@@ -62,11 +65,11 @@ public class QuestionRepositoryImpl implements QuestionRepository {
                     return;
                 }
 
-                System.out.println("QUESTION RECEIVED FROM BACKEND");
+                Log.d(TAG, "QUESTION RECEIVED FROM BACKEND");
                 Question question = convert(backendResponseQuestion);
                 //writes in local database asynchronously
                 AsyncTask.execute(() -> questionDao.insertQuestion(question));
-                System.out.println("QUESTION CONVERTED... WRITING IN DATABASE ASYNC STARTS");
+                Log.d(TAG, "QUESTION CONVERTED... WRITING IN DATABASE ASYNC STARTS");
             }
 
             @Override
@@ -79,7 +82,7 @@ public class QuestionRepositoryImpl implements QuestionRepository {
     @Override
     public void updateQuestion(Question q) {
         AsyncTask.execute(() -> questionDao.updateQuestion(q));
-        System.out.println("UPDATE Question CALLED IN repository");
+        Log.d(TAG, "UPDATE Question CALLED IN repository");
     }
 
     private Question convert(BackendResponseQuestion backendResponseQuestion) {
@@ -97,27 +100,6 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         //convertedQuestion.order = i;
 
         return convertedQuestion;
-    }
-
-    private List<Question> convert(List<BackendResponseQuestion> backendResponseQuestions) {
-        List<Question> convertedQuestions = new ArrayList<>();
-        long i = 0;
-        for (BackendResponseQuestion question : backendResponseQuestions) {
-            Question convertedQuestion = new Question();
-            convertedQuestion.id = question.getKey();
-            convertedQuestion.categoryKey = question.getCategoryKey();
-            convertedQuestion.correctAnswer = question.getCorrectAnswer();
-            convertedQuestion.question = question.getText();
-            convertedQuestion.optionA = question.getOptions().getA();
-            convertedQuestion.optionB = question.getOptions().getB();
-            convertedQuestion.optionC = question.getOptions().getC();
-            convertedQuestion.optionD = question.getOptions().getD();
-            convertedQuestion.isAnswered = false;
-            convertedQuestion.order = i;
-            convertedQuestions.add(convertedQuestion);
-            i++;
-        }
-        return convertedQuestions;
     }
 
     @Override

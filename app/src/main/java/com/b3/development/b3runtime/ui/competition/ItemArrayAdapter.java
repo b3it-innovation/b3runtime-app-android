@@ -9,16 +9,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.b3.development.b3runtime.R;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.ViewHolder> {
 
     private int listItemLayout;
-    private ArrayList<ListItem> itemList;
+    private List<ListItem> itemList;
     private View.OnClickListener listener;
 
 
-    public ItemArrayAdapter(int layoutId, ArrayList<ListItem> itemList) {
+    public ItemArrayAdapter(int layoutId, List<ListItem> itemList) {
         listItemLayout = layoutId;
         this.itemList = itemList;
     }

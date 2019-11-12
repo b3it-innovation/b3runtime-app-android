@@ -26,30 +26,30 @@ import static com.b3.development.b3runtime.R.color.b3Yellow;
 import static org.koin.java.KoinJavaComponent.get;
 
 /**
- * Contains logic for displaying a {@link ResultFragment} to inform user of their result
+ * Contains logic for displaying a {@link ResultDialogFragment} to inform user of their result
  */
-public class ResultFragment extends BaseDialogFragment {
+public class ResultDialogFragment extends BaseDialogFragment {
 
-    public static final String TAG = ResultFragment.class.getSimpleName();
+    public static final String TAG = ResultDialogFragment.class.getSimpleName();
 
     private MapsViewModel viewModel;
 
     private static final int layoutId = R.layout.fragment_result_dialog;
     private TextView response;
 
-    public ResultFragment() {
+    public ResultDialogFragment() {
     }
 
     /**
-     * Builds the {@link ResultFragment}
+     * Builds the {@link ResultDialogFragment}
      *
      * @return responseFragment
      */
-    public static ResultFragment newInstance() {
+    public static ResultDialogFragment newInstance() {
         Bundle arguments = new Bundle();
-        ResultFragment resultFragment = new ResultFragment();
-        resultFragment.setArguments(arguments);
-        return resultFragment;
+        ResultDialogFragment resultDialogFragment = new ResultDialogFragment();
+        resultDialogFragment.setArguments(arguments);
+        return resultDialogFragment;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ResultFragment extends BaseDialogFragment {
                         get(AttendeeRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext(), ""))
                 .get(MapsViewModel.class);
         //observe allCheckpoints and set response with the result
-        viewModel.getAllCheckpoints().observe(this, pins -> response.setText(viewModel.getResult()));
+        viewModel.getAllCheckpoints().observe(this, pins -> response.setText(viewModel.getResultString()));
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ResultFragment extends BaseDialogFragment {
 
         colorBase.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
         colorLogo.setImageResource(R.drawable.b3logo_yellow);
-        confirm.setText("Close App");
+        confirm.setText(getString(R.string.close_text));
         confirm.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
 
         confirm.setOnClickListener(v -> {

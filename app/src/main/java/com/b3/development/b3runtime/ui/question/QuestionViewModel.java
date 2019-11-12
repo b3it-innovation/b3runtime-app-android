@@ -1,5 +1,7 @@
 package com.b3.development.b3runtime.ui.question;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -15,6 +17,9 @@ import java.util.List;
  * Contains data to be displayed in the {@link QuestionFragment} and handles its lifecycle securely
  */
 public class QuestionViewModel extends BaseViewModel {
+
+    public static final String TAG = QuestionViewModel.class.getSimpleName();
+
     private LiveData<Question> quest;
     private MutableLiveData<Question> question = new MutableLiveData<>();
     private MutableLiveData<Boolean> validated = new MutableLiveData<>();
@@ -37,16 +42,16 @@ public class QuestionViewModel extends BaseViewModel {
         showLoading.postValue(true);
         Question q = quest.getValue();
         if (q == null) {
-            System.out.println("question in view model null");
+            Log.d(TAG, "question in view model null");
         } else {
-            System.out.println("question order: " + q.order);
+            Log.d(TAG, "question order: " + q.order);
             q.isAnswered = true;
             question.postValue(q);
             showLoading.postValue(false);
             String correctAnswer = q.correctAnswer;
-            System.out.println("correct answer: " + correctAnswer);
+            Log.d(TAG, "correct answer: " + correctAnswer);
             String selectedAnswer = convertSelectedAnswer(selectedOption);
-            System.out.println("selected answer: " + selectedAnswer);
+            Log.d(TAG, "selected answer: " + selectedAnswer);
             validated.postValue(correctAnswer.equalsIgnoreCase(selectedAnswer));
 
         }
@@ -70,6 +75,9 @@ public class QuestionViewModel extends BaseViewModel {
                 break;
             case R.id.optionD:
                 selectedAnswer = "D";
+                break;
+            default:
+                selectedAnswer = "";
                 break;
         }
         return selectedAnswer;

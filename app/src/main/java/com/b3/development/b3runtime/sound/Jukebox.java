@@ -4,10 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -15,6 +13,7 @@ import com.b3.development.b3runtime.R;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is a class for sound effect and eventually background music
@@ -24,41 +23,33 @@ public class Jukebox {
 
     static final String TAG = Jukebox.class.getSimpleName();
 
-    private static String SOUNDS_PREF_KEY;
-    private static String MUSIC_PREF_KEY;
+    private String soundsPrefKey;
+    private String musicPrefKey;
+    private int maxStreams;
+    private int defaultSfxVolume;
+    private int defaultMusicVolume;
 
-    private static int MAX_STREAMS;
-    private static int DEFAULT_SFX_VOLUME;
-    private static int DEFAULT_MUSIC_VOLUME;
-
-    private static Jukebox jukebox;
     private boolean soundEnabled;
     private boolean musicEnabled;
+
     private SoundPool soundPool = null;
-    private HashMap<SoundEvent, Integer> soundsMap = null;
+    private Map<SoundEvent, Integer> soundsMap = null;
     private MediaPlayer bgPlayer = null;
     private Context context = null;
 
-    private Jukebox(final Context context) {
+    public Jukebox(final Context context) {
         this.context = context;
-        MAX_STREAMS = context.getResources().getInteger(R.integer.sound_pool_max_streams);
-        DEFAULT_SFX_VOLUME = context.getResources().getInteger(R.integer.default_sfx_volume);
-        DEFAULT_MUSIC_VOLUME = context.getResources().getInteger(R.integer.default_music_volume);
-        SOUNDS_PREF_KEY = context.getResources().getString(R.string.sound_pref_key);
-        MUSIC_PREF_KEY = context.getResources().getString(R.string.music_pref_key);
+        maxStreams = context.getResources().getInteger(R.integer.sound_pool_max_streams);
+        defaultSfxVolume = context.getResources().getInteger(R.integer.default_sfx_volume);
+        defaultMusicVolume = context.getResources().getInteger(R.integer.default_music_volume);
+        soundsPrefKey = context.getResources().getString(R.string.sound_pref_key);
+        musicPrefKey = context.getResources().getString(R.string.music_pref_key);
 
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
-        soundEnabled = prefs.getBoolean(SOUNDS_PREF_KEY, true);
-        musicEnabled = prefs.getBoolean(MUSIC_PREF_KEY, false);
+        soundEnabled = prefs.getBoolean(soundsPrefKey, true);
+        musicEnabled = prefs.getBoolean(musicPrefKey, false);
         loadIfNeeded();
-    }
-
-    public static Jukebox getInstance(Context context) {
-        if (jukebox == null) {
-            jukebox = new Jukebox(context);
-        }
-        return jukebox;
     }
 
     private void loadIfNeeded() {
@@ -72,18 +63,15 @@ public class Jukebox {
 
     @SuppressWarnings("deprecation")
     private void createSoundPool() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            soundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0);
-        } else {
-            AudioAttributes attr = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_GAME)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build();
-            soundPool = new SoundPool.Builder()
-                    .setAudioAttributes(attr)
-                    .setMaxStreams(MAX_STREAMS)
-                    .build();
-        }
+        AudioAttributes attr = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build();
+        soundPool = new SoundPool.Builder()
+                .setAudioAttributes(attr)
+                .setMaxStreams(maxStreams)
+                .build();
+
     }
 
     // Loads sound files
@@ -112,8 +100,8 @@ public class Jukebox {
         if (!soundEnabled) {
             return;
         }
-        final float leftVolume = DEFAULT_SFX_VOLUME;
-        final float rightVolume = DEFAULT_SFX_VOLUME;
+        final float leftVolume = defaultSfxVolume;
+        final float rightVolume = defaultSfxVolume;
         final int priority = 1;
         final int loop = 0; //-1 loop forever, 0 play once
         final float rate = 1.0f;
@@ -134,7 +122,7 @@ public class Jukebox {
                     afd.getStartOffset(),
                     afd.getLength());
             bgPlayer.setLooping(true);
-            bgPlayer.setVolume(DEFAULT_MUSIC_VOLUME, DEFAULT_MUSIC_VOLUME);
+            bgPlayer.setVolume(defaultMusicVolume, defaultMusicVolume);
             bgPlayer.prepare();
         } catch (IOException e) {
             bgPlayer = null;
@@ -173,8 +161,8 @@ public class Jukebox {
         PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .edit()
-                .putBoolean(SOUNDS_PREF_KEY, soundEnabled)
-                .commit();
+                .putBoolean(soundsPrefKey, soundEnabled)
+                .apply();
     }
 
     public void toggleMusicStatus() {
@@ -187,8 +175,8 @@ public class Jukebox {
         PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .edit()
-                .putBoolean(MUSIC_PREF_KEY, soundEnabled)
-                .commit();
+                .putBoolean(musicPrefKey, soundEnabled)
+                .apply();
     }
 
     private void unloadSounds() {
@@ -202,7 +190,6 @@ public class Jukebox {
     public void destroy() {
         unloadSounds();
         unloadMusic();
-        jukebox = null;
     }
 
     public boolean isSoundEnabled() {

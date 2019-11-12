@@ -82,10 +82,10 @@ public class CheckinFragment extends BaseDialogFragment {
         setCancelable(false);
         confirm = view.findViewById(R.id.confirmResult);
 
-        response.setText("Are you ready to start?");
+        response.setText(getString(R.string.start_confirm_text));
         colorBase.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
         colorLogo.setImageResource(R.drawable.b3logo_yellow);
-        confirm.setText("Start");
+        confirm.setText(getString(R.string.start_text));
         confirm.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
 
         confirm.setOnClickListener(v -> {

@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.map;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -23,17 +24,29 @@ import java.util.List;
  */
 public class MapsViewModel extends BaseViewModel {
 
+    public static final String TAG = MapsViewModel.class.getSimpleName();
+    private static final int THOUSAND = 1000;
+    private static final int SIXTY = 60;
+
     private Checkpoint nextCheckpoint;
     private LiveData<List<Checkpoint>> allCheckpoints;
     private LiveData<Attendee> currentAttendee;
     private CheckpointRepository checkpointRepository;
     private ResultRepository resultRepository;
     private AttendeeRepository attendeeRepository;
+
     private GeofenceManager geofenceManager;
     private boolean isLatestAnsweredCorrect = false;
     private boolean isResponseOnScreen = false;
     private String resultKey;
     private Context context;
+
+    private Long totalTime;
+    private Long minutes;
+    private Long seconds;
+    private int numberOfCorrectAnswers;
+    private int totalNumberOfCheckpoints;
+
     private boolean darkMode = false;
     private boolean satelliteView = false;
 
@@ -47,7 +60,7 @@ public class MapsViewModel extends BaseViewModel {
         this.context = context;
     }
 
-    public void init(String trackKey) {
+    public final void init(String trackKey) {
         checkpointRepository.fetch(trackKey);
         allCheckpoints = checkpointRepository.getAllCheckpoints();
         errors = checkpointRepository.getError();
@@ -64,10 +77,16 @@ public class MapsViewModel extends BaseViewModel {
     }
 
     //creates a response string that contains the result of the race
-    public String getResult() {
-        String response = "";
-        int correctAnswers = 0;
-        int totalNumberOfCheckpoints = allCheckpoints.getValue().size() - 2;
+    public String getResultString() {
+        calcResult();
+        String response = String.format(context.getResources().getString(R.string.resultText),
+                numberOfCorrectAnswers, totalNumberOfCheckpoints, minutes, seconds);
+        return response;
+    }
+
+    public void calcResult() {
+        numberOfCorrectAnswers = 0;
+        totalNumberOfCheckpoints = allCheckpoints.getValue().size() - 2;
 
         if (allCheckpoints.getValue().get(0).completedTime != null) {
             if (allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime == null) {
@@ -75,24 +94,20 @@ public class MapsViewModel extends BaseViewModel {
                 // updates completedTime in nextCheckpoint to prevent to update it in updateCheckpointCompleted()
                 nextCheckpoint.completedTime = allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime;
             }
-            Long totalTime = getTotalTime();
-            Long minutes = (totalTime / 1000) / 60;
-            Long seconds = (totalTime / 1000) % 60;
+
+            totalTime = calcTotalTime();
+            minutes = (totalTime / THOUSAND) / SIXTY;
+            seconds = (totalTime / THOUSAND) % SIXTY;
 
             for (Checkpoint checkpoint : allCheckpoints.getValue()) {
                 if (checkpoint.penalty) {
                     totalNumberOfCheckpoints--;
                 }
                 if ((!checkpoint.penalty) && checkpoint.answeredCorrect) {
-                    correctAnswers++;
+                    numberOfCorrectAnswers++;
                 }
             }
-
-            response = String.format(context.getResources().getString(R.string.resultText),
-                    correctAnswers, totalNumberOfCheckpoints, minutes, seconds);
         }
-
-        return response;
     }
 
     public void addGeofence(Checkpoint checkpoint) {
@@ -123,14 +138,14 @@ public class MapsViewModel extends BaseViewModel {
     }
 
     public void updateCheckpointCorrectAnswer() {
-        System.out.println("Before update, checkpoint order: " + nextCheckpoint.order);
+        Log.d(TAG, "Before update, checkpoint order: " + nextCheckpoint.order);
         nextCheckpoint.answeredCorrect = true;
         isLatestAnsweredCorrect = true;
         updateCheckpointCompleted();
     }
 
     public void skipCheckpoint() {
-        System.out.println("Skips checkpoint order: " + nextCheckpoint.order);
+        Log.d(TAG, "Skips checkpoint order: " + nextCheckpoint.order);
         nextCheckpoint.skipped = true;
         updateCheckpointCompleted();
     }
@@ -144,7 +159,7 @@ public class MapsViewModel extends BaseViewModel {
         checkpointRepository.removeAllCheckpoints();
     }
 
-    private Long getTotalTime() {
+    private Long calcTotalTime() {
         Long endTime = allCheckpoints.getValue().get(allCheckpoints.getValue().size() - 1).completedTime;
         Long startTime = allCheckpoints.getValue().get(0).completedTime;
         if (endTime != null && startTime != null) {
@@ -157,7 +172,7 @@ public class MapsViewModel extends BaseViewModel {
     public void saveResult() {
         if (currentAttendee.getValue() != null && allCheckpoints.getValue() != null &&
                 !allCheckpoints.getValue().isEmpty()) {
-            resultKey = resultRepository.saveResult(resultKey, currentAttendee.getValue(), allCheckpoints.getValue(), getTotalTime());
+            resultKey = resultRepository.saveResult(resultKey, currentAttendee.getValue(), allCheckpoints.getValue(), calcTotalTime());
         }
     }
 
@@ -169,6 +184,26 @@ public class MapsViewModel extends BaseViewModel {
             }
         }
         return questionKeys;
+    }
+
+    public Long getMinutes() {
+        return minutes;
+    }
+
+    public Long getSeconds() {
+        return seconds;
+    }
+
+    public int getNumberOfCorrectAnswers() {
+        return numberOfCorrectAnswers;
+    }
+
+    public Long getTotalTime() {
+        return totalTime;
+    }
+
+    public int getTotalNumberOfCheckpoints() {
+        return totalNumberOfCheckpoints;
     }
 
     public boolean isDarkMode() {

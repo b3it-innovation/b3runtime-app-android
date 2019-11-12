@@ -5,12 +5,12 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
+import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -21,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * An implementation of the {@link BackendInteractor} interface
@@ -28,15 +29,15 @@ import java.util.List;
 public class BackendInteractorImpl implements BackendInteractor {
 
     private static final String TAG = BackendInteractor.class.getSimpleName();
-
+    private final QueryLiveData competitionsLiveDataSnapshot;
     private DatabaseReference firebaseDbQuestions;
     private DatabaseReference firebaseDbCompetitions;
     private DatabaseReference firebaseDbTracksCheckpoints;
     private DatabaseReference firebaseDbAttendees;
     private DatabaseReference firebaseDbResults;
     private DatabaseReference firebaseDbUserAccounts;
-
-    private final QueryLiveData competitionsLiveDataSnapshot;
+    private List<BackendAttendee> attendees = new ArrayList<>();
+    private List<BackendResult> attendeeResults;
 
     /**
      * A public constructor for {@link BackendInteractor}
@@ -79,7 +80,7 @@ public class BackendInteractorImpl implements BackendInteractor {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.d(TAG, "failed to save attendee " + e);
+                Log.e(TAG, "failed to save attendee " + e);
             }
         });
         return key;
@@ -99,7 +100,7 @@ public class BackendInteractorImpl implements BackendInteractor {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.d(TAG, "failed to save result. ", e);
+                        Log.e(TAG, "failed to save result. ", e);
                     }
                 });
         return key;
@@ -112,7 +113,6 @@ public class BackendInteractorImpl implements BackendInteractor {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
                     Log.d(TAG, uid);
-                    System.out.println(uid);
                     firebaseDbUserAccounts.child(uid).setValue("uid").addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -121,7 +121,7 @@ public class BackendInteractorImpl implements BackendInteractor {
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Log.d(TAG, "failed to save user. ", e);
+                            Log.e(TAG, "failed to save user. ", e);
                         }
                     });
                 }
@@ -129,7 +129,7 @@ public class BackendInteractorImpl implements BackendInteractor {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, "database error. ", databaseError.toException());
+                Log.e(TAG, "database error. ", databaseError.toException());
             }
         });
     }
@@ -145,7 +145,6 @@ public class BackendInteractorImpl implements BackendInteractor {
     public void getCheckpoints(final CheckpointsCallback checkpointsCallback, String trackKey) {
         // create query to fetch checkpoints related to certain trackKey
         Query query = firebaseDbTracksCheckpoints.orderByKey().equalTo(trackKey);
-        //sets listener on the data in firebase
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
             /**
@@ -154,7 +153,7 @@ public class BackendInteractorImpl implements BackendInteractor {
              */
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                System.out.println("data change in checkpoints");
+                Log.d(TAG, "data change in checkpoints");
                 List<BackendResponseCheckpoint> checkpoints = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     for (DataSnapshot checkpointsSnapshot : snapshot.child("checkpoints").getChildren()) {
@@ -165,9 +164,7 @@ public class BackendInteractorImpl implements BackendInteractor {
                         checkpoints.add(checkpoint);
                     }
                 }
-                //returns the Callback containing the List of locations
                 checkpointsCallback.onCheckpointsReceived(checkpoints);
-                //debug log
                 Log.d(TAG, "Checkpoints read: " + checkpoints.size());
             }
 
@@ -179,8 +176,98 @@ public class BackendInteractorImpl implements BackendInteractor {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 checkpointsCallback.onError();
+                Log.e(TAG, "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    @Override
+    public void getAttendeesByUserAccount(AttendeeCallback attendeeCallback, String userAccountKey) {
+        // create query to fetch attendess related to a useraccount
+        Query query = firebaseDbAttendees.orderByChild("userAccountKey").equalTo(userAccountKey);
+
+        //sets listener on the data in firebase
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            /**
+             * Contains the logic on handling a data change in the remote database
+             * @param dataSnapshot a snapshot of the data in control_points after the change
+             */
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                System.out.println("data change in attendees");
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    for (DataSnapshot attendeeSnapshot : snapshot.child("attendees").getChildren()) {
+                    //gets the Attendee object
+                    BackendAttendee attendee = new BackendAttendee();
+                    attendee.setUserAccountKey((String) snapshot.child("userAccountKey").getValue());
+                    attendee.setCompetitionKey((String) snapshot.child("competitionKey").getValue());
+                    attendee.setTrackKey((String) snapshot.child("trackKey").getValue());
+                    attendee.setKey(snapshot.getKey());
+
+                    //adds the object to the List of BackendAttendee objects
+                    attendees.add(attendee);
+//                    }
+                }
+                //returns the Callback containing the List of attendees
+                attendeeCallback.onAttendeesReceived(attendees);
+                //debug log
+                Log.d(TAG, "Attendees read: " + attendees.size());
+            }
+
+            /**
+             * Contains logic for handling possible database errors
+             *
+             * @param error the error recieved
+             */
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                attendeeCallback.onError();
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
+        });
+    }
+
+    @Override
+    public void getResultsByUserAccount(ResultCallback resultCallback, String userAccountKey) {
+        // create query to fetch results related to a useraccount
+        Query allResults = firebaseDbResults;
+
+        //sets listener on the data in firebase
+        allResults.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            /**
+             * Contains the logic on handling a data change in the remote database
+             *
+             * @param dataSnapshot a snapshot of the data in control_points after the change
+             */
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                System.out.println("data change in attendees");
+                attendeeResults = new ArrayList<>();
+                List<String> a = attendees.stream().map(BackendAttendee::getKey).collect(Collectors.toList());
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String attendeeKey = (String) snapshot.child("attendeeKey").getValue();
+                    if (a.contains(attendeeKey)) {
+                        BackendResult result = snapshot.getValue(BackendResult.class);
+                        result.setKey(snapshot.getKey());
+                        result.setAttendeeKey(attendeeKey);
+                        //todo lind warning translate objects
+                        result.setResults((List<Checkpoint>) snapshot.child("results").getValue());
+                        result.setTotalTime((Long) snapshot.child("totalTime").getValue());
+
+                        attendeeResults.add(result);
+                    }
+                }
+                resultCallback.onResultsReceived(attendeeResults);
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getMessage());
+            }
+
         });
     }
 
@@ -198,16 +285,14 @@ public class BackendInteractorImpl implements BackendInteractor {
                  */
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    System.out.println("data change in questions");
+                    Log.d(TAG, "data change in questions");
                     BackendResponseQuestion fbQuestion = null;
                     if (dataSnapshot.exists()) {
                         fbQuestion = convertDataToBackendResponseQuestion(dataSnapshot);
                     }
-                    //returns the Callback containing the List of locations
                     if (fbQuestion != null) {
                         questionCallback.onQuestionsReceived(fbQuestion);
                     }
-                    //removes the listener
                     firebaseDbQuestions.removeEventListener(this);
                 }
 
@@ -218,11 +303,9 @@ public class BackendInteractorImpl implements BackendInteractor {
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     questionCallback.onError();
-                    System.out.println("canceled");
-                    Log.w(TAG, "Failed to read value.", error.toException());
+                    Log.e(TAG, "Canceled. Failed to read value.", error.toException());
                 }
             });
-
         }
     }
 

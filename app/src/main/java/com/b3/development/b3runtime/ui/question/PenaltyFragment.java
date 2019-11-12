@@ -21,6 +21,7 @@ import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.sound.Jukebox;
 import com.b3.development.b3runtime.sound.SoundEvent;
+import com.b3.development.b3runtime.ui.map.MapsActivity;
 import com.b3.development.b3runtime.ui.map.MapsViewModel;
 import com.b3.development.b3runtime.ui.map.MapsViewModelFactory;
 import com.github.abdularis.civ.CircleImageView;
@@ -90,7 +91,8 @@ public class PenaltyFragment extends BaseDialogFragment {
         showResponse();
 
         // Play sound effect
-        Jukebox.getInstance(getContext()).playSoundForGameEvent(SoundEvent.AnswerCorrect);
+        final MapsActivity mapsActivity = (MapsActivity) getActivity();
+        mapsActivity.getJukebox().playSoundForGameEvent(SoundEvent.AnswerCorrect);
     }
 
     //changes look of responsefragment depending if answered correctly

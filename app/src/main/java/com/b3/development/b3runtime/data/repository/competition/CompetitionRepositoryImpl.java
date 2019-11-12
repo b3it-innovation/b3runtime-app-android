@@ -12,10 +12,8 @@ import com.b3.development.b3runtime.utils.failure.Failure;
 import com.google.firebase.database.DataSnapshot;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class CompetitionRepositoryImpl implements CompetitionRepository {
 
@@ -57,7 +55,7 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
                 //gets the BackendCompetition object
                 BackendCompetition fbCompetition = new BackendCompetition();
                 fbCompetition.setActive((Boolean) competitionSnapshot.child("active").getValue());
-                if(fbCompetition.isActive() != null && !fbCompetition.isActive()){
+                if (fbCompetition.isActive() != null && !fbCompetition.isActive()) {
                     continue;
                 }
                 fbCompetition.setKey(competitionSnapshot.getKey());
@@ -68,13 +66,11 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
                     BackendCategory category = new BackendCategory();
                     track.setKey(tracksSnapshot.getKey());
                     track.setName((String) tracksSnapshot.child("name").getValue());
-                    Map obj = (Map) tracksSnapshot.child("category").getValue();
-                    Set keys = obj.keySet();
-                    Iterator iter = keys.iterator();
-                    String key = (String) iter.next();
-                    category.setKey(key);
-                    obj = (Map) obj.get(key);
-                    category.setName((String) obj.get("name"));
+                    Map<String, Map<String, String>> obj =
+                            (Map<String, Map<String, String>>) tracksSnapshot.child("category").getValue();
+                    Map.Entry<String, Map<String, String>> entry = obj.entrySet().iterator().next();
+                    category.setKey(entry.getKey());
+                    category.setName(entry.getValue().get("name"));
                     track.setCategory(category);
                     tracks.add(track);
                 }
