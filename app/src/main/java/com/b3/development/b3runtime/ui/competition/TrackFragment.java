@@ -65,7 +65,7 @@ public class TrackFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         pb = view.findViewById(R.id.progress_loader);
         pb.setVisibility(View.INVISIBLE);
-        competitionViewModel.getShowLoading().observe(this, TrackFragment.this::showLoading);
+        competitionViewModel.getShowLoading().observe(getViewLifecycleOwner(), TrackFragment.this::showLoading);
         competitionViewModel.showLoading(true);
 
         TextView headline = view.findViewById(R.id.textChooseCompetition);

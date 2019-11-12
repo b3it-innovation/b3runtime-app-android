@@ -24,11 +24,7 @@ public class HomeViewModel extends BaseViewModel {
     public boolean isTrackUnfinished() {
         if (checkpointRepository.getAllCheckpoints().getValue() != null) {
             List<Checkpoint> checkpointList = checkpointRepository.getAllCheckpoints().getValue();
-            if (checkpointList.get(checkpointList.size() - 1).completedTime == null) {
-                return true;
-            } else {
-                return false;
-            }
+            return checkpointList.get(checkpointList.size() - 1).completedTime == null;
         } else {
             return false;
         }

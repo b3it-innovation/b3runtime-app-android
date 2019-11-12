@@ -123,10 +123,10 @@ public class QuestionFragment extends BaseDialogFragment {
         setCancelable(false);
 
         //observe LiveData in ViewModel
-        viewModel.getShowLoading().observe(this, QuestionFragment.this::showLoading);
-        viewModel.getQuest().observe(this, QuestionFragment.this::handleQuestion);
-        viewModel.getValidated().observe(this, QuestionFragment.this::showResponse);
-        viewModel.getQuestion().observe(this, QuestionFragment.this::updateQuestion);
+        viewModel.getShowLoading().observe(getViewLifecycleOwner(), QuestionFragment.this::showLoading);
+        viewModel.getQuest().observe(getViewLifecycleOwner(), QuestionFragment.this::handleQuestion);
+        viewModel.getValidated().observe(getViewLifecycleOwner(), QuestionFragment.this::showResponse);
+        viewModel.getQuestion().observe(getViewLifecycleOwner(), QuestionFragment.this::updateQuestion);
     }
 
     private void updateQuestion(Question q) {
