@@ -1,5 +1,6 @@
 package com.b3.development.b3runtime.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -12,6 +13,7 @@ import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseFragment;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepository;
+import com.b3.development.b3runtime.ui.map.MapsActivity;
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -55,10 +57,16 @@ public class HomeFragment extends BaseFragment {
                     @Override
                     public void onClick(View view) {
                         Toast.makeText(getContext(), "You're continued!", Toast.LENGTH_SHORT).show();
+                        continueTrack();
                     }
                 });
         homeViewModel.getTrackUnfinished().observe(getViewLifecycleOwner(), aBool -> {
             view.findViewById(R.id.continue_button).setEnabled(aBool);
         });
+    }
+
+    private void continueTrack() {
+        Intent intent = new Intent(getActivity(), MapsActivity.class);
+        startActivity(intent);
     }
 }
