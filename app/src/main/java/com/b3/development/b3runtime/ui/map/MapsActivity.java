@@ -29,6 +29,7 @@ import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
+import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.geofence.LocationService;
@@ -78,8 +79,6 @@ public class MapsActivity extends BaseActivity
     private QuestionFragment questionFragment;
     private boolean geofenceIntentHandled = true;
     private String receivedCheckpointID;
-    private String trackKey;
-    private String attendeeKey;
     private SharedPreferences prefs;
 
 
@@ -100,8 +99,8 @@ public class MapsActivity extends BaseActivity
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         // get trackKey from intent
         Intent intent = getIntent();
-        trackKey = intent.getStringExtra("trackKey");
-        attendeeKey = intent.getStringExtra("attendeeKey");
+        String trackKey = intent.getStringExtra("trackKey");
+        String attendeeKey = intent.getStringExtra("attendeeKey");
 
         //check if questionfragment is created and retained, if it is then detach from screen
         if (savedInstanceState != null &&
@@ -120,12 +119,22 @@ public class MapsActivity extends BaseActivity
 
         //create or connect already existing viewmodel to activity
         viewModel = ViewModelProviders.of(this,
-                new MapsViewModelFactory(get(CheckpointRepository.class), get(ResultRepository.class),
-                        get(AttendeeRepository.class), get(GeofenceManager.class), getApplicationContext(), trackKey))
+                new MapsViewModelFactory(get(CheckpointRepository.class), get(QuestionRepository.class), get(ResultRepository.class),
+                        get(AttendeeRepository.class), get(GeofenceManager.class), getApplicationContext()))
                 .get(MapsViewModel.class);
 
+        if(viewModel.getTrackKey() == null || !viewModel.getTrackKey().equals(trackKey)){
+            viewModel.setTrackKey(trackKey);
+            viewModel.fetchAllCheckpoints();
+        }
+
+        if(viewModel.getAttendeeKey() == null || !viewModel.getAttendeeKey().equals(attendeeKey)){
+            viewModel.setAttendeeKey(attendeeKey);
+        }
+
+
         // initializes attendee data in ViewModel
-        viewModel.initAttendee(attendeeKey);
+        viewModel.initAttendee();
         viewModel.getCurrentAttendee().observe(this, attendee -> {
         });
 
@@ -133,7 +142,7 @@ public class MapsActivity extends BaseActivity
         final String callingActivityName = intent.getStringExtra("callingActivity");
         if (callingActivityName != null && callingActivityName.equals(HomeActivity.TAG)) {
             viewModel.removeAllCheckpoints();
-            viewModel.init(trackKey);
+            viewModel.removeAllQuestions();
             // reset extra to avoid to trigger reset on screen rotation
             intent.putExtra("callingActivity", "");
         }
@@ -150,6 +159,7 @@ public class MapsActivity extends BaseActivity
             Toast.makeText(this, getString(R.string.somethingWentWrong), Toast.LENGTH_SHORT)
                     .show();
         });
+
         //set layout and call the mapFragment
         setContentView(com.b3.development.b3runtime.R.layout.activity_maps);
         SupportMapFragment mapFragment = (SupportMapFragment)
@@ -172,9 +182,6 @@ public class MapsActivity extends BaseActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         // Sets the Toolbar to act as the ActionBar for this Activity window.
         setSupportActionBar(toolbar);
-
-        //start foreground service to allow tracking of location in background
-        startService(new Intent(this, LocationService.class));
 
         mapsRenderer = new MapsRenderer(getApplicationContext());
 
@@ -275,8 +282,8 @@ public class MapsActivity extends BaseActivity
 
         // save trackKey, attendeeKey and resultKey to able to open activity via notification
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("trackKey", trackKey);
-        editor.putString("attendeeKey", attendeeKey);
+        editor.putString("trackKey", viewModel.getTrackKey());
+        editor.putString("attendeeKey", viewModel.getAttendeeKey());
         editor.putString("resultKey", viewModel.getResultKey());
         editor.apply();
     }
@@ -400,7 +407,10 @@ public class MapsActivity extends BaseActivity
             return;
         } else {
             map.setMyLocationEnabled(true);
-            // Get all checkpoints and draw / save ID of the last checkpoint
+
+            //start foreground service to allow tracking of location in background
+            startService(new Intent(this, LocationService.class));
+
             if (viewModel.getAllCheckpoints().hasObservers()) {
                 viewModel.getAllCheckpoints().removeObservers(this);
             }
@@ -418,14 +428,27 @@ public class MapsActivity extends BaseActivity
                         }
                         // save result when allCheckpoints change
                         viewModel.saveResult();
+
+                        if (viewModel.getQuestionKeys() == null) {
+                            viewModel.setQuestionKeys(viewModel.getQuestionKeysFromCheckpoints());
+                            viewModel.fetchAllQuestions();
+                        } else if(!viewModel.getQuestionKeys().equals(viewModel.getQuestionKeysFromCheckpoints())){
+                            viewModel.setQuestionKeys(viewModel.getQuestionKeysFromCheckpoints());
+                            viewModel.removeAllQuestions();
+                        }
                     });
+            viewModel.getQuestionCount().observe(this, count -> {
+                if(count <= 0 && viewModel.getQuestionKeys() != null && !viewModel.getQuestionKeys().isEmpty()){
+                    viewModel.fetchAllQuestions();
+                }
+            });
         }
     }
 
     //calls QuestionFragment to display a question for the user
     private void showQuestion() {
         if (getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG) == null) {
-            questionFragment = QuestionFragment.newInstance(viewModel.getQuestionKeys());
+            questionFragment = QuestionFragment.newInstance();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(questionFragment, QuestionFragment.TAG).show(questionFragment).commit();
         } else {

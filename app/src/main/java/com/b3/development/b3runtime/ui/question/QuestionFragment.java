@@ -23,8 +23,6 @@ import com.b3.development.b3runtime.data.local.model.question.Question;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 
-import java.util.List;
-
 import static org.koin.java.KoinJavaComponent.get;
 
 /**
@@ -47,15 +45,12 @@ public class QuestionFragment extends BaseDialogFragment {
     private ProgressBar pb;
 
     private FragmentShowHideCallback callback;
-    private static List<String> questionsKeys;
-
 
     public QuestionFragment() {
     }
 
-    public static final QuestionFragment newInstance(List<String> keys) {
+    public static final QuestionFragment newInstance() {
         QuestionFragment fragment = new QuestionFragment();
-        questionsKeys = keys;
         Bundle arguments = new Bundle();
         fragment.setArguments(arguments);
         fragment.setRetainInstance(true);
@@ -70,7 +65,6 @@ public class QuestionFragment extends BaseDialogFragment {
         viewModel = ViewModelProviders.of(this,
                 new QuestionViewModelFactory(get(QuestionRepository.class)))
                 .get(QuestionViewModel.class);
-        viewModel.init(questionsKeys);
     }
 
     @Override

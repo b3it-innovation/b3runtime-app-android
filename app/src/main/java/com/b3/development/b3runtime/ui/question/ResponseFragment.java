@@ -17,6 +17,7 @@ import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseDialogFragment;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
+import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.sound.Jukebox;
@@ -73,8 +74,8 @@ public class ResponseFragment extends BaseDialogFragment {
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
         //create or connect viewmodel to fragment
         viewModel = ViewModelProviders.of(getActivity(),
-                new MapsViewModelFactory(get(CheckpointRepository.class), get(ResultRepository.class),
-                        get(AttendeeRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext(), ""))
+                new MapsViewModelFactory(get(CheckpointRepository.class), get(QuestionRepository.class), get(ResultRepository.class),
+                        get(AttendeeRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext()))
                 .get(MapsViewModel.class);
     }
 
