@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
+import com.b3.development.b3runtime.utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,9 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultVi
             if (backendResult.getTotalTime() == null) {
                 result.setText(R.string.track_unfinished);
             } else {
-                result.setText(backendResult.getTotalTime() + "");
+                long minutes = Util.getMinutesFromLong(backendResult.getTotalTime());
+                long seconds = Util.getSecondsFromLong(backendResult.getTotalTime());
+                result.setText(String.format("%d min %d sec", minutes, seconds));
             }
         }
     }

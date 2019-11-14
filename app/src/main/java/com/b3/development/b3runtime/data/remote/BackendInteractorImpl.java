@@ -195,9 +195,8 @@ public class BackendInteractorImpl implements BackendInteractor {
              */
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                System.out.println("data change in attendees");
+                Log.d(TAG, "data change in attendees");
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    for (DataSnapshot attendeeSnapshot : snapshot.child("attendees").getChildren()) {
                     //gets the Attendee object
                     BackendAttendee attendee = new BackendAttendee();
                     attendee.setUserAccountKey((String) snapshot.child("userAccountKey").getValue());
@@ -207,7 +206,6 @@ public class BackendInteractorImpl implements BackendInteractor {
 
                     //adds the object to the List of BackendAttendee objects
                     attendees.add(attendee);
-//                    }
                 }
                 //returns the Callback containing the List of attendees
                 attendeeCallback.onAttendeesReceived(attendees);
@@ -243,7 +241,7 @@ public class BackendInteractorImpl implements BackendInteractor {
              */
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                System.out.println("data change in attendees");
+                Log.d(TAG, "data change in attendees");
                 attendeeResults = new ArrayList<>();
                 List<String> a = attendees.stream().map(BackendAttendee::getKey).collect(Collectors.toList());
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -251,23 +249,16 @@ public class BackendInteractorImpl implements BackendInteractor {
                     if (a.contains(attendeeKey)) {
                         BackendResult result = snapshot.getValue(BackendResult.class);
                         result.setKey(snapshot.getKey());
-                        result.setAttendeeKey(attendeeKey);
-                        //todo lind warning translate objects
-                        result.setResults((List<Checkpoint>) snapshot.child("results").getValue());
-                        result.setTotalTime((Long) snapshot.child("totalTime").getValue());
-
                         attendeeResults.add(result);
                     }
                 }
                 resultCallback.onResultsReceived(attendeeResults);
             }
 
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.e(TAG, databaseError.getMessage());
             }
-
         });
     }
 

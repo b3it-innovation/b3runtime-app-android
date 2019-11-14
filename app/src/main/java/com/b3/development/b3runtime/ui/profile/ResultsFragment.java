@@ -6,6 +6,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,9 +21,13 @@ import java.util.List;
 import static org.koin.java.KoinJavaComponent.get;
 
 public class ResultsFragment extends BaseFragment {
-    public static final String TAG = ProfileFragment.class.getSimpleName();
+
+    public static final String TAG = ResultsFragment.class.getSimpleName();
     private static final String KEY_USER_ID = "keyUserId";
+
+    private ResultsViewModel viewModel;
     private RecyclerView recyclerView;
+
 
     //todo
     // This is not at all a good practice and we should avoid holding references in the Views
@@ -41,6 +46,14 @@ public class ResultsFragment extends BaseFragment {
     @Override
     public Integer getLayoutId() {
         return R.layout.fragment_results;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //create or connect already existing viewmodel to activity
+        viewModel = ViewModelProviders.of(getActivity(), new ResultsViewModelFactory(get(ResultRepository.class)))
+                .get(ResultsViewModel.class);
     }
 
     @Override

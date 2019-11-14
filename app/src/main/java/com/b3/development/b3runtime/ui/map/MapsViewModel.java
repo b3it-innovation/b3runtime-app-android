@@ -14,6 +14,7 @@ import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointReposit
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
+import com.b3.development.b3runtime.utils.Util;
 import com.google.android.gms.location.Geofence;
 
 import java.util.ArrayList;
@@ -26,8 +27,6 @@ import java.util.List;
 public class MapsViewModel extends BaseViewModel {
 
     public static final String TAG = MapsViewModel.class.getSimpleName();
-    private static final int THOUSAND = 1000;
-    private static final int SIXTY = 60;
 
     private Checkpoint nextCheckpoint;
     private LiveData<List<Checkpoint>> allCheckpoints;
@@ -100,8 +99,8 @@ public class MapsViewModel extends BaseViewModel {
             }
 
             totalTime = calcTotalTime();
-            minutes = (totalTime / THOUSAND) / SIXTY;
-            seconds = (totalTime / THOUSAND) % SIXTY;
+            minutes = Util.getMinutesFromLong(totalTime);
+            seconds = Util.getSecondsFromLong(totalTime);
 
             for (Checkpoint checkpoint : allCheckpoints.getValue()) {
                 if (checkpoint.penalty) {

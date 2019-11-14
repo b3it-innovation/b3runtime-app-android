@@ -1,6 +1,5 @@
 package com.b3.development.b3runtime.ui.home;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
