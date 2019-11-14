@@ -11,6 +11,7 @@ import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponse
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
+import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUseraccount;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -107,31 +108,20 @@ public class BackendInteractorImpl implements BackendInteractor {
     }
 
     public void saveUserAccount(String uid) {
-        Query query = firebaseDbUserAccounts.orderByKey().equalTo(uid);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()) {
-                    Log.d(TAG, uid);
-                    firebaseDbUserAccounts.child(uid).setValue("uid").addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "succeeded to save user.");
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.e(TAG, "failed to save user. ", e);
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "database error. ", databaseError.toException());
-            }
-        });
+        BackendUseraccount user = new BackendUseraccount(uid);
+        firebaseDbUserAccounts.child(uid).setValue(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "succeeded to save user account. ");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "failed to save user account. ", e);
+                    }
+                });
     }
 
     /**
@@ -177,6 +167,24 @@ public class BackendInteractorImpl implements BackendInteractor {
             public void onCancelled(@NonNull DatabaseError error) {
                 checkpointsCallback.onError();
                 Log.e(TAG, "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    @Override
+    public void getUserAccountById(UserAccountCallback userAccountCallback, String userAccountKey) {
+        Query query = firebaseDbUserAccounts.child(userAccountKey);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                BackendUseraccount backendUseraccount = dataSnapshot.getValue(BackendUseraccount.class);
+                userAccountCallback.onUserAccountReceived(backendUseraccount);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                userAccountCallback.onError();
+                Log.e(TAG, "Failed to read value.", databaseError.toException());
             }
         });
     }

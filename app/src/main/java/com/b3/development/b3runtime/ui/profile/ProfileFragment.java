@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -119,7 +118,7 @@ public class ProfileFragment extends BaseFragment {
         btnChangeName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeName(view);
+                changeUsername(view);
             }
         });
 
@@ -262,6 +261,8 @@ public class ProfileFragment extends BaseFragment {
 
     private void drawProfile(View view) {
 
+        //todo Fetch username from firebase
+
         String userName = currentUser.getDisplayName();
         String email = currentUser.getEmail();
 
@@ -272,7 +273,7 @@ public class ProfileFragment extends BaseFragment {
         mail.setText(email);
     }
 
-    private void changeName(View view) {
+    private void changeUsername(View view) {
         //get old name
         TextView name = view.findViewById(R.id.editTextName);
         String oldName = name.getText().toString();
@@ -281,22 +282,11 @@ public class ProfileFragment extends BaseFragment {
         AlertDialogUtil.createTextInputDialogForName(this, view, oldName).show();
     }
 
-    public void updateDisplayName(String newName, View view) {
-        //take the new name entered and set it
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName(newName)
-                .build();
-        currentUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    drawProfile(view);
-                } else {
-                    Log.d(TAG, "Couldn't set new username");
-                    Toast.makeText(getContext(), "Something went wrong.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+    public void updateUsername(String newName, View view) {
+        //todo take the new name entered and set it in firebase
+        String uid = currentUser.getUid();
+
+
     }
 
     public void sendResetPasswordMail(View view) {

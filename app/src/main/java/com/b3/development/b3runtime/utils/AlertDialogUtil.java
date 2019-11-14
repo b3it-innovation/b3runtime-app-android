@@ -126,7 +126,7 @@ public class AlertDialogUtil {
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                profileFragment.updateDisplayName(input.getText().toString(), view);
+                profileFragment.updateUsername(input.getText().toString(), view);
             }
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
