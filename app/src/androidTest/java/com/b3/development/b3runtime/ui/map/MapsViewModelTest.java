@@ -121,8 +121,8 @@ public class MapsViewModelTest {
     public void calcResult() {
         Log.d(TAG, "running calcResult() test");
 
-        viewModel.allCheckpoints = this.allCheckpoints;
-        viewModel.nextCheckpoint = this.nextCheckpoint;
+        viewModel.setAllCheckpoints(this.allCheckpoints);
+        viewModel.setNextCheckpoint(this.nextCheckpoint);
 
         Checkpoint c = new Checkpoint();
         Checkpoint c1 = new Checkpoint();
@@ -153,7 +153,7 @@ public class MapsViewModelTest {
         list.add(c4);
         list.add(c5);
 
-        when(viewModel.allCheckpoints.getValue()).thenReturn(list);
+        when(viewModel.getAllCheckpoints().getValue()).thenReturn(list);
 
         viewModel.calcResult();
 

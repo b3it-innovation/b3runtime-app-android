@@ -113,7 +113,7 @@ public class ProfileFragment extends BaseFragment {
         btnResetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendResetPasswordMail(view);
+                // todo sendResetPasswordMail(view);
             }
         });
         btnChangeName.setOnClickListener(new View.OnClickListener() {
