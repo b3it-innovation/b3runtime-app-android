@@ -18,9 +18,12 @@ public class UserAccount {
     public String userName;
 
     @ColumnInfo(name = "organization")
-    public String trackKey;
+    public String organization;
 
-    @ColumnInfo(name = "competitionKey")
-    public String competitionKey;
+    @ColumnInfo(name = "firstName")
+    public String firstName;
+
+    @ColumnInfo(name = "lastName")
+    public String lastName;
 
 }

@@ -16,8 +16,8 @@ public interface UserAccountDao {
 
     //Conflict resolution strategy is set to Ignore here in order not to overwrite current attendee
     //This can be changed when a better system for monitoring is introduced
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insertAttendee(UserAccount userAccount);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertUserAccount(UserAccount userAccount);
 
     @Query("SELECT * FROM UserAccount")
     LiveData<List<UserAccount>> getAll();

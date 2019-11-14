@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
+import com.b3.development.b3runtime.data.local.model.useraccount.UserAccount;
 import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
@@ -21,7 +22,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -108,7 +111,7 @@ public class BackendInteractorImpl implements BackendInteractor {
     }
 
     public void saveUserAccount(String uid) {
-        BackendUseraccount user = new BackendUseraccount(uid);
+        BackendUseraccount user = new BackendUseraccount();
         firebaseDbUserAccounts.child(uid).setValue(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -122,6 +125,17 @@ public class BackendInteractorImpl implements BackendInteractor {
                         Log.e(TAG, "failed to save user account. ", e);
                     }
                 });
+
+    }
+
+    public void updateUserAccount(UserAccount userAccount) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("userName", userAccount.userName);
+        map.put("organization", userAccount.organization);
+        map.put("firstName", userAccount.firstName);
+        map.put("lastName", userAccount.lastName);
+            firebaseDbUserAccounts.child(userAccount.id)
+                    .updateChildren(map);
     }
 
     /**
