@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
+import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 
@@ -18,26 +19,26 @@ import com.b3.development.b3runtime.geofence.GeofenceManager;
 public class MapsViewModelFactory implements ViewModelProvider.Factory {
 
     private CheckpointRepository checkpointRepository;
+    private QuestionRepository questionRepository;
     private ResultRepository resultRepository;
     private AttendeeRepository attendeeRepository;
     private GeofenceManager geofenceManager;
     private Context context;
-    private String trackKey;
 
-    public MapsViewModelFactory(CheckpointRepository checkpointRepository, ResultRepository resultRepository,
-                                AttendeeRepository attendeeRepository, GeofenceManager geofenceManager, Context context, String trackKey) {
+    public MapsViewModelFactory(CheckpointRepository checkpointRepository, QuestionRepository questionRepository, ResultRepository resultRepository,
+                                AttendeeRepository attendeeRepository, GeofenceManager geofenceManager, Context context) {
         this.checkpointRepository = checkpointRepository;
+        this.questionRepository = questionRepository;
         this.resultRepository = resultRepository;
         this.attendeeRepository = attendeeRepository;
         this.geofenceManager = geofenceManager;
         this.context = context;
-        this.trackKey = trackKey;
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new MapsViewModel(checkpointRepository, resultRepository, attendeeRepository,
-                geofenceManager, context, trackKey);
+        return (T) new MapsViewModel(checkpointRepository, questionRepository, resultRepository, attendeeRepository,
+                geofenceManager, context);
     }
 }

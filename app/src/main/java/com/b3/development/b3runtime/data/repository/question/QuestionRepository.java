@@ -21,4 +21,8 @@ public interface QuestionRepository {
     void updateQuestion(Question q);
 
     void resetQuestionIsAnswered();
+
+    void removeAllQuestions();
+
+    LiveData<Integer> getQuestionCount();
 }

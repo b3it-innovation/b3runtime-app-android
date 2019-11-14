@@ -10,7 +10,6 @@ import com.b3.development.b3runtime.base.BaseViewModel;
 import com.b3.development.b3runtime.data.local.model.question.Question;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 
-import java.util.List;
 
 /**
  * A ViewModel for the {@link QuestionFragment}
@@ -29,10 +28,6 @@ public class QuestionViewModel extends BaseViewModel {
     public QuestionViewModel(QuestionRepository questionRepository) {
         this.repository = questionRepository;
         showLoading.postValue(false);
-    }
-
-    public void init(List<String> questionKeys) {
-        repository.fetch(questionKeys);
         quest = repository.getNextQuestion();
         question.postValue(quest.getValue());
         errors = repository.getError();
