@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,15 +17,16 @@ import com.b3.development.b3runtime.base.BaseFragment;
 import com.b3.development.b3runtime.data.remote.BackendInteractor;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
+import com.b3.development.b3runtime.ui.competition.CompetitionFragment;
 
 import java.util.List;
 
 import static org.koin.java.KoinJavaComponent.get;
 
-public class ResultsFragment extends BaseFragment {
+public class LeaderBoradFragment extends BaseFragment {
 
-    public static final String TAG = ResultsFragment.class.getSimpleName();
-    private static final String KEY_USER_ID = "keyUserId";
+    public static final String TAG = LeaderBoradFragment.class.getSimpleName();
+    private static final String KEY_TRACK = "keyUserId";
 
     private ResultsViewModel viewModel;
     private RecyclerView recyclerView;
@@ -39,17 +39,17 @@ public class ResultsFragment extends BaseFragment {
     private ResultRepository repository = get(ResultRepository.class);
 
     //provides the user key to the fragment
-    public static ResultsFragment newInstance(String uid) {
+    public static LeaderBoradFragment newInstance(String trackKey) {
         Bundle bundle = new Bundle();
-        bundle.putString(KEY_USER_ID, uid);
-        ResultsFragment resultsFragment = new ResultsFragment();
-        resultsFragment.setArguments(bundle);
-        return resultsFragment;
+        bundle.putString(KEY_TRACK, trackKey);
+        LeaderBoradFragment fragment = new LeaderBoradFragment();
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     @Override
     public Integer getLayoutId() {
-        return R.layout.fragment_results;
+        return R.layout.fragment_leaderboard;
     }
 
     @Override
@@ -65,47 +65,32 @@ public class ResultsFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         pb = view.findViewById(R.id.progress_loader);
         pb.setVisibility(View.INVISIBLE);
-        viewModel.getShowLoading().observe(getViewLifecycleOwner(), ResultsFragment.this::showLoading);
+        viewModel.getShowLoading().observe(getViewLifecycleOwner(), LeaderBoradFragment.this::showLoading);
         viewModel.showLoading(true);
-
-        recyclerView = view.findViewById(R.id.recycle_list_results);
+        recyclerView = view.findViewById(R.id.recycle_list_leader_board);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         ResultsAdapter adapter = new ResultsAdapter();
         recyclerView.setAdapter(adapter);
 
         adapter.setOnItemClickListener(v -> {
-            TextView trackName = (TextView) v;
-            for(BackendResult br : adapter.getResults()){
-                if(trackName.getText().equals(br.getAttendee().trackName)
-                        && br.getTotalTime() != null) {
-                    showResultsFragment(br.getAttendee().trackKey);
-                    break;
-                }
-            }
+
         });
 
-        repository.getResultsByUser(new BackendInteractor.ResultCallback() {
+        repository.getResultsByTrack(new BackendInteractor.ResultCallback() {
             @Override
             public void onResultsReceived(List<BackendResult> results) {
-                if (!isDetached()) {
-                    adapter.setResults(results);
-                    viewModel.showLoading(false);
-                }
+                Log.d(TAG, results.size() + "");
+                adapter.setResults(results);
+                viewModel.showLoading(false);
             }
+
             @Override
             public void onError() {
                 Log.d(TAG, "Error in loading results...");
             }
-        }, getArguments().getString(KEY_USER_ID));
-    }
+        }, getArguments().getString(KEY_TRACK));
 
-    private void showResultsFragment(String trackKey) {
-        LeaderBoradFragment leaderBoradFragment = LeaderBoradFragment.newInstance(trackKey);
-        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.home_container, leaderBoradFragment, LeaderBoradFragment.TAG);
-        ft.addToBackStack(LeaderBoradFragment.TAG);
-        ft.commit();
     }
 
     //show or hide loading graphic

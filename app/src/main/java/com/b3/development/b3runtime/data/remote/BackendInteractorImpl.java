@@ -36,8 +36,6 @@ public class BackendInteractorImpl implements BackendInteractor {
     private DatabaseReference firebaseDbAttendees;
     private DatabaseReference firebaseDbResults;
     private DatabaseReference firebaseDbUserAccounts;
-    private List<BackendAttendee> attendees = new ArrayList<>();
-    private List<BackendResult> attendeeResults;
 
     /**
      * A public constructor for {@link BackendInteractor}
@@ -185,7 +183,6 @@ public class BackendInteractorImpl implements BackendInteractor {
     public void getAttendeesByUserAccount(AttendeeCallback attendeeCallback, String userAccountKey) {
         // create query to fetch attendess related to a useraccount
         Query query = firebaseDbAttendees.orderByChild("userAccountKey").equalTo(userAccountKey);
-
         //sets listener on the data in firebase
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
@@ -196,14 +193,11 @@ public class BackendInteractorImpl implements BackendInteractor {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "data change in attendees");
+                List<BackendAttendee> attendees = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     //gets the Attendee object
-                    BackendAttendee attendee = new BackendAttendee();
-                    attendee.setUserAccountKey((String) snapshot.child("userAccountKey").getValue());
-                    attendee.setCompetitionKey((String) snapshot.child("competitionKey").getValue());
-                    attendee.setTrackKey((String) snapshot.child("trackKey").getValue());
+                    BackendAttendee attendee = snapshot.getValue(BackendAttendee.class);
                     attendee.setKey(snapshot.getKey());
-
                     //adds the object to the List of BackendAttendee objects
                     attendees.add(attendee);
                 }
@@ -229,7 +223,7 @@ public class BackendInteractorImpl implements BackendInteractor {
     @Override
     public void getResultsByUserAccount(ResultCallback resultCallback, String userAccountKey) {
         // create query to fetch results related to a useraccount
-        Query allResults = firebaseDbResults;
+        Query allResults = firebaseDbResults.orderByChild("attendee/userAccountKey").equalTo(userAccountKey);
 
         //sets listener on the data in firebase
         allResults.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -242,17 +236,39 @@ public class BackendInteractorImpl implements BackendInteractor {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "data change in attendees");
-                attendeeResults = new ArrayList<>();
-                List<String> a = attendees.stream().map(BackendAttendee::getKey).collect(Collectors.toList());
+                List<BackendResult> attendeeResults = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String attendeeKey = (String) snapshot.child("attendeeKey").getValue();
-                    if (a.contains(attendeeKey)) {
-                        BackendResult result = snapshot.getValue(BackendResult.class);
-                        result.setKey(snapshot.getKey());
-                        attendeeResults.add(result);
-                    }
+                    BackendResult result = snapshot.getValue(BackendResult.class);
+                    result.setKey(snapshot.getKey());
+                    attendeeResults.add(result);
                 }
                 resultCallback.onResultsReceived(attendeeResults);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void getResultsByTrack(ResultCallback resultCallback, String trackKey) {
+        Query query = firebaseDbResults.orderByChild("attendee/trackKey").equalTo(trackKey);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<BackendResult> resultList = new ArrayList<>();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Long totalTime = (Long) snapshot.child("totalTime").getValue();
+                    if (totalTime != null) {
+                        BackendResult result = snapshot.getValue(BackendResult.class);
+                        result.setKey(snapshot.getKey());
+                        resultList.add(result);
+                    }
+                }
+                resultCallback.onResultsReceived(resultList);
             }
 
             @Override

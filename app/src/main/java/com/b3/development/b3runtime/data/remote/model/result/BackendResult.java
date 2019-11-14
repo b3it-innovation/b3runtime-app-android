@@ -1,5 +1,6 @@
 package com.b3.development.b3runtime.data.remote.model.result;
 
+import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 public class BackendResult {
 
     private String key;
-    private String attendeeKey;
+    private Attendee attendee;
     private List<Checkpoint> results;
     private Long totalTime;
 
@@ -19,12 +20,12 @@ public class BackendResult {
         this.key = key;
     }
 
-    public String getAttendeeKey() {
-        return attendeeKey;
+    public Attendee getAttendee() {
+        return attendee;
     }
 
-    public void setAttendeeKey(String attendeeKey) {
-        this.attendeeKey = attendeeKey;
+    public void setAttendee(Attendee attendee) {
+        this.attendee = attendee;
     }
 
     public List<Checkpoint> getResults() {

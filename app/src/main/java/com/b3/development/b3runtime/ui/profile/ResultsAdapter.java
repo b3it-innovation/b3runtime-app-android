@@ -18,23 +18,32 @@ import java.util.List;
 public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultViewHolder> {
 
     private List<BackendResult> results = new ArrayList<>();
+    private View.OnClickListener listener;
 
     public void setResults(List<BackendResult> results) {
         this.results = results;
         notifyDataSetChanged();
     }
 
+    public List<BackendResult> getResults(){
+        return results;
+    }
 
     @NonNull
     @Override
     public ResultViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new ResultViewHolder(inflater.inflate(R.layout.list_item, parent, false));
+        return new ResultViewHolder(inflater.inflate(R.layout.list_item_result, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull ResultViewHolder holder, int position) {
         holder.setup(results.get(position));
+        holder.trackName.setOnClickListener(view -> listener.onClick(view));
+    }
+
+    public void setOnItemClickListener(View.OnClickListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -42,22 +51,25 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultVi
         return results.size();
     }
 
-    class ResultViewHolder extends RecyclerView.ViewHolder {
+    static class ResultViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView result;
+        private TextView totalTime;
+        private TextView trackName;
 
         public ResultViewHolder(@NonNull View itemView) {
             super(itemView);
-            result = itemView.findViewById(R.id.row_item);
+            totalTime = itemView.findViewById(R.id.total_time);
+            trackName = itemView.findViewById(R.id.track_name);
         }
 
         public void setup(BackendResult backendResult) {
+            trackName.setText(backendResult.getAttendee().trackName);
             if (backendResult.getTotalTime() == null) {
-                result.setText(R.string.track_unfinished);
+                totalTime.setText(R.string.track_unfinished);
             } else {
                 long minutes = Util.getMinutesFromLong(backendResult.getTotalTime());
                 long seconds = Util.getSecondsFromLong(backendResult.getTotalTime());
-                result.setText(String.format("%d min %d sec", minutes, seconds));
+                totalTime.setText(String.format("%d min %d sec", minutes, seconds));
             }
         }
     }

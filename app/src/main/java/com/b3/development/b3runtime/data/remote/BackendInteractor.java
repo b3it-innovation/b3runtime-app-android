@@ -19,6 +19,8 @@ public interface BackendInteractor {
 
     void getResultsByUserAccount(ResultCallback resultCallback, String userAccountKey);
 
+    void getResultsByTrack(ResultCallback resultCallback, String trakKey);
+
     void getQuestions(QuestionsCallback questionCallback, List<String> keys);
 
     void getAttendeesByUserAccount(AttendeeCallback attendeeCallback, String userAccountKey);

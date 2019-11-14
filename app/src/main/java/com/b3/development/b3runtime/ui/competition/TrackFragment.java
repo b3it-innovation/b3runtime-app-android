@@ -89,8 +89,6 @@ public class TrackFragment extends BaseFragment {
 
         itemArrayAdapter.setOnItemClickListener(v -> {
             TextView textView = (TextView) v;
-            //if list contains tracks, start chosen track
-            competitionViewModel.setChosenCompetitionName(null);
             startTrack(textView.getText().toString());
         });
         competitionViewModel.showLoading(false);
@@ -115,14 +113,15 @@ public class TrackFragment extends BaseFragment {
         Intent intent = new Intent(getActivity(), MapsActivity.class);
         for (ListItem listItem : itemList) {
             if (listItem.getName().equalsIgnoreCase(trackName)) {
-                intent.putExtra("trackKey", listItem.getKey());
-                intent.putExtra("callingActivity", HomeActivity.TAG);
                 competitionViewModel.setTrackKey(listItem.getKey());
+                competitionViewModel.setChosenTrackName(listItem.getName());
                 Attendee attendee = competitionViewModel.createAttendee();
                 String attendeeKey = competitionViewModel.saveBackendAttendee(attendee);
                 attendee.id = attendeeKey;
                 competitionViewModel.insertAttendee(attendee);
+                intent.putExtra("trackKey", listItem.getKey());
                 intent.putExtra("attendeeKey", attendeeKey);
+                intent.putExtra("doReset", true);
                 startActivity(intent);
             }
         }

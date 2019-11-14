@@ -139,10 +139,10 @@ public class ProfileFragment extends BaseFragment {
     }
 
     private void showResultsFragment() {
-        ResultsFragment profileFragment = ResultsFragment.newInstance(currentUser.getUid());
+        ResultsFragment resultsFragment = ResultsFragment.newInstance(currentUser.getUid());
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.home_container, profileFragment, ProfileFragment.TAG);
-        ft.addToBackStack(null);
+        ft.replace(R.id.home_container, resultsFragment, ResultsFragment.TAG);
+        ft.addToBackStack(ResultsFragment.TAG);
         ft.commit();
     }
 

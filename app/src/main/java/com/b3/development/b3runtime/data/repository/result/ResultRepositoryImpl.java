@@ -3,7 +3,6 @@ package com.b3.development.b3runtime.data.repository.result;
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 import com.b3.development.b3runtime.data.remote.BackendInteractor;
-import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
 
 import java.util.List;
@@ -31,15 +30,26 @@ public class ResultRepositoryImpl implements ResultRepository {
     }
 
     @Override
-    public void getResultsForUser(BackendInteractor.ResultCallback callback, String key) {
-        //refreshes data in attendees to be able to get results for user
-        backend.getAttendeesByUserAccount(new BackendInteractor.AttendeeCallback() {
+    public void getResultsByUser(BackendInteractor.ResultCallback callback, String key) {
+        backend.getResultsByUserAccount(new BackendInteractor.ResultCallback() {
             @Override
-            public void onAttendeesReceived(List<BackendAttendee> attendees) {
-
-                backend.getResultsByUserAccount(callback, key);
+            public void onResultsReceived(List<BackendResult> results) {
+                callback.onResultsReceived(results);
             }
+            @Override
+            public void onError() {
+                callback.onError();
+            }
+        }, key);
+    }
 
+    @Override
+    public void getResultsByTrack(BackendInteractor.ResultCallback callback, String key) {
+        backend.getResultsByTrack(new BackendInteractor.ResultCallback() {
+            @Override
+            public void onResultsReceived(List<BackendResult> results) {
+                callback.onResultsReceived(results);
+            }
             @Override
             public void onError() {
                 callback.onError();
@@ -55,7 +65,7 @@ public class ResultRepositoryImpl implements ResultRepository {
      */
     private BackendResult convert(Attendee attendee, List<Checkpoint> checkpoints, Long totalTime) {
         BackendResult backendResult = new BackendResult();
-        backendResult.setAttendeeKey(attendee.id);
+        backendResult.setAttendee(attendee);
         backendResult.setTotalTime(totalTime);
         backendResult.setResults(checkpoints);
         return backendResult;

@@ -13,5 +13,9 @@ public interface ResultRepository {
 
     String saveResult(String key, Attendee attendee, List<Checkpoint> checkpoints, Long totalTime);
 
-    void getResultsForUser(BackendInteractor.ResultCallback callback, String key);
+    void getResultsByUser(BackendInteractor.ResultCallback callback, String key);
+
+    void getResultsByTrack(BackendInteractor.ResultCallback callback, String key);
+
+
 }

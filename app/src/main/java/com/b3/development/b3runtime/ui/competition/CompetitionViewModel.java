@@ -26,6 +26,7 @@ public class CompetitionViewModel extends BaseViewModel {
     private String competitionKey;
     private String trackKey;
     private String chosenCompetitionName;
+    private String chosenTrackName;
 
     public CompetitionViewModel(CompetitionRepository competitionRepository, AttendeeRepository attendeeRepository) {
         this.repository = competitionRepository;
@@ -44,6 +45,8 @@ public class CompetitionViewModel extends BaseViewModel {
         currentAttendee.competitionKey = competitionKey;
         currentAttendee.trackKey = trackKey;
         currentAttendee.userAccountKey = userAccountId;
+        currentAttendee.competitionName = chosenCompetitionName;
+        currentAttendee.trackName = chosenTrackName;
         return currentAttendee;
     }
 
@@ -97,5 +100,13 @@ public class CompetitionViewModel extends BaseViewModel {
 
     public void setChosenCompetitionName(String chosenCompetitionName) {
         this.chosenCompetitionName = chosenCompetitionName;
+    }
+
+    public String getChosenTrackName() {
+        return chosenTrackName;
+    }
+
+    public void setChosenTrackName(String chosenTrackName) {
+        this.chosenTrackName = chosenTrackName;
     }
 }

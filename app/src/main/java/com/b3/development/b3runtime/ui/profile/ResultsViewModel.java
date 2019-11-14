@@ -21,6 +21,10 @@ public class ResultsViewModel extends BaseViewModel {
         showLoading.setValue(false);
     }
 
+    public void showLoading(boolean show) {
+        showLoading.setValue(show);
+    }
+
     public MutableLiveData<Boolean> getShowLoading() {
         return showLoading;
     }
