@@ -2,6 +2,7 @@ package com.b3.development.b3runtime.data.local.model.question;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -33,9 +34,15 @@ public interface QuestionDao {
     @Update
     void updateQuestion(Question question);
 
-//    @Delete
-//    void removeQuestion(Question question);
+    @Delete
+    void removeQuestion(Question question);
 
     @Query("UPDATE question SET isAnswered = :bool")
     int updateQuestionIsAnswered(boolean bool);
+
+    @Query("DELETE FROM question")
+    int removeAllQuestions();
+
+    @Query("SELECT COUNT(*) FROM question")
+    LiveData<Integer> getCount();
 }

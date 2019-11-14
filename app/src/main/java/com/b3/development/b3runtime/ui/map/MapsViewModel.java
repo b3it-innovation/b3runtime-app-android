@@ -11,6 +11,7 @@ import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
+import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.utils.Util;
@@ -30,14 +31,20 @@ public class MapsViewModel extends BaseViewModel {
     private Checkpoint nextCheckpoint;
     private LiveData<List<Checkpoint>> allCheckpoints;
     private LiveData<Attendee> currentAttendee;
+    private LiveData<Integer> questionCount;
+    private List<String> questionKeys;
+    private String trackKey;
+    private String attendeeKey;
+    private String resultKey;
+
     private CheckpointRepository checkpointRepository;
+    private QuestionRepository questionRepository;
     private ResultRepository resultRepository;
     private AttendeeRepository attendeeRepository;
 
     private GeofenceManager geofenceManager;
     private boolean isLatestAnsweredCorrect = false;
     private boolean isResponseOnScreen = false;
-    private String resultKey;
     private Context context;
 
     private Long totalTime;
@@ -49,23 +56,20 @@ public class MapsViewModel extends BaseViewModel {
     private boolean darkMode = false;
     private boolean satelliteView = false;
 
-    public MapsViewModel(CheckpointRepository checkpointRepository, ResultRepository resultRepository,
-                         AttendeeRepository attendeeRepository, GeofenceManager geofenceManager, Context context, String trackKey) {
+    public MapsViewModel(CheckpointRepository checkpointRepository, QuestionRepository questionRepository, ResultRepository resultRepository,
+                         AttendeeRepository attendeeRepository, GeofenceManager geofenceManager, Context context) {
         this.checkpointRepository = checkpointRepository;
+        this.questionRepository = questionRepository;
         this.resultRepository = resultRepository;
         this.attendeeRepository = attendeeRepository;
-        init(trackKey);
         this.geofenceManager = geofenceManager;
         this.context = context;
-    }
-
-    public final void init(String trackKey) {
-        checkpointRepository.fetch(trackKey);
         allCheckpoints = checkpointRepository.getAllCheckpoints();
         errors = checkpointRepository.getError();
+        questionCount = questionRepository.getQuestionCount();
     }
 
-    public void initAttendee(String attendeeKey) {
+    public void initAttendee() {
         currentAttendee = attendeeRepository.getAttendeeById(attendeeKey);
     }
 
@@ -175,7 +179,7 @@ public class MapsViewModel extends BaseViewModel {
         }
     }
 
-    public List<String> getQuestionKeys() {
+    public List<String> getQuestionKeysFromCheckpoints() {
         List<String> questionKeys = new ArrayList<>();
         for (Checkpoint c : allCheckpoints.getValue()) {
             if (c.questionKey != null && !c.questionKey.equals("")) {
@@ -183,6 +187,19 @@ public class MapsViewModel extends BaseViewModel {
             }
         }
         return questionKeys;
+    }
+
+    public void fetchAllCheckpoints() {
+        checkpointRepository.fetch(trackKey);
+    }
+
+    public void fetchAllQuestions() {
+        //removeAllQuestions();
+        questionRepository.fetch(questionKeys);
+    }
+
+    public void removeAllQuestions(){
+        questionRepository.removeAllQuestions();
     }
 
     public Long getMinutes() {
@@ -267,5 +284,37 @@ public class MapsViewModel extends BaseViewModel {
 
     public void setResultKey(String resultKey) {
         this.resultKey = resultKey;
+    }
+
+    public List<String> getQuestionKeys() {
+        return questionKeys;
+    }
+
+    public void setQuestionKeys(List<String> questionKeys) {
+        this.questionKeys = questionKeys;
+    }
+
+    public String getTrackKey() {
+        return trackKey;
+    }
+
+    public void setTrackKey(String trackKey) {
+        this.trackKey = trackKey;
+    }
+
+    public String getAttendeeKey() {
+        return attendeeKey;
+    }
+
+    public void setAttendeeKey(String attendeeKey) {
+        this.attendeeKey = attendeeKey;
+    }
+
+    public LiveData<Integer> getQuestionCount() {
+        return questionCount;
+    }
+
+    public void setQuestionCount(LiveData<Integer> questionCount) {
+        this.questionCount = questionCount;
     }
 }

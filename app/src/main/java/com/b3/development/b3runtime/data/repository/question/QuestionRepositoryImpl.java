@@ -85,6 +85,11 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         Log.d(TAG, "UPDATE Question CALLED IN repository");
     }
 
+    @Override
+    public void removeAllQuestions() {
+        AsyncTask.execute(() -> questionDao.removeAllQuestions());
+    }
+
     private Question convert(BackendResponseQuestion backendResponseQuestion) {
 
         Question convertedQuestion = new Question();
@@ -105,5 +110,10 @@ public class QuestionRepositoryImpl implements QuestionRepository {
     @Override
     public void resetQuestionIsAnswered() {
         AsyncTask.execute(() -> questionDao.updateQuestionIsAnswered(false));
+    }
+
+    @Override
+    public LiveData<Integer> getQuestionCount() {
+        return questionDao.getCount();
     }
 }

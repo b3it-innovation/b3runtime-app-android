@@ -25,6 +25,9 @@ public interface AttendeeDao {
     @Query("SELECT * FROM Attendee WHERE userAccountKey = :userAccountKey")
     LiveData<Attendee> getAttendeeByUserAccountId(String userAccountKey);
 
+    @Query("SELECT * FROM Attendee WHERE userAccountKey = :userAccountKey ORDER BY id DESC LIMIT 1")
+    LiveData<Attendee> getLatestAttendeeByUserAccountId(String userAccountKey);
+
     @Query("SELECT * FROM Attendee WHERE id = :id")
     LiveData<Attendee> getAttendeeById(String id);
 
