@@ -20,9 +20,12 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseFragment;
+import com.b3.development.b3runtime.data.local.model.useraccount.UserAccount;
+import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepository;
 import com.b3.development.b3runtime.utils.AlertDialogUtil;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
@@ -43,6 +46,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
+import static org.koin.java.KoinJavaComponent.get;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,6 +70,7 @@ public class ProfileFragment extends BaseFragment {
     private FirebaseUser currentUser;
     private ImageView profileImageView;
     private String currentPhotoPath;
+    private ProfileViewModel viewModel;
 
     public ProfileFragment() {
 
@@ -94,6 +99,10 @@ public class ProfileFragment extends BaseFragment {
         firebaseAuth = FirebaseAuth.getInstance();
         currentUser = firebaseAuth.getCurrentUser();
         profileImageFileName = getString(R.string.profile_image_file_name);
+        viewModel = ViewModelProviders.of(this,
+                new ProfileViewModelFactory(get(UserAccountRepository.class)))
+                .get(ProfileViewModel.class);
+
     }
 
     @Override
@@ -129,11 +138,13 @@ public class ProfileFragment extends BaseFragment {
             }
         });
 
-        drawProfile(view);
-
         view.findViewById(R.id.btn_camera).setOnClickListener(v -> {
             requestCameraAndWriteExternalStoragePermissions();
             dispatchTakePictureIntent();
+        });
+
+        viewModel.getUserAccountLiveData().observe(getViewLifecycleOwner(), userAccount -> {
+            if (userAccount != null) drawProfile(view, userAccount);
         });
     }
 
@@ -259,18 +270,18 @@ public class ProfileFragment extends BaseFragment {
                 .into(imageView);
     }
 
-    private void drawProfile(View view) {
+    private void drawProfile(View view, UserAccount userAccount) {
 
         //todo Fetch username from firebase
 
-        String userName = currentUser.getDisplayName();
-        String email = currentUser.getEmail();
+        String userName = userAccount.userName;
+        String organization = userAccount.organization;
 
         TextView name = view.findViewById(R.id.editTextName);
         TextView mail = view.findViewById(R.id.textViewMail);
 
         name.setText(userName);
-        mail.setText(email);
+        mail.setText(organization);
     }
 
     private void changeUsername(View view) {

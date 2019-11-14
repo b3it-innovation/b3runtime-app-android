@@ -15,6 +15,7 @@ import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
 import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUseraccount;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -112,6 +113,7 @@ public class BackendInteractorImpl implements BackendInteractor {
 
     public void saveUserAccount(String uid) {
         BackendUseraccount user = new BackendUseraccount();
+        user.setKey(FirebaseAuth.getInstance().getUid());
         firebaseDbUserAccounts.child(uid).setValue(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -128,6 +130,7 @@ public class BackendInteractorImpl implements BackendInteractor {
 
     }
 
+    @Override
     public void updateUserAccount(UserAccount userAccount) {
         Map<String, Object> map = new HashMap<>();
         map.put("userName", userAccount.userName);

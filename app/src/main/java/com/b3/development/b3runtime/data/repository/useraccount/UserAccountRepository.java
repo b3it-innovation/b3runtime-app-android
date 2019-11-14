@@ -16,4 +16,5 @@ public interface UserAccountRepository {
 
     void updateUserAccount(UserAccount userAccount);
 
+    void fetch(String uid);
 }

@@ -42,6 +42,7 @@ val b3RuntimeModule = module {
     single { get<B3RuntimeDatabase>().checkpointDao() }
     single { get<B3RuntimeDatabase>().questionDao() }
     single { get<B3RuntimeDatabase>().attendeeDao() }
+    single { get<B3RuntimeDatabase>().userAccountDao() }
     single {
         BackendInteractorImpl(get(StringQualifier("questions")), get(StringQualifier("competitions")),
                 get(StringQualifier("tracks_checkpoints")), get(StringQualifier("attendees")),
@@ -58,6 +59,6 @@ val b3RuntimeModule = module {
     single { CompetitionRepositoryImpl(get()) as CompetitionRepository }
     single { AttendeeRepositoryImpl(get(), get()) as AttendeeRepository }
     single { ResultRepositoryImpl(get()) as ResultRepository }
-    single { UserAccountRepositoryImpl(get()) as UserAccountRepository }
+    single { UserAccountRepositoryImpl(get(), get()) as UserAccountRepository }
     single { GeofenceManagerImpl(androidContext()) as GeofenceManager }
 }
