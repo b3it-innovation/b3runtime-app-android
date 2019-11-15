@@ -112,21 +112,22 @@ public class AlertDialogUtil {
                 activity);
     }
 
-    public static AlertDialog createTextInputDialogForName(final ProfileFragment profileFragment, final View view, final String oldName) {
+    public static AlertDialog createTextInputDialogForName(final ProfileFragment profileFragment,
+                                                           final View view, final String oldValue, int viewType) {
         AlertDialog.Builder builder = new AlertDialog.Builder(profileFragment.getActivity());
-        builder.setTitle("Enter new name");
+        builder.setTitle("Enter new value");
         final EditText input = new EditText(profileFragment.getActivity());
 
         InputFilter[] filterArray = createInputFilters();
         input.setFilters(filterArray);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
-        input.setText(oldName);
+        input.setText(oldValue);
         builder.setView(input);
 
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                profileFragment.updateUsername(input.getText().toString(), view);
+                profileFragment.updateUserValue(input.getText().toString(), view, viewType);
             }
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());

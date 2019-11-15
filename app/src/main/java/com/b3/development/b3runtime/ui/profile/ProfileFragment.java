@@ -61,6 +61,10 @@ public class ProfileFragment extends BaseFragment {
     private static final int REQUEST_IMAGE_CAPTURE = 2;
     private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 3;
     private static final int PERMISSIONS_REQUEST_CAMERA_AND_WRITE_EXTERNAL_STORAGE = 4;
+    private static final int USERNAME_VIEW = 1;
+    private static final int FIRSTNAME_VIEW = 2;
+    private static final int LASTNAME_VIEW = 3;
+    private static final int ORGANIZATION_VIEW = 4;
 
     private String profileImageFileName;
 
@@ -115,19 +119,12 @@ public class ProfileFragment extends BaseFragment {
         showProfileImage(profileImageView);
 
         Button btnResetPassword = view.findViewById(R.id.btn_reset_password);
-        Button btnChangeName = view.findViewById(R.id.btnEditName);
         Button btnSeeResults = view.findViewById(R.id.btn_results);
 
         btnResetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // todo sendResetPasswordMail(view);
-            }
-        });
-        btnChangeName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeUsername(view);
             }
         });
 
@@ -145,6 +142,38 @@ public class ProfileFragment extends BaseFragment {
 
         viewModel.getUserAccountLiveData().observe(getViewLifecycleOwner(), userAccount -> {
             if (userAccount != null) drawProfile(view, userAccount);
+        });
+
+        ImageView userName = view.findViewById(R.id.editIconUserName);
+        userName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeUserValue(view, USERNAME_VIEW);
+            }
+        });
+
+        ImageView firstName = view.findViewById(R.id.editIconFirstName);
+        firstName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeUserValue(view, FIRSTNAME_VIEW);
+            }
+        });
+
+        ImageView lastName = view.findViewById(R.id.editIconLastName);
+        lastName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeUserValue(view, LASTNAME_VIEW);
+            }
+        });
+
+        ImageView organization = view.findViewById(R.id.editIconOrganization);
+        organization.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeUserValue(view, ORGANIZATION_VIEW);
+            }
         });
     }
 
@@ -272,32 +301,76 @@ public class ProfileFragment extends BaseFragment {
 
     private void drawProfile(View view, UserAccount userAccount) {
 
-        //todo Fetch username from firebase
+        String userNameString = userAccount.userName;
+        String organizationString = userAccount.organization;
+        String emailString = currentUser.getEmail();
+        String firstNameString = userAccount.firstName;
+        String lastNameString = userAccount.lastName;
 
-        String userName = userAccount.userName;
-        String organization = userAccount.organization;
-
-        TextView name = view.findViewById(R.id.editTextName);
+        TextView userName = view.findViewById(R.id.editUserName);
+        TextView firstName = view.findViewById(R.id.editFirstName);
+        TextView lastName = view.findViewById(R.id.editLastName);
+        TextView organization = view.findViewById(R.id.editOrganization);
         TextView mail = view.findViewById(R.id.textViewMail);
 
-        name.setText(userName);
-        mail.setText(organization);
+        userName.setText(userNameString);
+        firstName.setText(firstNameString);
+        lastName.setText(lastNameString);
+        organization.setText(organizationString);
+        mail.setText(emailString);
     }
 
-    private void changeUsername(View view) {
-        //get old name
-        TextView name = view.findViewById(R.id.editTextName);
-        String oldName = name.getText().toString();
+    private void changeUserValue(View view, int viewType) {
+        TextView textView;
+        switch (viewType) {
+            case USERNAME_VIEW:
+                textView = getView().findViewById(R.id.editUserName);
+                break;
+            case FIRSTNAME_VIEW:
+                textView = getView().findViewById(R.id.editFirstName);
+                break;
+            case LASTNAME_VIEW:
+                textView = getView().findViewById(R.id.editLastName);
+                break;
+            case ORGANIZATION_VIEW:
+                textView = getView().findViewById(R.id.editOrganization);
+                break;
+            default:
+                Log.e(TAG, "incompatible viewType sent to changeUserValue");
+                textView = null;
+                break;
+        }
+        String oldValue = "";
+        if (textView != null) {
+            oldValue = textView.getText().toString();
 
-        //create dialog, insert old name as placeholder
-        AlertDialogUtil.createTextInputDialogForName(this, view, oldName).show();
+            //create dialog, insert old name as placeholder
+            AlertDialogUtil.createTextInputDialogForName(this, view, oldValue, viewType).show();
+        }
     }
 
-    public void updateUsername(String newName, View view) {
-        //todo take the new name entered and set it in firebase
-        String uid = currentUser.getUid();
+    public void updateUserValue(String newValue, View view, int viewType) {
 
+        UserAccount userAccount = viewModel.getUserAccountLiveData().getValue();
 
+        switch (viewType) {
+            case USERNAME_VIEW:
+                userAccount.userName = newValue;
+                break;
+            case FIRSTNAME_VIEW:
+                userAccount.firstName = newValue;
+                break;
+            case LASTNAME_VIEW:
+                userAccount.lastName = newValue;
+                break;
+            case ORGANIZATION_VIEW:
+                userAccount.organization = newValue;
+                break;
+            default:
+                Log.e(TAG, "incompatible viewType sent to updateUserValue");
+                break;
+        }
+        viewModel.updateUserAccount(userAccount);
     }
 
     public void sendResetPasswordMail(View view) {

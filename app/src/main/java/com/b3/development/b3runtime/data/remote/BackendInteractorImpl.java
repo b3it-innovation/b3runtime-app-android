@@ -113,32 +113,54 @@ public class BackendInteractorImpl implements BackendInteractor {
 
     public void saveUserAccount(String uid) {
         BackendUseraccount user = new BackendUseraccount();
-        user.setKey(FirebaseAuth.getInstance().getUid());
-        firebaseDbUserAccounts.child(uid).setValue(user)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "succeeded to save user account. ");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "failed to save user account. ", e);
-                    }
-                });
+        user.setLastName("");
 
+        firebaseDbUserAccounts.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null) {
+                    firebaseDbUserAccounts.child(uid).setValue(user)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG, "succeeded to save user account. ");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.e(TAG, "failed to save user account. ", e);
+                                }
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Failed to save UserAccount", databaseError.toException());
+            }
+        });
     }
 
     @Override
     public void updateUserAccount(UserAccount userAccount) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("userName", userAccount.userName);
-        map.put("organization", userAccount.organization);
-        map.put("firstName", userAccount.firstName);
-        map.put("lastName", userAccount.lastName);
-            firebaseDbUserAccounts.child(userAccount.id)
-                    .updateChildren(map);
+
+        Map<String, Object> wholeMap = new HashMap<>();
+
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("userName", userAccount.userName);
+        userMap.put("organization", userAccount.organization);
+        userMap.put("firstName", userAccount.firstName);
+        userMap.put("lastName", userAccount.lastName);
+
+        Map<String, Object> nameMap = new HashMap<>();
+        nameMap.put(userAccount.id, userAccount.userName);
+
+        wholeMap.put("/user_accounts/" + userAccount.id, userMap);
+        wholeMap.put("/user_accounts-usernames/", nameMap);
+
+        firebaseDbUserAccounts.child(userAccount.id)
+                .updateChildren(userMap);
     }
 
     /**

@@ -29,4 +29,8 @@ public class ProfileViewModel extends BaseViewModel {
     public LiveData<UserAccount> getUserAccountLiveData() {
         return userAccountLiveData;
     }
+
+    public void updateUserAccount(UserAccount userAccount) {
+        userAccountRepository.updateUserAccount(userAccount);
+    }
 }
