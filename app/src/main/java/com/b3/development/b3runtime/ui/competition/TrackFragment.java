@@ -3,7 +3,6 @@ package com.b3.development.b3runtime.ui.competition;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,7 +18,6 @@ import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
-import com.b3.development.b3runtime.ui.home.HomeActivity;
 import com.b3.development.b3runtime.ui.map.MapsActivity;
 
 import java.util.ArrayList;
@@ -33,7 +31,6 @@ public class TrackFragment extends BaseFragment {
     private static final int layoutId = R.layout.fragment_competition;
 
     private CompetitionViewModel competitionViewModel;
-    private ProgressBar pb;
     private ItemArrayAdapter itemArrayAdapter;
     private List<ListItem> itemList = new ArrayList<>();
 
@@ -63,20 +60,21 @@ public class TrackFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        pb = view.findViewById(R.id.progress_loader);
-        pb.setVisibility(View.INVISIBLE);
+        progressBar = view.findViewById(R.id.progress_loader);
+        progressBar.setVisibility(View.INVISIBLE);
         competitionViewModel.getShowLoading().observe(getViewLifecycleOwner(), TrackFragment.this::showLoading);
         competitionViewModel.showLoading(true);
 
         TextView headline = view.findViewById(R.id.textChooseCompetition);
         headline.setText(getResources().getString(R.string.chooseTrack));
 
-        //check if there's been a screen rotation and whether competition had been chosen
         if (competitionViewModel.getChosenCompetitionName() != null) {
             //populate list with BackendTracks
-            showTracks(competitionViewModel.getChosenCompetitionName());
-        } else {
-            ((HomeActivity) getActivity()).showCompetitionFragment();
+            competitionViewModel.getCompetitions().observe(getViewLifecycleOwner(),
+                    c -> {
+                        showTracks(competitionViewModel.getChosenCompetitionName());
+                        competitionViewModel.showLoading(false);
+                    });
         }
 
         //create a recyclerview and populate it with ListItems
@@ -91,7 +89,6 @@ public class TrackFragment extends BaseFragment {
             TextView textView = (TextView) v;
             startTrack(textView.getText().toString());
         });
-        competitionViewModel.showLoading(false);
     }
 
     //populate itemList with tracks from chosen competition
@@ -127,13 +124,5 @@ public class TrackFragment extends BaseFragment {
         }
     }
 
-    //show or hide loading graphic
-    private void showLoading(boolean b) {
-        if (b) {
-            pb.setVisibility(View.VISIBLE);
-        } else {
-            pb.setVisibility(View.INVISIBLE);
-        }
-    }
 
 }

@@ -2,7 +2,7 @@ package com.b3.development.b3runtime.ui.profile;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +22,6 @@ public class LeaderBoardFragment extends BaseFragment {
     private static final String KEY_TRACK = "keyTrack";
 
     private ResultsViewModel viewModel;
-    private ProgressBar pb;
 
     //provides the user key to the fragment
     public static LeaderBoardFragment newInstance(String trackKey) {
@@ -50,8 +49,9 @@ public class LeaderBoardFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        pb = view.findViewById(R.id.progress_loader);
-        pb.setVisibility(View.INVISIBLE);
+        progressBar = view.findViewById(R.id.progress_loader);
+        progressBar.setVisibility(View.INVISIBLE);
+        TextView trackName = view.findViewById(R.id.top5_track_name);
         viewModel.getShowLoading().observe(getViewLifecycleOwner(), LeaderBoardFragment.this::showLoading);
         viewModel.showLoading(true);
         RecyclerView recyclerView = view.findViewById(R.id.recycle_list_leader_board);
@@ -60,19 +60,13 @@ public class LeaderBoardFragment extends BaseFragment {
         LeaderBoardAdapter adapter = new LeaderBoardAdapter();
         recyclerView.setAdapter(adapter);
 
-        viewModel.top5Results.observe(getViewLifecycleOwner(), results -> {
-            adapter.setResults(results);
-            viewModel.showLoading(false);
+        viewModel.getTop5Results().observe(getViewLifecycleOwner(), results -> {
+            if (results != null && !results.isEmpty()) {
+                trackName.setText(results.get(0).getAttendee().trackName);
+                adapter.setResults(results);
+                viewModel.showLoading(false);
+            }
         });
-
     }
 
-    //show or hide loading graphic
-    private void showLoading(boolean b) {
-        if (b) {
-            pb.setVisibility(View.VISIBLE);
-        } else {
-            pb.setVisibility(View.INVISIBLE);
-        }
-    }
 }

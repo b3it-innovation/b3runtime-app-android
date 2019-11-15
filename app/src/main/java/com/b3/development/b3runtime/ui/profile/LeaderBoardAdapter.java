@@ -38,7 +38,7 @@ public class LeaderBoardAdapter extends RecyclerView.Adapter<LeaderBoardAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ResultViewHolder holder, int position) {
-        holder.setup(results.get(position));
+        holder.setup(results.get(position), position);
     }
 
     public void setOnItemClickListener(View.OnClickListener listener) {
@@ -54,15 +54,18 @@ public class LeaderBoardAdapter extends RecyclerView.Adapter<LeaderBoardAdapter.
 
         private TextView totalTime;
         private TextView userName;
+        private TextView rankingNumber;
 
         public ResultViewHolder(@NonNull View itemView) {
             super(itemView);
             totalTime = itemView.findViewById(R.id.total_time);
             userName = itemView.findViewById(R.id.user_name);
+            rankingNumber = itemView.findViewById(R.id.ranking_number);
         }
 
-        public void setup(BackendResult backendResult) {
+        public void setup(BackendResult backendResult, int position) {
             userName.setText(backendResult.getAttendee().name);
+            rankingNumber.setText(String.valueOf(position + 1));
             if (backendResult.getTotalTime() == null) {
                 totalTime.setText(R.string.track_unfinished);
             } else {

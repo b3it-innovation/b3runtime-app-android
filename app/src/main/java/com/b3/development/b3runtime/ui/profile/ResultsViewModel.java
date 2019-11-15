@@ -14,7 +14,8 @@ public class ResultsViewModel extends BaseViewModel {
     public static final String TAG = ResultsViewModel.class.getSimpleName();
 
     private ResultRepository resultRepository;
-    public LiveData<List<BackendResult>> top5Results;
+    private LiveData<List<BackendResult>> top5Results;
+    private LiveData<List<BackendResult>> myResults;
     private MutableLiveData<Boolean> showLoading = new MutableLiveData<>();
 
     public ResultsViewModel(ResultRepository resultRepository) {
@@ -24,6 +25,26 @@ public class ResultsViewModel extends BaseViewModel {
 
     public void initTop5ResultsLiveData(String trackKey) {
         top5Results = resultRepository.getTop5ResultsLiveData(trackKey);
+    }
+
+    public void initMyResults(String userAccountKey) {
+        myResults = resultRepository.getResultsLiveDataByUserAccount(userAccountKey);
+    }
+
+    public LiveData<List<BackendResult>> getTop5Results() {
+        return top5Results;
+    }
+
+    public void setTop5Results(LiveData<List<BackendResult>> top5Results) {
+        this.top5Results = top5Results;
+    }
+
+    public LiveData<List<BackendResult>> getMyResults() {
+        return myResults;
+    }
+
+    public void setMyResults(LiveData<List<BackendResult>> myResults) {
+        this.myResults = myResults;
     }
 
     public void showLoading(boolean show) {

@@ -5,7 +5,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
-import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
@@ -21,7 +20,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * An implementation of the {@link BackendInteractor} interface
@@ -36,8 +34,6 @@ public class BackendInteractorImpl implements BackendInteractor {
     private DatabaseReference firebaseDbAttendees;
     private DatabaseReference firebaseDbResults;
     private DatabaseReference firebaseDbUserAccounts;
-
-    private final QueryLiveData competitionsLiveDataSnapshot;
 
     /**
      * A public constructor for {@link BackendInteractor}
@@ -60,19 +56,22 @@ public class BackendInteractorImpl implements BackendInteractor {
         this.firebaseDbAttendees = firebaseDbAttendees;
         this.firebaseDbResults = firebaseDbResults;
         this.firebaseDbUserAccounts = firebaseDbUserAccounts;
-        this.competitionsLiveDataSnapshot = new QueryLiveData(this.firebaseDbCompetitions);
     }
 
     @NonNull
     @Override
-    public LiveData<DataSnapshot> getCompetitionsDataSnapshot() {
-        return competitionsLiveDataSnapshot;
+    public LiveData<DataSnapshot> getActiveCompetitionsLiveData() {
+        return new QueryLiveData(firebaseDbCompetitions.orderByChild("active").equalTo(true));
     }
 
-    public LiveData<DataSnapshot> getTop5ResultForTrack(String trackKey) {
-        QueryLiveData top5ResultForTrack =
-                new QueryLiveData(firebaseDbResults.orderByChild("attendee/trackKey").equalTo(trackKey));
-        return top5ResultForTrack;
+    @Override
+    public LiveData<DataSnapshot> getTop5ResultLiveDataByTrack(String trackKey) {
+        return new QueryLiveData(firebaseDbResults.orderByChild("attendee/trackKey").equalTo(trackKey));
+    }
+
+    @Override
+    public LiveData<DataSnapshot> getResultsLiveDataByUserAccount(String userAccountKey) {
+        return new QueryLiveData(firebaseDbResults.orderByChild("attendee/userAccountKey").equalTo(userAccountKey));
     }
 
     @Override
@@ -189,7 +188,7 @@ public class BackendInteractorImpl implements BackendInteractor {
 
     @Override
     public void getAttendeesByUserAccount(AttendeeCallback attendeeCallback, String userAccountKey) {
-        // create query to fetch attendess related to a useraccount
+        // create query to fetch attendees related to a user account
         Query query = firebaseDbAttendees.orderByChild("userAccountKey").equalTo(userAccountKey);
         //sets listener on the data in firebase
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -218,7 +217,7 @@ public class BackendInteractorImpl implements BackendInteractor {
             /**
              * Contains logic for handling possible database errors
              *
-             * @param error the error recieved
+             * @param error the error received
              */
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -230,7 +229,7 @@ public class BackendInteractorImpl implements BackendInteractor {
 
     @Override
     public void getResultsByUserAccount(ResultCallback resultCallback, String userAccountKey) {
-        // create query to fetch results related to a useraccount
+        // create query to fetch results related to a user account
         Query allResults = firebaseDbResults.orderByChild("attendee/userAccountKey").equalTo(userAccountKey);
 
         //sets listener on the data in firebase
@@ -287,7 +286,7 @@ public class BackendInteractorImpl implements BackendInteractor {
 
                 /**
                  * Contains logic for handling possible database errors
-                 * @param error the error recieved
+                 * @param error the error received
                  */
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {

@@ -12,6 +12,7 @@ import com.google.firebase.database.DataSnapshot;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * An implementation of the {@link ResultRepository} interface
@@ -31,7 +32,7 @@ public class ResultRepositoryImpl implements ResultRepository {
 
     @Override
     public String saveResult(String key, Attendee attendee, List<Checkpoint> checkpoints, Long totalTime) {
-        BackendResult backendResult = convert(attendee, checkpoints, totalTime);
+        BackendResult backendResult = createBackendResult(attendee, checkpoints, totalTime);
         return backend.saveResult(backendResult, key);
     }
 
@@ -50,24 +51,35 @@ public class ResultRepositoryImpl implements ResultRepository {
         }, key);
     }
 
+    @Override
     public LiveData<List<BackendResult>> getTop5ResultsLiveData(String trackKey) {
-        return Transformations.map(backend.getTop5ResultForTrack(trackKey),
-                snapShot -> convertDatasnapshotToBackendResults(snapShot));
+        return Transformations.map(backend.getTop5ResultLiveDataByTrack(trackKey), snapShot -> {
+            List list = convertDataSnapshotToBackendResults(snapShot);
+            list = filterUncompletedResults(list);
+            return sortTop5Results(list);
+        });
     }
 
-    private List<BackendResult> convertDatasnapshotToBackendResults(DataSnapshot dataSnapshot) {
+    @Override
+    public LiveData<List<BackendResult>> getResultsLiveDataByUserAccount(String userAccountKey) {
+        return Transformations.map(backend.getResultsLiveDataByUserAccount(userAccountKey),
+                snapShot -> convertDataSnapshotToBackendResults(snapShot));
+    }
+
+    private List<BackendResult> convertDataSnapshotToBackendResults(DataSnapshot dataSnapshot) {
         List<BackendResult> resultList = new ArrayList<>();
         if (dataSnapshot != null) {
             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                Long totalTime = (Long) snapshot.child("totalTime").getValue();
-                if (totalTime != null) {
-                    BackendResult result = snapshot.getValue(BackendResult.class);
-                    result.setKey(dataSnapshot.getKey());
-                    resultList.add(result);
-                }
+                BackendResult result = snapshot.getValue(BackendResult.class);
+                result.setKey(dataSnapshot.getKey());
+                resultList.add(result);
             }
         }
-        return sortTop5Results(resultList);
+        return resultList;
+    }
+
+    private List<BackendResult> filterUncompletedResults(List<BackendResult> list) {
+        return list.stream().filter(br -> br.getTotalTime() != null).collect(Collectors.toList());
     }
 
     private List<BackendResult> sortTop5Results(List<BackendResult> list) {
@@ -81,7 +93,7 @@ public class ResultRepositoryImpl implements ResultRepository {
         return top5List;
     }
 
-    private BackendResult convert(Attendee attendee, List<Checkpoint> checkpoints, Long totalTime) {
+    private BackendResult createBackendResult(Attendee attendee, List<Checkpoint> checkpoints, Long totalTime) {
         BackendResult backendResult = new BackendResult();
         backendResult.setAttendee(attendee);
         backendResult.setTotalTime(totalTime);

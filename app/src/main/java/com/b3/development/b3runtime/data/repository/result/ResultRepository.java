@@ -20,4 +20,6 @@ public interface ResultRepository {
 
     LiveData<List<BackendResult>> getTop5ResultsLiveData(String trackKey);
 
+    LiveData<List<BackendResult>> getResultsLiveDataByUserAccount(String userAccountKey);
+
 }

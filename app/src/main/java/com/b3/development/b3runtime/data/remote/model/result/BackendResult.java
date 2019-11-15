@@ -1,6 +1,6 @@
 package com.b3.development.b3runtime.data.remote.model.result;
 
-import android.content.Intent;
+import androidx.annotation.Nullable;
 
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
@@ -49,5 +49,10 @@ public class BackendResult implements Comparable<BackendResult> {
     @Override
     public int compareTo(BackendResult o) {
         return (int) (this.totalTime - o.getTotalTime());
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return super.equals(obj);
     }
 }

@@ -56,6 +56,9 @@
     <string name="total_time">Total time: </string>
     <string name="continue_track_button_text">Continue track</string>
     <string name="results">Results</string>
+    <string name="leader_board_title">Top 5</string>
+    <string name="leader_board_track_name">Track name</string>
+    <string name="results_title">My Results</string>
 
     <!-- string properties for application settings  -->
     <string name="question_fragment_added_key">questionAdded</string>
