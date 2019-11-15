@@ -14,7 +14,7 @@ public interface UserAccountRepository {
 
     LiveData<Failure> getError();
 
-    void updateUserAccount(UserAccount userAccount);
+    void updateUserAccount(UserAccount userAccount, String oldValue);
 
     void fetch(String uid);
 }

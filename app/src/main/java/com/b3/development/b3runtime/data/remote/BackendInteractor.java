@@ -17,7 +17,7 @@ import java.util.List;
  */
 public interface BackendInteractor {
 
-    void updateUserAccount(UserAccount userAccount);
+    void updateUserAccount(UserAccount userAccount, String oldValue);
 
     void getCheckpoints(CheckpointsCallback checkpointsCallback, String trackKey);
 

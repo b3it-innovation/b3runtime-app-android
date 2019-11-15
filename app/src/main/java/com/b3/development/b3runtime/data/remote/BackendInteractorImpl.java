@@ -13,11 +13,15 @@ import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOpti
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
 import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUseraccount;
+import com.b3.development.b3runtime.utils.AlertDialogUtil;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -146,7 +150,7 @@ public class BackendInteractorImpl implements BackendInteractor {
     }
 
     @Override
-    public void updateUserAccount(UserAccount userAccount) {
+    public void updateUserAccount(UserAccount userAccount, String oldValue) {
 
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("userName", userAccount.userName);
@@ -154,14 +158,36 @@ public class BackendInteractorImpl implements BackendInteractor {
         userMap.put("firstName", userAccount.firstName);
         userMap.put("lastName", userAccount.lastName);
 
-        Map<String, Object> nameMap = new HashMap<>();
-        nameMap.put(userAccount.userName, userAccount.id);
+//        Map<String, Object> nameMap = new HashMap<>();
+//        nameMap.put(userAccount.userName, userAccount.id);
 
         Map<String, Object> wholeMap = new HashMap<>();
-        wholeMap.put("/user_accounts/" + userAccount.id, userMap);
-        wholeMap.put("/usernames/", nameMap);
 
-        firebaseDb.updateChildren(wholeMap);
+        //todo Move if-check to earlier in chain maybe
+        if (oldValue != null && !oldValue.equals("")) {
+            wholeMap.put("/usernames/" + oldValue, null);
+        }
+
+        if (userAccount.userName != null && !userAccount.userName.equals("")) {
+            wholeMap.put("/user_accounts/" + userAccount.id, userMap);
+            wholeMap.put("/usernames/" + userAccount.userName, userAccount.id);
+
+            firebaseDb.updateChildren(wholeMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (!task.isSuccessful()) {
+                        Log.d(TAG, "Could not update username.");
+                        try {
+                            throw task.getException();
+                        } catch (DatabaseException e) {
+
+                        } catch (Exception e) {
+                            Log.e(TAG, e.getMessage());
+                        }
+                    }
+                }
+            });
+        }
     }
 
     /**

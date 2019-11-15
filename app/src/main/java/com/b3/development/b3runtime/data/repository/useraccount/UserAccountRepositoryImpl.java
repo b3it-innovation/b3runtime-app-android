@@ -51,8 +51,8 @@ public class UserAccountRepositoryImpl implements UserAccountRepository {
     }
 
     @Override
-    public void updateUserAccount(UserAccount userAccount) {
-        backendInteractor.updateUserAccount(userAccount);
+    public void updateUserAccount(UserAccount userAccount, String oldValue) {
+        backendInteractor.updateUserAccount(userAccount, oldValue);
     }
 
     /**

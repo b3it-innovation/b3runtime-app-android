@@ -30,7 +30,7 @@ public class ProfileViewModel extends BaseViewModel {
         return userAccountLiveData;
     }
 
-    public void updateUserAccount(UserAccount userAccount) {
-        userAccountRepository.updateUserAccount(userAccount);
+    public void updateUserAccount(UserAccount userAccount, String oldValue) {
+        userAccountRepository.updateUserAccount(userAccount, oldValue);
     }
 }

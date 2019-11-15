@@ -75,5 +75,7 @@
     <string name="profile_firstname_hint">First name</string>
     <string name="profile_lastname_hint">Last name</string>
     <string name="profile_organization_hint">Organization</string>
+    <string name="invalidUsernameDialogTitle">Invalid username</string>
+    <string name="invalidUsernameDialogMessage">Your username cannot be empty.</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.profile;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -349,7 +350,7 @@ public class ProfileFragment extends BaseFragment {
         }
     }
 
-    public void updateUserValue(String newValue, View view, int viewType) {
+    public void updateUserValue(String newValue, View view, int viewType, String oldValue) {
 
         UserAccount userAccount = viewModel.getUserAccountLiveData().getValue();
 
@@ -370,7 +371,12 @@ public class ProfileFragment extends BaseFragment {
                 Log.e(TAG, "incompatible viewType sent to updateUserValue");
                 break;
         }
-        viewModel.updateUserAccount(userAccount);
+        //Alert on empty username
+        if ((newValue.equals("") || newValue == null) && viewType == USERNAME_VIEW) {
+            AlertDialogUtil.createEmptyUserNameDialog(getActivity()).show();
+        } else {
+            viewModel.updateUserAccount(userAccount, oldValue);
+        }
     }
 
     public void sendResetPasswordMail(View view) {

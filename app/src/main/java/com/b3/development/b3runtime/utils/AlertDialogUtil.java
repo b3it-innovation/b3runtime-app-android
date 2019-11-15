@@ -127,13 +127,38 @@ public class AlertDialogUtil {
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                profileFragment.updateUserValue(input.getText().toString(), view, viewType);
+                profileFragment.updateUserValue(input.getText().toString(), view, viewType, oldValue);
             }
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         return builder.create();
     }
+
+    public static AlertDialog createEmptyUserNameDialog(final Activity activity) {
+        return createDialog(
+                activity.getString(R.string.invalidUsernameDialogTitle),
+                activity.getString(R.string.invalidUsernameDialogMessage),
+                activity.getString(R.string.okButton),
+                null,
+                "",
+                null,
+                false,
+                activity);
+    }
+
+    public static AlertDialog createCustomInfoDialog(final Context context, String title, String message) {
+        return createDialog(
+                title,
+                message,
+                context.getString(R.string.okButton),
+                null,
+                "",
+                null,
+                false,
+                context);
+    }
+
 
     private static InputFilter[] createInputFilters() {
         InputFilter[] filterArray = new InputFilter[2];
