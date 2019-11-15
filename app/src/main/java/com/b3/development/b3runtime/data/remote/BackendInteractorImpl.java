@@ -5,7 +5,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
-import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
@@ -21,7 +20,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * An implementation of the {@link BackendInteractor} interface
@@ -29,15 +27,13 @@ import java.util.stream.Collectors;
 public class BackendInteractorImpl implements BackendInteractor {
 
     private static final String TAG = BackendInteractor.class.getSimpleName();
-    private final QueryLiveData competitionsLiveDataSnapshot;
+
     private DatabaseReference firebaseDbQuestions;
     private DatabaseReference firebaseDbCompetitions;
     private DatabaseReference firebaseDbTracksCheckpoints;
     private DatabaseReference firebaseDbAttendees;
     private DatabaseReference firebaseDbResults;
     private DatabaseReference firebaseDbUserAccounts;
-    private List<BackendAttendee> attendees = new ArrayList<>();
-    private List<BackendResult> attendeeResults;
 
     /**
      * A public constructor for {@link BackendInteractor}
@@ -60,13 +56,22 @@ public class BackendInteractorImpl implements BackendInteractor {
         this.firebaseDbAttendees = firebaseDbAttendees;
         this.firebaseDbResults = firebaseDbResults;
         this.firebaseDbUserAccounts = firebaseDbUserAccounts;
-        this.competitionsLiveDataSnapshot = new QueryLiveData(this.firebaseDbCompetitions);
     }
 
     @NonNull
     @Override
-    public LiveData<DataSnapshot> getCompetitionsDataSnapshot() {
-        return competitionsLiveDataSnapshot;
+    public LiveData<DataSnapshot> getActiveCompetitionsLiveData() {
+        return new QueryLiveData(firebaseDbCompetitions.orderByChild("active").equalTo(true));
+    }
+
+    @Override
+    public LiveData<DataSnapshot> getTop5ResultLiveDataByTrack(String trackKey) {
+        return new QueryLiveData(firebaseDbResults.orderByChild("attendee/trackKey").equalTo(trackKey));
+    }
+
+    @Override
+    public LiveData<DataSnapshot> getResultsLiveDataByUserAccount(String userAccountKey) {
+        return new QueryLiveData(firebaseDbResults.orderByChild("attendee/userAccountKey").equalTo(userAccountKey));
     }
 
     @Override
@@ -183,9 +188,8 @@ public class BackendInteractorImpl implements BackendInteractor {
 
     @Override
     public void getAttendeesByUserAccount(AttendeeCallback attendeeCallback, String userAccountKey) {
-        // create query to fetch attendess related to a useraccount
+        // create query to fetch attendees related to a user account
         Query query = firebaseDbAttendees.orderByChild("userAccountKey").equalTo(userAccountKey);
-
         //sets listener on the data in firebase
         query.addListenerForSingleValueEvent(new ValueEventListener() {
 
@@ -196,14 +200,11 @@ public class BackendInteractorImpl implements BackendInteractor {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "data change in attendees");
+                List<BackendAttendee> attendees = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     //gets the Attendee object
-                    BackendAttendee attendee = new BackendAttendee();
-                    attendee.setUserAccountKey((String) snapshot.child("userAccountKey").getValue());
-                    attendee.setCompetitionKey((String) snapshot.child("competitionKey").getValue());
-                    attendee.setTrackKey((String) snapshot.child("trackKey").getValue());
+                    BackendAttendee attendee = snapshot.getValue(BackendAttendee.class);
                     attendee.setKey(snapshot.getKey());
-
                     //adds the object to the List of BackendAttendee objects
                     attendees.add(attendee);
                 }
@@ -216,7 +217,7 @@ public class BackendInteractorImpl implements BackendInteractor {
             /**
              * Contains logic for handling possible database errors
              *
-             * @param error the error recieved
+             * @param error the error received
              */
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -228,8 +229,8 @@ public class BackendInteractorImpl implements BackendInteractor {
 
     @Override
     public void getResultsByUserAccount(ResultCallback resultCallback, String userAccountKey) {
-        // create query to fetch results related to a useraccount
-        Query allResults = firebaseDbResults;
+        // create query to fetch results related to a user account
+        Query allResults = firebaseDbResults.orderByChild("attendee/userAccountKey").equalTo(userAccountKey);
 
         //sets listener on the data in firebase
         allResults.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -242,15 +243,11 @@ public class BackendInteractorImpl implements BackendInteractor {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "data change in attendees");
-                attendeeResults = new ArrayList<>();
-                List<String> a = attendees.stream().map(BackendAttendee::getKey).collect(Collectors.toList());
+                List<BackendResult> attendeeResults = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String attendeeKey = (String) snapshot.child("attendeeKey").getValue();
-                    if (a.contains(attendeeKey)) {
-                        BackendResult result = snapshot.getValue(BackendResult.class);
-                        result.setKey(snapshot.getKey());
-                        attendeeResults.add(result);
-                    }
+                    BackendResult result = snapshot.getValue(BackendResult.class);
+                    result.setKey(snapshot.getKey());
+                    attendeeResults.add(result);
                 }
                 resultCallback.onResultsReceived(attendeeResults);
             }
@@ -289,7 +286,7 @@ public class BackendInteractorImpl implements BackendInteractor {
 
                 /**
                  * Contains logic for handling possible database errors
-                 * @param error the error recieved
+                 * @param error the error received
                  */
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {

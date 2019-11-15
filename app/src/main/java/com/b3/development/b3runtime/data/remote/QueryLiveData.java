@@ -21,6 +21,10 @@ public class QueryLiveData extends LiveData<DataSnapshot> {
         this.query = databaseRef;
     }
 
+    public QueryLiveData(Query query) {
+        this.query = query;
+    }
+
     @Override
     protected void onActive() {
         Log.d(TAG, "onActive");
@@ -36,7 +40,6 @@ public class QueryLiveData extends LiveData<DataSnapshot> {
     private class QueryValueEventListener implements ValueEventListener {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-
             setValue(dataSnapshot);
         }
 

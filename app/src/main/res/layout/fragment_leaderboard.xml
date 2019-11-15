@@ -1,21 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/competition_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.home.HomeActivity">
 
     <TextView
-        android:id="@+id/textChooseCompetition"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
-        android:padding="25dp"
+        android:padding="20dp"
         android:scaleType="center"
-        android:text="@string/results_title"
+        android:text="@string/leader_board_title"
         android:textAlignment="center"
         android:textSize="34sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/top5_track_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:scaleType="center"
+        android:hint="@string/leader_board_track_name"
+        android:textAlignment="center"
+        android:textSize="24sp"
         android:textStyle="bold" />
 
     <ProgressBar
@@ -27,9 +38,9 @@
         android:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycle_list_results"
+        android:id="@+id/recycle_list_leader_board"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:scrollbars="vertical" />
 
 </LinearLayout>
-

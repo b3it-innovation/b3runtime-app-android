@@ -26,4 +26,10 @@ public class Attendee {
     @ColumnInfo(name = "competitionKey")
     public String competitionKey;
 
+    @ColumnInfo(name = "trackName")
+    public String trackName;
+
+    @ColumnInfo(name = "competitionName")
+    public String competitionName;
+
 }

@@ -2,7 +2,6 @@ package com.b3.development.b3runtime.ui.competition;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,7 +28,6 @@ public class CompetitionFragment extends BaseFragment {
     private static final int layoutId = R.layout.fragment_competition;
 
     private CompetitionViewModel competitionViewModel;
-    private ProgressBar pb;
     private RecyclerView recyclerView;
     private ItemArrayAdapter itemArrayAdapter;
     private List<ListItem> itemList = new ArrayList<>();
@@ -60,8 +58,8 @@ public class CompetitionFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        pb = view.findViewById(R.id.progress_loader);
-        pb.setVisibility(View.INVISIBLE);
+        progressBar = view.findViewById(R.id.progress_loader);
+        progressBar.setVisibility(View.INVISIBLE);
         competitionViewModel.getShowLoading().observe(getViewLifecycleOwner(), CompetitionFragment.this::showLoading);
         competitionViewModel.showLoading(true);
 
@@ -86,15 +84,6 @@ public class CompetitionFragment extends BaseFragment {
             });
             competitionViewModel.showLoading(false);
         });
-    }
-
-    //show or hide loading graphic
-    private void showLoading(boolean b) {
-        if (b) {
-            pb.setVisibility(View.VISIBLE);
-        } else {
-            pb.setVisibility(View.INVISIBLE);
-        }
     }
 
 }

@@ -27,6 +27,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
+import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
@@ -139,8 +140,8 @@ public class MapsActivity extends BaseActivity
         });
 
         // if the intent is come from HomeActivity remove all checkpoints to redraw them
-        final String callingActivityName = intent.getStringExtra("callingActivity");
-        if (callingActivityName != null && callingActivityName.equals(HomeActivity.TAG)) {
+        final Boolean doReset = intent.getBooleanExtra("doReset", false);
+        if (doReset) {
             viewModel.removeAllCheckpoints();
             viewModel.removeAllQuestions();
             // reset extra to avoid to trigger reset on screen rotation

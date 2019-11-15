@@ -56,12 +56,17 @@
     <string name="total_time">Total time: </string>
     <string name="continue_track_button_text">Continue track</string>
     <string name="results">Results</string>
+    <string name="leader_board_title">Top 5</string>
+    <string name="leader_board_track_name">Track name</string>
+    <string name="results_title">My Results</string>
 
     <!-- string properties for application settings  -->
     <string name="question_fragment_added_key">questionAdded</string>
     <string name="competition_fragment_added_key">competitionAdded</string>
     <string name="profile_fragment_added_key">profileAdded</string>
     <string name="track_fragment_added_key">trackAdded</string>
+    <string name="result_fragment_added_key">resultAdded</string>
+    <string name="leader_board_fragment_added_key">leaderBoardAdded</string>
     <string name="geofenceIntentName">newQuestion</string>
     <string name="correct_answer_sound_file">sfx/correct_answer.mp3</string>
     <string name="wrong_answer_sound_file">sfx/wrong_answer.mp3</string>

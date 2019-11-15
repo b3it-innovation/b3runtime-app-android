@@ -15,7 +15,7 @@ import com.b3.development.b3runtime.utils.Util;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultViewHolder> {
+public class LeaderBoardAdapter extends RecyclerView.Adapter<LeaderBoardAdapter.ResultViewHolder> {
 
     private List<BackendResult> results = new ArrayList<>();
     private View.OnClickListener listener;
@@ -25,7 +25,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultVi
         notifyDataSetChanged();
     }
 
-    public List<BackendResult> getResults(){
+    public List<BackendResult> getResults() {
         return results;
     }
 
@@ -33,13 +33,12 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultVi
     @Override
     public ResultViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new ResultViewHolder(inflater.inflate(R.layout.list_item_result, parent, false));
+        return new ResultViewHolder(inflater.inflate(R.layout.list_item_leaderboard, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull ResultViewHolder holder, int position) {
-        holder.setup(results.get(position));
-        holder.trackName.setOnClickListener(view -> listener.onClick(view));
+        holder.setup(results.get(position), position);
     }
 
     public void setOnItemClickListener(View.OnClickListener listener) {
@@ -54,16 +53,19 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultVi
     static class ResultViewHolder extends RecyclerView.ViewHolder {
 
         private TextView totalTime;
-        private TextView trackName;
+        private TextView userName;
+        private TextView rankingNumber;
 
         public ResultViewHolder(@NonNull View itemView) {
             super(itemView);
             totalTime = itemView.findViewById(R.id.total_time);
-            trackName = itemView.findViewById(R.id.track_name);
+            userName = itemView.findViewById(R.id.user_name);
+            rankingNumber = itemView.findViewById(R.id.ranking_number);
         }
 
-        public void setup(BackendResult backendResult) {
-            trackName.setText(backendResult.getAttendee().trackName);
+        public void setup(BackendResult backendResult, int position) {
+            userName.setText(backendResult.getAttendee().name);
+            rankingNumber.setText(String.valueOf(position + 1));
             if (backendResult.getTotalTime() == null) {
                 totalTime.setText(R.string.track_unfinished);
             } else {

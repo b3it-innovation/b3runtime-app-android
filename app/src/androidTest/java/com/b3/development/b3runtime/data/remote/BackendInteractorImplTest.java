@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.test.core.app.ApplicationProvider;
 
+import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
@@ -106,7 +107,9 @@ public class BackendInteractorImplTest {
     @Test
     public void saveResult() throws InterruptedException {
         BackendResult backendResult = new BackendResult();
-        backendResult.setAttendeeKey("testAttendee");
+        Attendee attendee = new Attendee();
+        attendee.id = "testAttendee";
+        backendResult.setAttendee(attendee);
         backendResult.setTotalTime(1000L);
         Checkpoint checkpoint = new Checkpoint();
         checkpoint.id = "1";
@@ -121,7 +124,7 @@ public class BackendInteractorImplTest {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 assertNotNull(dataSnapshot);
-                assertTrue(dataSnapshot.child("attendeeKey").getValue().equals(backendResult.getAttendeeKey()));
+                assertTrue(dataSnapshot.child("attendee").child("id").getValue().equals(backendResult.getAttendee().id));
                 assertTrue(((Long) dataSnapshot.child("totalTime").getValue()).equals(backendResult.getTotalTime()));
                 Map resultMap = ((Map) (dataSnapshot.child("results").child("0").getValue()));
                 assertTrue((resultMap.get("id").equals(checkpoint.id)));

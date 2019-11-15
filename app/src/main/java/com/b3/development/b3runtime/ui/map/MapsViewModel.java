@@ -194,7 +194,6 @@ public class MapsViewModel extends BaseViewModel {
     }
 
     public void fetchAllQuestions() {
-        //removeAllQuestions();
         questionRepository.fetch(questionKeys);
     }
 

@@ -23,7 +23,11 @@ public interface BackendInteractor {
 
     void getAttendeesByUserAccount(AttendeeCallback attendeeCallback, String userAccountKey);
 
-    LiveData<DataSnapshot> getCompetitionsDataSnapshot();
+    LiveData<DataSnapshot> getActiveCompetitionsLiveData();
+
+    LiveData<DataSnapshot> getTop5ResultLiveDataByTrack(String trackKey);
+
+    LiveData<DataSnapshot> getResultsLiveDataByUserAccount(String userAccountKey);
 
     String saveAttendee(BackendAttendee attendee);
 
