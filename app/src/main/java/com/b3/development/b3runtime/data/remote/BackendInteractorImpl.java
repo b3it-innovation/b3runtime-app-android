@@ -29,13 +29,15 @@ import java.util.stream.Collectors;
 public class BackendInteractorImpl implements BackendInteractor {
 
     private static final String TAG = BackendInteractor.class.getSimpleName();
-    private final QueryLiveData competitionsLiveDataSnapshot;
+
     private DatabaseReference firebaseDbQuestions;
     private DatabaseReference firebaseDbCompetitions;
     private DatabaseReference firebaseDbTracksCheckpoints;
     private DatabaseReference firebaseDbAttendees;
     private DatabaseReference firebaseDbResults;
     private DatabaseReference firebaseDbUserAccounts;
+
+    private final QueryLiveData competitionsLiveDataSnapshot;
 
     /**
      * A public constructor for {@link BackendInteractor}
@@ -65,6 +67,12 @@ public class BackendInteractorImpl implements BackendInteractor {
     @Override
     public LiveData<DataSnapshot> getCompetitionsDataSnapshot() {
         return competitionsLiveDataSnapshot;
+    }
+
+    public LiveData<DataSnapshot> getTop5ResultForTrack(String trackKey) {
+        QueryLiveData top5ResultForTrack =
+                new QueryLiveData(firebaseDbResults.orderByChild("attendee/trackKey").equalTo(trackKey));
+        return top5ResultForTrack;
     }
 
     @Override
@@ -243,32 +251,6 @@ public class BackendInteractorImpl implements BackendInteractor {
                     attendeeResults.add(result);
                 }
                 resultCallback.onResultsReceived(attendeeResults);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, databaseError.getMessage());
-            }
-        });
-    }
-
-    @Override
-    public void getResultsByTrack(ResultCallback resultCallback, String trackKey) {
-        Query query = firebaseDbResults.orderByChild("attendee/trackKey").equalTo(trackKey);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<BackendResult> resultList = new ArrayList<>();
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Long totalTime = (Long) snapshot.child("totalTime").getValue();
-                    if (totalTime != null) {
-                        BackendResult result = snapshot.getValue(BackendResult.class);
-                        result.setKey(snapshot.getKey());
-                        resultList.add(result);
-                    }
-                }
-                resultCallback.onResultsReceived(resultList);
             }
 
             @Override

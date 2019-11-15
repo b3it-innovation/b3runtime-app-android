@@ -62,6 +62,8 @@
     <string name="competition_fragment_added_key">competitionAdded</string>
     <string name="profile_fragment_added_key">profileAdded</string>
     <string name="track_fragment_added_key">trackAdded</string>
+    <string name="result_fragment_added_key">resultAdded</string>
+    <string name="leader_board_fragment_added_key">leaderBoardAdded</string>
     <string name="geofenceIntentName">newQuestion</string>
     <string name="correct_answer_sound_file">sfx/correct_answer.mp3</string>
     <string name="wrong_answer_sound_file">sfx/wrong_answer.mp3</string>

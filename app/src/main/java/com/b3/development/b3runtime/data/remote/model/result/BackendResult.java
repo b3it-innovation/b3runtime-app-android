@@ -1,11 +1,13 @@
 package com.b3.development.b3runtime.data.remote.model.result;
 
+import android.content.Intent;
+
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 
 import java.util.List;
 
-public class BackendResult {
+public class BackendResult implements Comparable<BackendResult> {
 
     private String key;
     private Attendee attendee;
@@ -42,5 +44,10 @@ public class BackendResult {
 
     public void setTotalTime(Long totalTime) {
         this.totalTime = totalTime;
+    }
+
+    @Override
+    public int compareTo(BackendResult o) {
+        return (int) (this.totalTime - o.getTotalTime());
     }
 }

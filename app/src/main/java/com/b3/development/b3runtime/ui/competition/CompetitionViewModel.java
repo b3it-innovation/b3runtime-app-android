@@ -9,6 +9,7 @@ import com.b3.development.b3runtime.data.remote.model.competition.BackendCompeti
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -40,11 +41,12 @@ public class CompetitionViewModel extends BaseViewModel {
     }
 
     public Attendee createAttendee() {
-        String userAccountId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         currentAttendee = new Attendee();
+        currentAttendee.name = user.getDisplayName();
         currentAttendee.competitionKey = competitionKey;
         currentAttendee.trackKey = trackKey;
-        currentAttendee.userAccountKey = userAccountId;
+        currentAttendee.userAccountKey = user.getUid();
         currentAttendee.competitionName = chosenCompetitionName;
         currentAttendee.trackName = chosenTrackName;
         return currentAttendee;

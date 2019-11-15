@@ -76,8 +76,8 @@ public class ResultsFragment extends BaseFragment {
 
         adapter.setOnItemClickListener(v -> {
             TextView trackName = (TextView) v;
-            for(BackendResult br : adapter.getResults()){
-                if(trackName.getText().equals(br.getAttendee().trackName)
+            for (BackendResult br : adapter.getResults()) {
+                if (trackName.getText().equals(br.getAttendee().trackName)
                         && br.getTotalTime() != null) {
                     showResultsFragment(br.getAttendee().trackKey);
                     break;
@@ -93,6 +93,7 @@ public class ResultsFragment extends BaseFragment {
                     viewModel.showLoading(false);
                 }
             }
+
             @Override
             public void onError() {
                 Log.d(TAG, "Error in loading results...");
@@ -101,10 +102,10 @@ public class ResultsFragment extends BaseFragment {
     }
 
     private void showResultsFragment(String trackKey) {
-        LeaderBoradFragment leaderBoradFragment = LeaderBoradFragment.newInstance(trackKey);
+        LeaderBoardFragment leaderBoardFragment = LeaderBoardFragment.newInstance(trackKey);
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.home_container, leaderBoradFragment, LeaderBoradFragment.TAG);
-        ft.addToBackStack(LeaderBoradFragment.TAG);
+        ft.replace(R.id.home_container, leaderBoardFragment, LeaderBoardFragment.TAG);
+        ft.addToBackStack(LeaderBoardFragment.TAG);
         ft.commit();
     }
 
