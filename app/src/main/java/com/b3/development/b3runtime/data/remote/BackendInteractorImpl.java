@@ -41,6 +41,7 @@ public class BackendInteractorImpl implements BackendInteractor {
     private DatabaseReference firebaseDbAttendees;
     private DatabaseReference firebaseDbResults;
     private DatabaseReference firebaseDbUserAccounts;
+    private DatabaseReference firebaseDb;
     private List<BackendAttendee> attendees = new ArrayList<>();
     private List<BackendResult> attendeeResults;
 
@@ -58,13 +59,15 @@ public class BackendInteractorImpl implements BackendInteractor {
                                  DatabaseReference firebaseDbTracksCheckpoints,
                                  DatabaseReference firebaseDbAttendees,
                                  DatabaseReference firebaseDbResults,
-                                 DatabaseReference firebaseDbUserAccounts) {
+                                 DatabaseReference firebaseDbUserAccounts,
+                                 DatabaseReference firebaseDb) {
         this.firebaseDbQuestions = firebaseDbQuestions;
         this.firebaseDbCompetitions = firebaseDbCompetitions;
         this.firebaseDbTracksCheckpoints = firebaseDbTracksCheckpoints;
         this.firebaseDbAttendees = firebaseDbAttendees;
         this.firebaseDbResults = firebaseDbResults;
         this.firebaseDbUserAccounts = firebaseDbUserAccounts;
+        this.firebaseDb = firebaseDb;
         this.competitionsLiveDataSnapshot = new QueryLiveData(this.firebaseDbCompetitions);
     }
 
@@ -145,8 +148,6 @@ public class BackendInteractorImpl implements BackendInteractor {
     @Override
     public void updateUserAccount(UserAccount userAccount) {
 
-        Map<String, Object> wholeMap = new HashMap<>();
-
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("userName", userAccount.userName);
         userMap.put("organization", userAccount.organization);
@@ -154,13 +155,13 @@ public class BackendInteractorImpl implements BackendInteractor {
         userMap.put("lastName", userAccount.lastName);
 
         Map<String, Object> nameMap = new HashMap<>();
-        nameMap.put(userAccount.id, userAccount.userName);
+        nameMap.put(userAccount.userName, userAccount.id);
 
+        Map<String, Object> wholeMap = new HashMap<>();
         wholeMap.put("/user_accounts/" + userAccount.id, userMap);
-        wholeMap.put("/user_accounts-usernames/", nameMap);
+        wholeMap.put("/usernames/", nameMap);
 
-        firebaseDbUserAccounts.child(userAccount.id)
-                .updateChildren(userMap);
+        firebaseDb.updateChildren(wholeMap);
     }
 
     /**
