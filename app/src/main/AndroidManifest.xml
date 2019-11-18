@@ -55,6 +55,7 @@
         <activity
             android:name=".ui.map.MapsActivity"
             android:label="@string/title_activity_maps"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
