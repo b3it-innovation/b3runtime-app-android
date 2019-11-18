@@ -82,5 +82,6 @@
     <string name="profile_organization_hint">Organization</string>
     <string name="invalidValueDialogTitle">Invalid value</string>
     <string name="invalidValueDialogMessage">This cannot be empty.</string>
+    <string name="menu_main_toggle_lines">Toggle track lines</string>
 
 </resources>
