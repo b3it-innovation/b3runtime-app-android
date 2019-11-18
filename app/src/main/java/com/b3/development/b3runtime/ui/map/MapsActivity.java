@@ -145,7 +145,7 @@ public class MapsActivity extends BaseActivity
             viewModel.removeAllCheckpoints();
             viewModel.removeAllQuestions();
             // reset extra to avoid to trigger reset on screen rotation
-            intent.putExtra("callingActivity", "");
+            intent.putExtra("doReset", false);
         }
         // if onCreate() is triggered by other cases
         else {
@@ -202,11 +202,9 @@ public class MapsActivity extends BaseActivity
     @Override
     public void onResume() {
         super.onResume();
-        initializeMap();
         if (!geofenceIntentHandled) {
             handleGeofenceIntent();
         }
-
     }
 
     // Menu icons are inflated just as they were with actionbar
@@ -409,8 +407,11 @@ public class MapsActivity extends BaseActivity
         } else {
             map.setMyLocationEnabled(true);
 
+
             //start foreground service to allow tracking of location in background
-            startService(new Intent(this, LocationService.class));
+            if (!Util.isMyServiceRunning(LocationService.class, getApplicationContext())) {
+                startService(new Intent(this, LocationService.class));
+            }
 
             if (viewModel.getAllCheckpoints().hasObservers()) {
                 viewModel.getAllCheckpoints().removeObservers(this);
