@@ -45,7 +45,7 @@
     <string name="close_text">Close</string>
     <string name="home_title">B3runtime</string>
     <string name="take_photo">take photo</string>
-    <string name="profile_name_hint">Name</string>
+    <string name="profile_username_hint">Username</string>
     <string name="profile_mail_hint">Mail</string>
     <string name="result_answer_correct_hint">YOUR ANSWER IS CORRECT....</string>
     <string name="menu_main_reset_track">Reset Track</string>
@@ -77,5 +77,10 @@
     <string name="profile_image_file_name">avatar.jpg</string>
     <string name="external_storage_image_path">/Pictures/b3runtime</string>
     <string name="image_file_date_format">yyyyMMdd_HHmmss</string>
+    <string name="profile_firstname_hint">First name</string>
+    <string name="profile_lastname_hint">Last name</string>
+    <string name="profile_organization_hint">Organization</string>
+    <string name="invalidValueDialogTitle">Invalid value</string>
+    <string name="invalidValueDialogMessage">This cannot be empty.</string>
 
 </resources>

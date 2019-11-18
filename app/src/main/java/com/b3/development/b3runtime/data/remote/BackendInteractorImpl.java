@@ -5,21 +5,30 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
+import com.b3.development.b3runtime.data.local.model.useraccount.UserAccount;
 import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
+import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUseraccount;
+import com.b3.development.b3runtime.utils.failure.FailureType;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * An implementation of the {@link BackendInteractor} interface
@@ -34,6 +43,7 @@ public class BackendInteractorImpl implements BackendInteractor {
     private DatabaseReference firebaseDbAttendees;
     private DatabaseReference firebaseDbResults;
     private DatabaseReference firebaseDbUserAccounts;
+    private DatabaseReference firebaseDb;
 
     /**
      * A public constructor for {@link BackendInteractor}
@@ -49,13 +59,15 @@ public class BackendInteractorImpl implements BackendInteractor {
                                  DatabaseReference firebaseDbTracksCheckpoints,
                                  DatabaseReference firebaseDbAttendees,
                                  DatabaseReference firebaseDbResults,
-                                 DatabaseReference firebaseDbUserAccounts) {
+                                 DatabaseReference firebaseDbUserAccounts,
+                                 DatabaseReference firebaseDb) {
         this.firebaseDbQuestions = firebaseDbQuestions;
         this.firebaseDbCompetitions = firebaseDbCompetitions;
         this.firebaseDbTracksCheckpoints = firebaseDbTracksCheckpoints;
         this.firebaseDbAttendees = firebaseDbAttendees;
         this.firebaseDbResults = firebaseDbResults;
         this.firebaseDbUserAccounts = firebaseDbUserAccounts;
+        this.firebaseDb = firebaseDb;
     }
 
     @NonNull
@@ -112,31 +124,70 @@ public class BackendInteractorImpl implements BackendInteractor {
     }
 
     public void saveUserAccount(String uid) {
-        Query query = firebaseDbUserAccounts.orderByKey().equalTo(uid);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        BackendUseraccount user = new BackendUseraccount();
+        user.setLastName("");
+
+        firebaseDbUserAccounts.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()) {
-                    Log.d(TAG, uid);
-                    firebaseDbUserAccounts.child(uid).setValue("uid").addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "succeeded to save user.");
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.e(TAG, "failed to save user. ", e);
-                        }
-                    });
+                if (dataSnapshot.getValue() == null) {
+                    firebaseDbUserAccounts.child(uid).setValue(user)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d(TAG, "succeeded to save user account. ");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.e(TAG, "failed to save user account. ", e);
+                                }
+                            });
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "database error. ", databaseError.toException());
+                Log.e(TAG, "Failed to save UserAccount", databaseError.toException());
             }
         });
+    }
+
+    @Override
+    public void updateUserAccount(ErrorCallback errorCallback, UserAccount userAccount, String oldValue) {
+
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("userName", userAccount.userName);
+        userMap.put("organization", userAccount.organization);
+        userMap.put("firstName", userAccount.firstName);
+        userMap.put("lastName", userAccount.lastName);
+
+        Map<String, Object> wholeMap = new HashMap<>();
+      
+        if (oldValue != null && !oldValue.equals("")) {
+            oldValue = oldValue.toLowerCase();
+            wholeMap.put("/usernames/" + oldValue, null);
+        }
+
+        if (userAccount.userName != null && !userAccount.userName.equals("")) {
+            wholeMap.put("/user_accounts/" + userAccount.id, userMap);
+            wholeMap.put("/usernames/" + userAccount.userName.toLowerCase(), userAccount.id);
+
+            firebaseDb.updateChildren(wholeMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (!task.isSuccessful()) {
+                        Log.d(TAG, "Could not update username.");
+                        if (task.getException() instanceof DatabaseException) {
+                            errorCallback.onErrorReceived(FailureType.PERMISSION);
+                        }
+                    }
+                }
+            });
+        } else {
+            errorCallback.onErrorReceived(FailureType.GENERIC);
+        }
     }
 
     /**
@@ -182,6 +233,24 @@ public class BackendInteractorImpl implements BackendInteractor {
             public void onCancelled(@NonNull DatabaseError error) {
                 checkpointsCallback.onError();
                 Log.e(TAG, "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    @Override
+    public void getUserAccountById(UserAccountCallback userAccountCallback, String userAccountKey) {
+        Query query = firebaseDbUserAccounts.child(userAccountKey);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                BackendUseraccount backendUseraccount = dataSnapshot.getValue(BackendUseraccount.class);
+                userAccountCallback.onUserAccountReceived(backendUseraccount);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                userAccountCallback.onError();
+                Log.e(TAG, "Failed to read value.", databaseError.toException());
             }
         });
     }

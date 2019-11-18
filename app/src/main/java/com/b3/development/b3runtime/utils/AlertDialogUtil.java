@@ -112,21 +112,22 @@ public class AlertDialogUtil {
                 activity);
     }
 
-    public static AlertDialog createTextInputDialogForName(final ProfileFragment profileFragment, final View view, final String oldName) {
+    public static AlertDialog createTextInputDialogForProfile(final ProfileFragment profileFragment,
+                                                              final View view, final String oldValue, int viewType) {
         AlertDialog.Builder builder = new AlertDialog.Builder(profileFragment.getActivity());
-        builder.setTitle("Enter new name");
+        builder.setTitle("Enter new value");
         final EditText input = new EditText(profileFragment.getActivity());
 
-        InputFilter[] filterArray = createInputFilters();
+        InputFilter[] filterArray = createInputFilters(viewType);
         input.setFilters(filterArray);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
-        input.setText(oldName);
+        input.setText(oldValue);
         builder.setView(input);
 
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                profileFragment.updateDisplayName(input.getText().toString(), view);
+                profileFragment.updateUserValue(input.getText().toString(), view, viewType, oldValue);
             }
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
@@ -134,20 +135,92 @@ public class AlertDialogUtil {
         return builder.create();
     }
 
-    private static InputFilter[] createInputFilters() {
+    public static AlertDialog createEmptyValueDialog(final Activity activity) {
+        return createDialog(
+                activity.getString(R.string.invalidValueDialogTitle),
+                activity.getString(R.string.invalidValueDialogMessage),
+                activity.getString(R.string.okButton),
+                null,
+                "",
+                null,
+                false,
+                activity);
+    }
+
+    public static AlertDialog createCustomInfoDialog(final Context context, String title, String message) {
+        return createDialog(
+                title,
+                message,
+                context.getString(R.string.okButton),
+                null,
+                "",
+                null,
+                false,
+                context);
+    }
+
+
+    private static InputFilter[] createInputFilters(int viewType) {
         InputFilter[] filterArray = new InputFilter[2];
-        filterArray[0] = new InputFilter.LengthFilter(20);
-        InputFilter filter = new InputFilter() {
-            public CharSequence filter(CharSequence source, int start, int end,
-                                       Spanned dest, int dstart, int dend) {
-                for (int i = start; i < end; i++) {
-                    if (!Character.isLetterOrDigit(source.charAt(i))) {
-                        return "";
+        InputFilter filter;
+
+        switch (viewType) {
+            case ProfileFragment.USERNAME_VIEW:
+                filterArray[0] = new InputFilter.LengthFilter(20);
+                filter = new InputFilter() {
+                    public CharSequence filter(CharSequence source, int start, int end,
+                                               Spanned dest, int dstart, int dend) {
+                        for (int i = start; i < end; i++) {
+                            if (!Character.isLetterOrDigit(source.charAt(i))) {
+                                return "";
+                            }
+                        }
+                        return null;
                     }
-                }
-                return null;
-            }
-        };
+                };
+                break;
+
+            case ProfileFragment.FIRSTNAME_VIEW:
+            case ProfileFragment.LASTNAME_VIEW:
+                filterArray[0] = new InputFilter.LengthFilter(20);
+                filter = new InputFilter() {
+                    public CharSequence filter(CharSequence source, int start, int end,
+                                               Spanned dest, int dstart, int dend) {
+                        for (int i = start; i < end; i++) {
+                            if (!Character.isLetter(source.charAt(i)) && !Character.isWhitespace(source.charAt(i))) {
+                                return "";
+                            }
+                        }
+                        return null;
+                    }
+                };
+                break;
+
+            case ProfileFragment.ORGANIZATION_VIEW:
+                filterArray[0] = new InputFilter.LengthFilter(20);
+                filter = new InputFilter() {
+                    public CharSequence filter(CharSequence source, int start, int end,
+                                               Spanned dest, int dstart, int dend) {
+                        for (int i = start; i < end; i++) {
+                            if (!Character.isLetterOrDigit(source.charAt(i)) && !Character.isWhitespace(source.charAt(i))) {
+                                return "";
+                            }
+                        }
+                        return null;
+                    }
+                };
+                break;
+
+            default:
+                filter = new InputFilter() {
+                    @Override
+                    public CharSequence filter(CharSequence charSequence, int i, int i1, Spanned spanned, int i2, int i3) {
+                        return null;
+                    }
+                };
+        }
+
+
         filterArray[1] = filter;
         return filterArray;
     }

@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,10 +20,14 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseFragment;
+import com.b3.development.b3runtime.data.local.model.useraccount.UserAccount;
+import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepository;
 import com.b3.development.b3runtime.utils.AlertDialogUtil;
+import com.b3.development.b3runtime.utils.failure.FailureType;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -44,6 +47,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import static android.app.Activity.RESULT_OK;
+import static org.koin.java.KoinJavaComponent.get;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,6 +62,10 @@ public class ProfileFragment extends BaseFragment {
     private static final int REQUEST_IMAGE_CAPTURE = 2;
     private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 3;
     private static final int PERMISSIONS_REQUEST_CAMERA_AND_WRITE_EXTERNAL_STORAGE = 4;
+    public static final int USERNAME_VIEW = 1;
+    public static final int FIRSTNAME_VIEW = 2;
+    public static final int LASTNAME_VIEW = 3;
+    public static final int ORGANIZATION_VIEW = 4;
 
     private String profileImageFileName;
 
@@ -67,6 +75,7 @@ public class ProfileFragment extends BaseFragment {
     private FirebaseUser currentUser;
     private ImageView profileImageView;
     private String currentPhotoPath;
+    private ProfileViewModel viewModel;
 
     public ProfileFragment() {
 
@@ -95,6 +104,10 @@ public class ProfileFragment extends BaseFragment {
         firebaseAuth = FirebaseAuth.getInstance();
         currentUser = firebaseAuth.getCurrentUser();
         profileImageFileName = getString(R.string.profile_image_file_name);
+        viewModel = ViewModelProviders.of(this,
+                new ProfileViewModelFactory(get(UserAccountRepository.class)))
+                .get(ProfileViewModel.class);
+
     }
 
     @Override
@@ -107,19 +120,12 @@ public class ProfileFragment extends BaseFragment {
         showProfileImage(profileImageView);
 
         Button btnResetPassword = view.findViewById(R.id.btn_reset_password);
-        Button btnChangeName = view.findViewById(R.id.btnEditName);
         Button btnSeeResults = view.findViewById(R.id.btn_results);
 
         btnResetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // todo sendResetPasswordMail(view);
-            }
-        });
-        btnChangeName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeName(view);
             }
         });
 
@@ -130,11 +136,56 @@ public class ProfileFragment extends BaseFragment {
             }
         });
 
-        drawProfile(view);
-
         view.findViewById(R.id.btn_camera).setOnClickListener(v -> {
             requestCameraAndWriteExternalStoragePermissions();
             dispatchTakePictureIntent();
+        });
+
+        viewModel.getUserAccountLiveData().observe(getViewLifecycleOwner(), userAccount -> {
+            if (userAccount != null) drawProfile(view, userAccount);
+        });
+
+        viewModel.getError().observe(getViewLifecycleOwner(), error -> {
+            if (error != null && error.getType() == FailureType.PERMISSION) {
+                AlertDialogUtil.createCustomInfoDialog(getContext(), "Invalid username",
+                        "That username is already taken").show();
+            } else if (error != null && error.getType() == FailureType.GENERIC) {
+                AlertDialogUtil.createCustomInfoDialog(getContext(), "Invalid username",
+                        "That username is invalid. Username must be between 1-20 " +
+                                "characters and can only contain A-ö and numbers.");
+            }
+        });
+
+        ImageView userName = view.findViewById(R.id.editIconUserName);
+        userName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeUserValue(view, USERNAME_VIEW);
+            }
+        });
+
+        ImageView firstName = view.findViewById(R.id.editIconFirstName);
+        firstName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeUserValue(view, FIRSTNAME_VIEW);
+            }
+        });
+
+        ImageView lastName = view.findViewById(R.id.editIconLastName);
+        lastName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeUserValue(view, LASTNAME_VIEW);
+            }
+        });
+
+        ImageView organization = view.findViewById(R.id.editIconOrganization);
+        organization.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeUserValue(view, ORGANIZATION_VIEW);
+            }
         });
     }
 
@@ -260,43 +311,84 @@ public class ProfileFragment extends BaseFragment {
                 .into(imageView);
     }
 
-    private void drawProfile(View view) {
+    private void drawProfile(View view, UserAccount userAccount) {
 
-        String userName = currentUser.getDisplayName();
-        String email = currentUser.getEmail();
+        String userNameString = userAccount.userName;
+        String organizationString = userAccount.organization;
+        String emailString = currentUser.getEmail();
+        String firstNameString = userAccount.firstName;
+        String lastNameString = userAccount.lastName;
 
-        TextView name = view.findViewById(R.id.editTextName);
+        TextView userName = view.findViewById(R.id.editUserName);
+        TextView firstName = view.findViewById(R.id.editFirstName);
+        TextView lastName = view.findViewById(R.id.editLastName);
+        TextView organization = view.findViewById(R.id.editOrganization);
         TextView mail = view.findViewById(R.id.textViewMail);
 
-        name.setText(userName);
-        mail.setText(email);
+        userName.setText(userNameString);
+        firstName.setText(firstNameString);
+        lastName.setText(lastNameString);
+        organization.setText(organizationString);
+        mail.setText(emailString);
     }
 
-    private void changeName(View view) {
-        //get old name
-        TextView name = view.findViewById(R.id.editTextName);
-        String oldName = name.getText().toString();
+    private void changeUserValue(View view, int viewType) {
+        TextView textView;
+        switch (viewType) {
+            case USERNAME_VIEW:
+                textView = getView().findViewById(R.id.editUserName);
+                break;
+            case FIRSTNAME_VIEW:
+                textView = getView().findViewById(R.id.editFirstName);
+                break;
+            case LASTNAME_VIEW:
+                textView = getView().findViewById(R.id.editLastName);
+                break;
+            case ORGANIZATION_VIEW:
+                textView = getView().findViewById(R.id.editOrganization);
+                break;
+            default:
+                Log.e(TAG, "incompatible viewType sent to changeUserValue");
+                textView = null;
+                break;
+        }
+        String oldValue = "";
+        if (textView != null) {
+            oldValue = textView.getText().toString();
 
-        //create dialog, insert old name as placeholder
-        AlertDialogUtil.createTextInputDialogForName(this, view, oldName).show();
+            //create dialog, insert old name as placeholder
+            AlertDialogUtil.createTextInputDialogForProfile(this, view, oldValue, viewType).show();
+        }
     }
 
-    public void updateDisplayName(String newName, View view) {
-        //take the new name entered and set it
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setDisplayName(newName)
-                .build();
-        currentUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    drawProfile(view);
-                } else {
-                    Log.d(TAG, "Couldn't set new username");
-                    Toast.makeText(getContext(), "Something went wrong.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+    public void updateUserValue(String newValue, View view, int viewType, String oldValue) {
+
+        UserAccount userAccount = viewModel.getUserAccountLiveData().getValue();
+
+        switch (viewType) {
+            case USERNAME_VIEW:
+                userAccount.userName = newValue;
+                break;
+            case FIRSTNAME_VIEW:
+                userAccount.firstName = newValue;
+                break;
+            case LASTNAME_VIEW:
+                userAccount.lastName = newValue;
+                break;
+            case ORGANIZATION_VIEW:
+                userAccount.organization = newValue;
+                break;
+            default:
+                Log.e(TAG, "incompatible viewType sent to updateUserValue");
+                break;
+        }
+        //Alert on empty username
+        if ((newValue.equals("") || newValue == null) && (viewType == USERNAME_VIEW
+                || viewType == FIRSTNAME_VIEW || viewType == LASTNAME_VIEW)) {
+            AlertDialogUtil.createEmptyValueDialog(getActivity()).show();
+        } else {
+            viewModel.updateUserAccount(userAccount, oldValue);
+        }
     }
 
     public void sendResetPasswordMail(View view) {
