@@ -21,8 +21,6 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
 
     private final BackendInteractor backendInteractor;
     private final MutableLiveData<Failure> error = new MutableLiveData<>();
-    private final LiveData<DataSnapshot> competitionsLiveDataSnapshot;
-    private final LiveData<List<BackendCompetition>> competitionsLiveData;
 
     /**
      * A public constructor for {@link CompetitionRepository} implementation
@@ -31,9 +29,6 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
      */
     public CompetitionRepositoryImpl(BackendInteractor bi) {
         this.backendInteractor = bi;
-        competitionsLiveDataSnapshot = backendInteractor.getCompetitionsDataSnapshot();
-        competitionsLiveData = Transformations.map(competitionsLiveDataSnapshot,
-                snapshot -> convertDatasnapshotToCompetitions(snapshot));
     }
 
     /**
@@ -48,16 +43,14 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
     /**
      * Contains logic for converting firebase datasnapshot into backendcompetitions
      */
-    private List<BackendCompetition> convertDatasnapshotToCompetitions(DataSnapshot dataSnapshot) {
+    private List<BackendCompetition> convertDataSnapshotToCompetitions(DataSnapshot dataSnapshot) {
         List<BackendCompetition> competitions = new ArrayList<>();
         if (dataSnapshot != null) {
             for (DataSnapshot competitionSnapshot : dataSnapshot.getChildren()) {
                 //gets the BackendCompetition object
                 BackendCompetition fbCompetition = new BackendCompetition();
                 fbCompetition.setActive((Boolean) competitionSnapshot.child("active").getValue());
-                if (fbCompetition.isActive() != null && !fbCompetition.isActive()) {
-                    continue;
-                }
+                fbCompetition.setName((String) competitionSnapshot.child("name").getValue());
                 fbCompetition.setKey(competitionSnapshot.getKey());
                 //gets the nested "child" object of the actual competition
                 ArrayList<BackendTrack> tracks = new ArrayList<>();
@@ -74,9 +67,7 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
                     track.setCategory(category);
                     tracks.add(track);
                 }
-                //sets the rest of the BackendCompetition object
                 fbCompetition.setTracks(tracks);
-                fbCompetition.setName((String) competitionSnapshot.child("name").getValue());
                 //adds the object to the List of BackendResponseCheckpoint objects
                 competitions.add(fbCompetition);
             }
@@ -85,6 +76,7 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
     }
 
     public LiveData<List<BackendCompetition>> getCompetitionsLiveData() {
-        return competitionsLiveData;
+        return Transformations.map(backendInteractor.getActiveCompetitionsLiveData(),
+                snapshot -> convertDataSnapshotToCompetitions(snapshot));
     }
 }

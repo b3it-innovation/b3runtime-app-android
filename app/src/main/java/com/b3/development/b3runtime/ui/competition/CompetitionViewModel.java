@@ -9,6 +9,7 @@ import com.b3.development.b3runtime.data.remote.model.competition.BackendCompeti
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class CompetitionViewModel extends BaseViewModel {
     private String competitionKey;
     private String trackKey;
     private String chosenCompetitionName;
+    private String chosenTrackName;
 
     public CompetitionViewModel(CompetitionRepository competitionRepository, AttendeeRepository attendeeRepository) {
         this.repository = competitionRepository;
@@ -39,11 +41,14 @@ public class CompetitionViewModel extends BaseViewModel {
     }
 
     public Attendee createAttendee() {
-        String userAccountId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         currentAttendee = new Attendee();
+        currentAttendee.name = user.getDisplayName();
         currentAttendee.competitionKey = competitionKey;
         currentAttendee.trackKey = trackKey;
-        currentAttendee.userAccountKey = userAccountId;
+        currentAttendee.userAccountKey = user.getUid();
+        currentAttendee.competitionName = chosenCompetitionName;
+        currentAttendee.trackName = chosenTrackName;
         return currentAttendee;
     }
 
@@ -97,5 +102,13 @@ public class CompetitionViewModel extends BaseViewModel {
 
     public void setChosenCompetitionName(String chosenCompetitionName) {
         this.chosenCompetitionName = chosenCompetitionName;
+    }
+
+    public String getChosenTrackName() {
+        return chosenTrackName;
+    }
+
+    public void setChosenTrackName(String chosenTrackName) {
+        this.chosenTrackName = chosenTrackName;
     }
 }

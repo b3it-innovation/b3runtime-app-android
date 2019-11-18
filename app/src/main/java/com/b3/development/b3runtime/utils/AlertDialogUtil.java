@@ -26,7 +26,7 @@ public class AlertDialogUtil {
     private static AlertDialog createDialog(final String title,
                                             final String message,
                                             final String positiveButton,
-                                            final DialogInterface.OnClickListener positiveButtonlistener,
+                                            final DialogInterface.OnClickListener positiveButtonListener,
                                             final String negativeButton,
                                             final DialogInterface.OnClickListener negativeButtonListener,
                                             final Boolean cancelable,
@@ -34,7 +34,7 @@ public class AlertDialogUtil {
         return new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)
-                .setPositiveButton(positiveButton, positiveButtonlistener)
+                .setPositiveButton(positiveButton, positiveButtonListener)
                 .setNegativeButton(negativeButton, negativeButtonListener)
                 .setCancelable(cancelable)
                 .create();

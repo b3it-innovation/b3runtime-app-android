@@ -27,6 +27,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
+import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
@@ -139,12 +140,12 @@ public class MapsActivity extends BaseActivity
         });
 
         // if the intent is come from HomeActivity remove all checkpoints to redraw them
-        final String callingActivityName = intent.getStringExtra("callingActivity");
-        if (callingActivityName != null && callingActivityName.equals(HomeActivity.TAG)) {
+        final Boolean doReset = intent.getBooleanExtra("doReset", false);
+        if (doReset) {
             viewModel.removeAllCheckpoints();
             viewModel.removeAllQuestions();
             // reset extra to avoid to trigger reset on screen rotation
-            intent.putExtra("callingActivity", "");
+            intent.putExtra("doReset", false);
         }
         // if onCreate() is triggered by other cases
         else {
@@ -201,11 +202,9 @@ public class MapsActivity extends BaseActivity
     @Override
     public void onResume() {
         super.onResume();
-        initializeMap();
         if (!geofenceIntentHandled) {
             handleGeofenceIntent();
         }
-
     }
 
     // Menu icons are inflated just as they were with actionbar
@@ -408,8 +407,11 @@ public class MapsActivity extends BaseActivity
         } else {
             map.setMyLocationEnabled(true);
 
+
             //start foreground service to allow tracking of location in background
-            startService(new Intent(this, LocationService.class));
+            if (!Util.isMyServiceRunning(LocationService.class, getApplicationContext())) {
+                startService(new Intent(this, LocationService.class));
+            }
 
             if (viewModel.getAllCheckpoints().hasObservers()) {
                 viewModel.getAllCheckpoints().removeObservers(this);

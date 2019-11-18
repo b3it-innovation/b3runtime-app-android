@@ -10,6 +10,7 @@ import androidx.test.core.app.ApplicationProvider;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
+import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 
@@ -38,6 +39,8 @@ public class MapsViewModelTest {
     @Mock
     CheckpointRepository checkpointRepository;
     @Mock
+    QuestionRepository questionRepository;
+    @Mock
     ResultRepository resultRepository;
     @Mock
     AttendeeRepository attendeeRepository;
@@ -60,8 +63,8 @@ public class MapsViewModelTest {
 
         MockitoAnnotations.initMocks(this);
 
-        viewModel = new MapsViewModel(checkpointRepository, resultRepository, attendeeRepository,
-                geofenceManager, context, trackKey);
+        viewModel = new MapsViewModel(checkpointRepository, questionRepository, resultRepository, attendeeRepository,
+                geofenceManager, context);
     }
 
     @Test
@@ -223,7 +226,7 @@ public class MapsViewModelTest {
     public void initAttendee() {
         Log.d(TAG, "running initAttendee() test");
         String attendeeKey = "key";
-        viewModel.initAttendee(attendeeKey);
+        viewModel.initAttendee();
         verify(attendeeRepository, atLeastOnce()).getAttendeeById(attendeeKey);
         verify(attendeeRepository, atMostOnce()).getAttendeeById(attendeeKey);
     }

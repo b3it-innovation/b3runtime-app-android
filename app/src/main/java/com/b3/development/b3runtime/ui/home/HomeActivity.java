@@ -15,7 +15,9 @@ import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointReposit
 import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepository;
 import com.b3.development.b3runtime.ui.competition.CompetitionFragment;
 import com.b3.development.b3runtime.ui.competition.TrackFragment;
+import com.b3.development.b3runtime.ui.profile.LeaderBoardFragment;
 import com.b3.development.b3runtime.ui.profile.ProfileFragment;
+import com.b3.development.b3runtime.ui.profile.ResultsFragment;
 import com.b3.development.b3runtime.ui.signin.SignInActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -49,18 +51,26 @@ public class HomeActivity extends AppCompatActivity {
 
         // retain the state of fragments
         if (savedInstanceState != null) {
-            if (savedInstanceState.getBoolean(getResources().getString(R.string.competition_fragment_added_key))) {
+            if (savedInstanceState.getBoolean(getString(R.string.competition_fragment_added_key))) {
                 CompetitionFragment fragment = (CompetitionFragment) getSupportFragmentManager().findFragmentByTag(CompetitionFragment.TAG);
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.home_container, fragment, CompetitionFragment.TAG).commit();
-            } else if (savedInstanceState.getBoolean(getResources().getString(R.string.profile_fragment_added_key))) {
+            } else if (savedInstanceState.getBoolean(getString(R.string.profile_fragment_added_key))) {
                 ProfileFragment fragment = (ProfileFragment) getSupportFragmentManager().findFragmentByTag(ProfileFragment.TAG);
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.home_container, fragment, ProfileFragment.TAG).commit();
-            } else if (savedInstanceState.getBoolean(getResources().getString(R.string.track_fragment_added_key))) {
+            } else if (savedInstanceState.getBoolean(getString(R.string.track_fragment_added_key))) {
                 TrackFragment fragment = (TrackFragment) getSupportFragmentManager().findFragmentByTag(TrackFragment.TAG);
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.home_container, fragment, TrackFragment.TAG).commit();
+            } else if (savedInstanceState.getBoolean(getString(R.string.result_fragment_added_key))) {
+                ResultsFragment fragment = (ResultsFragment) getSupportFragmentManager().findFragmentByTag(ResultsFragment.TAG);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.home_container, fragment, ResultsFragment.TAG).commit();
+            } else if (savedInstanceState.getBoolean(getString(R.string.leader_board_fragment_added_key))) {
+                LeaderBoardFragment fragment = (LeaderBoardFragment) getSupportFragmentManager().findFragmentByTag(LeaderBoardFragment.TAG);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.home_container, fragment, LeaderBoardFragment.TAG).commit();
             }
         }
         saveUserAccount();
@@ -109,19 +119,25 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putBoolean(getResources().getString(R.string.competition_fragment_added_key), false);
-        savedInstanceState.putBoolean(getResources().getString(R.string.profile_fragment_added_key), false);
-        savedInstanceState.putBoolean(getResources().getString(R.string.track_fragment_added_key), false);
+        savedInstanceState.putBoolean(getString(R.string.competition_fragment_added_key), false);
+        savedInstanceState.putBoolean(getString(R.string.profile_fragment_added_key), false);
+        savedInstanceState.putBoolean(getString(R.string.track_fragment_added_key), false);
+        savedInstanceState.putBoolean(getString(R.string.result_fragment_added_key), false);
+        savedInstanceState.putBoolean(getString(R.string.leader_board_fragment_added_key), false);
 
         for (Fragment f : getSupportFragmentManager().getFragments()) {
             String tag = f.getTag();
             if (tag != null) {
                 if (tag.equals(CompetitionFragment.TAG) && f.isVisible() && !f.isDetached()) {
-                    savedInstanceState.putBoolean(getResources().getString(R.string.competition_fragment_added_key), true);
+                    savedInstanceState.putBoolean(getString(R.string.competition_fragment_added_key), true);
                 } else if (tag.equals(ProfileFragment.TAG) && f.isVisible() && !f.isDetached()) {
-                    savedInstanceState.putBoolean(getResources().getString(R.string.profile_fragment_added_key), true);
+                    savedInstanceState.putBoolean(getString(R.string.profile_fragment_added_key), true);
                 } else if (tag.equals(TrackFragment.TAG) && f.isVisible() && !f.isDetached()) {
-                    savedInstanceState.putBoolean(getResources().getString(R.string.track_fragment_added_key), true);
+                    savedInstanceState.putBoolean(getString(R.string.track_fragment_added_key), true);
+                } else if (tag.equals(ResultsFragment.TAG) && f.isVisible() && !f.isDetached()) {
+                    savedInstanceState.putBoolean(getString(R.string.result_fragment_added_key), true);
+                } else if (tag.equals(LeaderBoardFragment.TAG) && f.isVisible() && !f.isDetached()) {
+                    savedInstanceState.putBoolean(getString(R.string.leader_board_fragment_added_key), true);
                 }
             }
         }

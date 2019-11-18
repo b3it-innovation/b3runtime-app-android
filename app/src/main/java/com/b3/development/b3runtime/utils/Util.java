@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public final class Util {
 
@@ -64,7 +65,7 @@ public final class Util {
     }
 
     public static String formatLongToTime(Long time){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss", Locale.US);
         return simpleDateFormat.format(time);
     }
 
