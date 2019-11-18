@@ -5,7 +5,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
-import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 import com.b3.development.b3runtime.data.local.model.useraccount.UserAccount;
 import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
@@ -13,12 +12,11 @@ import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOpti
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
 import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUseraccount;
-import com.b3.development.b3runtime.utils.AlertDialogUtil;
+import com.b3.development.b3runtime.utils.failure.FailureType;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseException;
@@ -150,7 +148,7 @@ public class BackendInteractorImpl implements BackendInteractor {
     }
 
     @Override
-    public void updateUserAccount(UserAccount userAccount, String oldValue) {
+    public void updateUserAccount(ErrorCallback errorCallback, UserAccount userAccount, String oldValue) {
 
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("userName", userAccount.userName);
@@ -165,28 +163,27 @@ public class BackendInteractorImpl implements BackendInteractor {
 
         //todo Move if-check to earlier in chain maybe
         if (oldValue != null && !oldValue.equals("")) {
+            oldValue = oldValue.toLowerCase();
             wholeMap.put("/usernames/" + oldValue, null);
         }
 
         if (userAccount.userName != null && !userAccount.userName.equals("")) {
             wholeMap.put("/user_accounts/" + userAccount.id, userMap);
-            wholeMap.put("/usernames/" + userAccount.userName, userAccount.id);
+            wholeMap.put("/usernames/" + userAccount.userName.toLowerCase(), userAccount.id);
 
             firebaseDb.updateChildren(wholeMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (!task.isSuccessful()) {
                         Log.d(TAG, "Could not update username.");
-                        try {
-                            throw task.getException();
-                        } catch (DatabaseException e) {
-
-                        } catch (Exception e) {
-                            Log.e(TAG, e.getMessage());
+                        if (task.getException() instanceof DatabaseException) {
+                            errorCallback.onErrorReceived(FailureType.PERMISSION);
                         }
                     }
                 }
             });
+        } else {
+            errorCallback.onErrorReceived(FailureType.GENERIC);
         }
     }
 

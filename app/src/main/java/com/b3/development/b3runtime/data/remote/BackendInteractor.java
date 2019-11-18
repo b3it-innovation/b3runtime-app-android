@@ -8,6 +8,7 @@ import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponse
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
 import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUseraccount;
+import com.b3.development.b3runtime.utils.failure.FailureType;
 import com.google.firebase.database.DataSnapshot;
 
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
  */
 public interface BackendInteractor {
 
-    void updateUserAccount(UserAccount userAccount, String oldValue);
+    void updateUserAccount(ErrorCallback errorCallback, UserAccount userAccount, String oldValue);
 
     void getCheckpoints(CheckpointsCallback checkpointsCallback, String trackKey);
 
@@ -65,5 +66,9 @@ public interface BackendInteractor {
         void onResultsReceived(List<BackendResult> results);
 
         void onError();
+    }
+
+    interface ErrorCallback {
+        void onErrorReceived(FailureType failureType);
     }
 }

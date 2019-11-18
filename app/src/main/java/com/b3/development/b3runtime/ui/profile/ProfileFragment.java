@@ -1,7 +1,6 @@
 package com.b3.development.b3runtime.ui.profile;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -28,6 +27,7 @@ import com.b3.development.b3runtime.base.BaseFragment;
 import com.b3.development.b3runtime.data.local.model.useraccount.UserAccount;
 import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepository;
 import com.b3.development.b3runtime.utils.AlertDialogUtil;
+import com.b3.development.b3runtime.utils.failure.FailureType;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -62,10 +62,10 @@ public class ProfileFragment extends BaseFragment {
     private static final int REQUEST_IMAGE_CAPTURE = 2;
     private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 3;
     private static final int PERMISSIONS_REQUEST_CAMERA_AND_WRITE_EXTERNAL_STORAGE = 4;
-    private static final int USERNAME_VIEW = 1;
-    private static final int FIRSTNAME_VIEW = 2;
-    private static final int LASTNAME_VIEW = 3;
-    private static final int ORGANIZATION_VIEW = 4;
+    public static final int USERNAME_VIEW = 1;
+    public static final int FIRSTNAME_VIEW = 2;
+    public static final int LASTNAME_VIEW = 3;
+    public static final int ORGANIZATION_VIEW = 4;
 
     private String profileImageFileName;
 
@@ -143,6 +143,17 @@ public class ProfileFragment extends BaseFragment {
 
         viewModel.getUserAccountLiveData().observe(getViewLifecycleOwner(), userAccount -> {
             if (userAccount != null) drawProfile(view, userAccount);
+        });
+
+        viewModel.getError().observe(getViewLifecycleOwner(), error -> {
+            if (error != null && error.getType() == FailureType.PERMISSION) {
+                AlertDialogUtil.createCustomInfoDialog(getContext(), "Invalid username",
+                        "That username is already taken").show();
+            } else if (error != null && error.getType() == FailureType.GENERIC) {
+                AlertDialogUtil.createCustomInfoDialog(getContext(), "Invalid username",
+                        "That username is invalid. Username must be between 1-20 " +
+                                "characters and can only contain A-ö and numbers.");
+            }
         });
 
         ImageView userName = view.findViewById(R.id.editIconUserName);
@@ -346,7 +357,7 @@ public class ProfileFragment extends BaseFragment {
             oldValue = textView.getText().toString();
 
             //create dialog, insert old name as placeholder
-            AlertDialogUtil.createTextInputDialogForName(this, view, oldValue, viewType).show();
+            AlertDialogUtil.createTextInputDialogForProfile(this, view, oldValue, viewType).show();
         }
     }
 
@@ -372,8 +383,9 @@ public class ProfileFragment extends BaseFragment {
                 break;
         }
         //Alert on empty username
-        if ((newValue.equals("") || newValue == null) && viewType == USERNAME_VIEW) {
-            AlertDialogUtil.createEmptyUserNameDialog(getActivity()).show();
+        if ((newValue.equals("") || newValue == null) && (viewType == USERNAME_VIEW
+                || viewType == FIRSTNAME_VIEW || viewType == LASTNAME_VIEW)) {
+            AlertDialogUtil.createEmptyValueDialog(getActivity()).show();
         } else {
             viewModel.updateUserAccount(userAccount, oldValue);
         }

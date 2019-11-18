@@ -52,7 +52,16 @@ public class UserAccountRepositoryImpl implements UserAccountRepository {
 
     @Override
     public void updateUserAccount(UserAccount userAccount, String oldValue) {
-        backendInteractor.updateUserAccount(userAccount, oldValue);
+        backendInteractor.updateUserAccount(new BackendInteractor.ErrorCallback() {
+            @Override
+            public void onErrorReceived(FailureType failureType) {
+                if (failureType == FailureType.PERMISSION) {
+                    error.setValue(new Failure(FailureType.PERMISSION, "Username must be unique"));
+                } else if (failureType == FailureType.GENERIC) {
+                    error.setValue(new Failure(FailureType.GENERIC, "Incorrect username"));
+                }
+            }
+        }, userAccount, oldValue);
     }
 
     /**

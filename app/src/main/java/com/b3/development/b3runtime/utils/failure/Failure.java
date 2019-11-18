@@ -18,4 +18,12 @@ public class Failure {
     public Failure(FailureType type) {
         this.type = type;
     }
+
+    public FailureType getType() {
+        return type;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }
