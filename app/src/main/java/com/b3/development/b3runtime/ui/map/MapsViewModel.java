@@ -17,6 +17,7 @@ import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.utils.Util;
 import com.google.android.gms.location.Geofence;
+import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ public class MapsViewModel extends BaseViewModel {
     private String trackKey;
     private String attendeeKey;
     private String resultKey;
+    private Polyline finalLine;
 
     private float trackMinLength;
     private float trackMaxLength;
@@ -59,6 +61,7 @@ public class MapsViewModel extends BaseViewModel {
 
     private boolean darkMode = false;
     private boolean satelliteView = false;
+    private boolean trackLines = false;
 
     public MapsViewModel(CheckpointRepository checkpointRepository, QuestionRepository questionRepository, ResultRepository resultRepository,
                          AttendeeRepository attendeeRepository, GeofenceManager geofenceManager, Context context) {
@@ -370,7 +373,7 @@ public class MapsViewModel extends BaseViewModel {
     public void setQuestionCount(LiveData<Integer> questionCount) {
         this.questionCount = questionCount;
     }
-
+  
     public float getTrackMinLength() {
         return trackMinLength;
     }
@@ -385,6 +388,22 @@ public class MapsViewModel extends BaseViewModel {
 
     public void setTrackMaxLength(float trackMaxLength) {
         this.trackMaxLength = trackMaxLength;
+    }
+
+    public boolean hasTrackLines() {
+        return trackLines;
+    }
+
+    public void setHasTrackLines(boolean trackLines) {
+        this.trackLines = trackLines;
+    }
+
+    public Polyline getFinalLine() {
+        return finalLine;
+    }
+
+    public void setFinalLine(Polyline finalLine) {
+        this.finalLine = finalLine;
     }
 
 }

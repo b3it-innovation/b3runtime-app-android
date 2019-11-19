@@ -76,6 +76,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setAutoCancel(true)
                 .setVibrate(new long[]{VIBRATION_INTERVAL, VIBRATION_INTERVAL, VIBRATION_INTERVAL, VIBRATION_INTERVAL, VIBRATION_INTERVAL})
+                .setTimeoutAfter(getResources().getInteger(R.integer.notificationExpirationDuration))
                 .setDefaults(Notification.DEFAULT_SOUND);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);

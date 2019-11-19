@@ -22,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.List;
 
@@ -73,6 +74,7 @@ public class MapsRenderer {
         if (allCheckpoints == null || allCheckpoints.isEmpty()) {
             return;
         }
+
         boolean nextCheckpointDrawn = false;
         // draw all checkpoints except for next checkpoint
         for (int i = 0; i < allCheckpoints.size(); i++) {
@@ -215,5 +217,21 @@ public class MapsRenderer {
         map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         //save state in viewmodel
         viewModel.setSatelliteView(true);
+    }
+
+
+    public void drawLineBetweenCheckpoints(final GoogleMap map, final MapsViewModel mapsViewModel) {
+        if (mapsViewModel.getFinalLine() != null) {
+            mapsViewModel.getFinalLine().remove();
+        }
+        PolylineOptions lines = new PolylineOptions();
+        for (Checkpoint c : mapsViewModel.getAllCheckpoints().getValue()) {
+            if (c.penalty == false) {
+                LatLng latLng = new LatLng(c.latitude, c.longitude);
+                lines.add(latLng);
+            }
+        }
+        lines.color(Color.RED).width(context.getResources().getInteger(R.integer.track_line_width));
+        mapsViewModel.setFinalLine(map.addPolyline(lines));
     }
 }
