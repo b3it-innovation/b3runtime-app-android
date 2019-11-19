@@ -243,6 +243,9 @@ public class BackendInteractorImpl implements BackendInteractor {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 BackendUseraccount backendUseraccount = dataSnapshot.getValue(BackendUseraccount.class);
+                if(backendUseraccount != null) {
+                    backendUseraccount.setKey(dataSnapshot.getKey());
+                }
                 userAccountCallback.onUserAccountReceived(backendUseraccount);
             }
 

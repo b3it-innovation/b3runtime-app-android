@@ -176,6 +176,39 @@ public class QuestionDaoTest {
         });
     }
 
+    @Test
+    public void removeAllQuestions(){
+        Log.i(TAG, "Testing method: " + name.getMethodName());
+        Question question1 = insertOneQuestion("1", false, "Java",
+                "A", "test question");
+        Question question2 = insertOneQuestion("2", false, "Java",
+                "B", "test question2");
+        questionDao.removeAllQuestions();
+        LiveData<List<Question>> liveData = questionDao.getAll();
+        liveData.observeForever(new Observer<List<Question>>() {
+            @Override
+            public void onChanged(List<Question> questions) {
+                assertTrue(questions.size() == 0);
+            }
+        });
+    }
+
+    @Test
+    public void getCount(){
+        Log.i(TAG, "Testing method: " + name.getMethodName());
+        Question question1 = insertOneQuestion("1", false, "Java",
+                "A", "test question");
+        Question question2 = insertOneQuestion("2", false, "Java",
+                "B", "test question2");
+        LiveData<Integer> liveData = questionDao.getCount();
+        liveData.observeForever(new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                assertTrue(integer == 2);
+            }
+        });
+    }
+
     private Question insertOneQuestion(String id, Boolean isAnswered, String categoryKey,
                                        String correctAnswer, String question) {
         Question q = new Question();

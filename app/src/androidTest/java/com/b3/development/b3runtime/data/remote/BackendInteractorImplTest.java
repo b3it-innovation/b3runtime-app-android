@@ -7,11 +7,14 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
+import com.b3.development.b3runtime.data.local.model.useraccount.UserAccount;
 import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
+import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUseraccount;
+import com.b3.development.b3runtime.utils.failure.FailureType;
 import com.firebase.client.Firebase;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,6 +30,7 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +66,8 @@ public class BackendInteractorImplTest {
         resultsTestRef = firebaseDatabase.getReference("resultsTest");
         questionsTestRef = firebaseDatabase.getReference("questionsTest");
         userAccountsTestRef = firebaseDatabase.getReference("userAccountsTest");
-        wholeDBTestRef = firebaseDatabase.getReference();
+        wholeDBTestRef = firebaseDatabase.getReference("wholeDBTest");
+      
         backendInteractor = new BackendInteractorImpl(questionsTestRef, competitionsTestRef, tracksCheckpointsTestRef,
                 attendeesTestRef, resultsTestRef, userAccountsTestRef, wholeDBTestRef);
     }
@@ -94,7 +99,6 @@ public class BackendInteractorImplTest {
                 // remove saved test data
                 attendeesTestRef.setValue(null);
                 Log.d(testName.getMethodName(), "test completed!");
-
             }
 
             @Override
@@ -103,21 +107,12 @@ public class BackendInteractorImplTest {
             }
         });
         // make sure that onDataChange gets called
-        Thread.sleep(1000);
+        Thread.sleep(500);
     }
 
     @Test
     public void saveResult() throws InterruptedException {
-        BackendResult backendResult = new BackendResult();
-        Attendee attendee = new Attendee();
-        attendee.id = "testAttendee";
-        backendResult.setAttendee(attendee);
-        backendResult.setTotalTime(1000L);
-        Checkpoint checkpoint = new Checkpoint();
-        checkpoint.id = "1";
-        List<Checkpoint> results = new ArrayList<>();
-        results.add(checkpoint);
-        backendResult.setResults(results);
+        BackendResult backendResult = createBackendResult();
         // save result to test database
         String key = backendInteractor.saveResult(backendResult, null);
         // get saved result and test it
@@ -129,11 +124,10 @@ public class BackendInteractorImplTest {
                 assertTrue(dataSnapshot.child("attendee").child("id").getValue().equals(backendResult.getAttendee().id));
                 assertTrue((dataSnapshot.child("totalTime").getValue()).equals(backendResult.getTotalTime()));
                 Map resultMap = ((Map) (dataSnapshot.child("results").child("0").getValue()));
-                assertTrue((resultMap.get("id").equals(checkpoint.id)));
+                assertTrue((resultMap.get("id").equals(backendResult.getResults().get(0).id)));
                 // remove saved test data
                 resultsTestRef.setValue(null);
                 Log.d(testName.getMethodName(), "test completed!");
-
             }
 
             @Override
@@ -142,7 +136,74 @@ public class BackendInteractorImplTest {
             }
         });
         // make sure that onDataChange gets called
-        Thread.sleep(1000);
+        Thread.sleep(500);
+    }
+
+    @Test
+    public void saveUserAccount() throws InterruptedException {
+        final String key = "testUserId1";
+        backendInteractor.saveUserAccount(key);
+        Thread.sleep(300);
+        Query query = userAccountsTestRef.child(key);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                assertNotNull(dataSnapshot);
+                assertTrue(dataSnapshot.getKey().equals(key));
+                assertTrue(dataSnapshot.child("lastName").getValue().equals(""));
+                userAccountsTestRef.setValue(null);
+                Log.d(testName.getMethodName(), "test completed!");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(testName.getMethodName(), "canceled: " + databaseError.getMessage());
+            }
+        });
+        // make sure that onDataChange gets called
+        Thread.sleep(500);
+    }
+
+    @Test
+    public void updateUserAccount() throws InterruptedException {
+        final String key = "testUpdateUserAccount";
+        backendInteractor.saveUserAccount(key);
+        UserAccount userAccount = new UserAccount();
+        userAccount.id = key;
+        userAccount.firstName = "Sven";
+        userAccount.lastName = "Test";
+        userAccount.userName = "User Name";
+        userAccount.organization = "Organization";
+        backendInteractor.updateUserAccount(new BackendInteractor.ErrorCallback() {
+            @Override
+            public void onErrorReceived(FailureType failureType) {
+            }
+        }, userAccount, null);
+
+        Query query = wholeDBTestRef;
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                HashMap<String, String> map1 = (HashMap) dataSnapshot.child("usernames").getValue();
+                assertTrue(map1.containsKey(userAccount.userName.toLowerCase()));
+                assertTrue(map1.containsValue(key));
+                UserAccount ua = dataSnapshot.child("user_accounts").child(key).getValue(UserAccount.class);
+                assertTrue(ua.firstName.equals(userAccount.firstName));
+                assertTrue(ua.lastName.equals(userAccount.lastName));
+                assertTrue(ua.organization.equals(userAccount.organization));
+                assertTrue(ua.userName.equals(userAccount.userName));
+                userAccountsTestRef.setValue(null);
+                wholeDBTestRef.setValue(null);
+                Log.d(testName.getMethodName(), "test completed!");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+        // make sure that onDataChange gets called
+        Thread.sleep(500);
     }
 
     @Test
@@ -179,7 +240,64 @@ public class BackendInteractorImplTest {
         }, key);
 
         // make sure that callback gets called
-        Thread.sleep(1000);
+        Thread.sleep(500);
+    }
+
+    @Test
+    public void getUserAccountById() throws InterruptedException {
+        final String key = "testUserId";
+        backendInteractor.saveUserAccount(key);
+        backendInteractor.getUserAccountById(new BackendInteractor.UserAccountCallback() {
+            @Override
+            public void onUserAccountReceived(BackendUseraccount backendUseraccount) {
+                // must check if it is null because this will be triggered when database is erased
+                if (backendUseraccount != null) {
+                    assertTrue(backendUseraccount.getKey().equals(key));
+                    assertTrue(backendUseraccount.getLastName().equals(""));
+                    userAccountsTestRef.child(key).setValue(null);
+                    Log.d(testName.getMethodName(), "test completed!");
+                }
+            }
+
+            @Override
+            public void onError() {
+                Log.d(testName.getMethodName(), "An error occurred");
+            }
+        }, key);
+        // make sure that onDataChange gets called
+        Thread.sleep(500);
+    }
+
+    @Test
+    public void getResultsByUserAccount() throws InterruptedException {
+        final String userAccountKey = "testUserAccountKey";
+        BackendResult br1 = createBackendResult();
+        br1.getAttendee().userAccountKey = userAccountKey;
+        BackendResult br2 = createBackendResult();
+        br2.getAttendee().userAccountKey = userAccountKey;
+        backendInteractor.saveResult(br1, null);
+        backendInteractor.saveResult(br2, null);
+        backendInteractor.getResultsByUserAccount(new BackendInteractor.ResultCallback() {
+            @Override
+            public void onResultsReceived(List<BackendResult> results) {
+                assertNotNull(results);
+                assertTrue(results.size() == 2);
+                assertTrue(results.get(0).getAttendee().id.equals(br1.getAttendee().id));
+                assertTrue(results.get(0).getAttendee().userAccountKey.equals(userAccountKey));
+                assertTrue(results.get(1).getAttendee().id.equals(br2.getAttendee().id));
+                assertTrue(results.get(1).getAttendee().userAccountKey.equals(userAccountKey));
+                resultsTestRef.setValue(null);
+                Log.d(testName.getMethodName(), "test completed!");
+            }
+
+            @Override
+            public void onError() {
+                Log.d(testName.getMethodName(), "An error occurred");
+            }
+        }, userAccountKey);
+
+        // make sure that callback get called
+        Thread.sleep(500);
     }
 
     @Test
@@ -190,6 +308,7 @@ public class BackendInteractorImplTest {
         questionsTestRef.child(key1).setValue(question1);
         String key2 = questionsTestRef.push().getKey();
         questionsTestRef.child(key2).setValue(question2);
+        Thread.sleep(200);
         List<String> keys = new ArrayList<>();
         keys.add(key1);
         keys.add(key2);
@@ -248,5 +367,20 @@ public class BackendInteractorImplTest {
         option.setD("DDD");
         question.setOptions(option);
         return question;
+    }
+
+    private BackendResult createBackendResult() {
+        BackendResult backendResult = new BackendResult();
+        Attendee attendee = new Attendee();
+        attendee.id = "testAttendee";
+        attendee.userAccountKey = "testUserAccountKey";
+        backendResult.setAttendee(attendee);
+        backendResult.setTotalTime(1000L);
+        Checkpoint checkpoint = new Checkpoint();
+        checkpoint.id = "1";
+        List<Checkpoint> results = new ArrayList<>();
+        results.add(checkpoint);
+        backendResult.setResults(results);
+        return backendResult;
     }
 }
