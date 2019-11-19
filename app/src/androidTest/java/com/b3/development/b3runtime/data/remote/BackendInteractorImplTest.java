@@ -43,7 +43,7 @@ public class BackendInteractorImplTest {
     @Rule
     public final TestName testName = new TestName();
 
-    BackendInteractorImpl backendInteractor = null;
+    private BackendInteractorImpl backendInteractor = null;
     private FirebaseDatabase firebaseDatabase = null;
     private DatabaseReference attendeesTestRef = null;
     private DatabaseReference competitionsTestRef = null;
@@ -67,6 +67,7 @@ public class BackendInteractorImplTest {
         questionsTestRef = firebaseDatabase.getReference("questionsTest");
         userAccountsTestRef = firebaseDatabase.getReference("userAccountsTest");
         wholeDBTestRef = firebaseDatabase.getReference("wholeDBTest");
+      
         backendInteractor = new BackendInteractorImpl(questionsTestRef, competitionsTestRef, tracksCheckpointsTestRef,
                 attendeesTestRef, resultsTestRef, userAccountsTestRef, wholeDBTestRef);
     }

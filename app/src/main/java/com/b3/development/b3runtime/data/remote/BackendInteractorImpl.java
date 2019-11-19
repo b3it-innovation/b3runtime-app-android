@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * An implementation of the {@link BackendInteractor} interface
@@ -164,7 +163,7 @@ public class BackendInteractorImpl implements BackendInteractor {
         userMap.put("lastName", userAccount.lastName);
 
         Map<String, Object> wholeMap = new HashMap<>();
-      
+
         if (oldValue != null && !oldValue.equals("")) {
             oldValue = oldValue.toLowerCase();
             wholeMap.put("/usernames/" + oldValue, null);

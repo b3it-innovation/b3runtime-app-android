@@ -66,8 +66,7 @@ public class ResultsFragment extends BaseFragment {
         adapter.setOnItemClickListener(v -> {
             TextView trackName = (TextView) v;
             for (BackendResult br : adapter.getResults()) {
-                if (trackName.getText().equals(br.getAttendee().trackName)
-                        && br.getTotalTime() != null) {
+                if (trackName.getText().equals(br.getAttendee().trackName)) {
                     showLeaderBoardFragment(br.getAttendee().trackKey);
                     break;
                 }

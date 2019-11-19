@@ -170,8 +170,8 @@ public class QuestionDaoTest {
             @Override
             public void onChanged(List<Question> questions) {
                 assertTrue(questions.size() == 2);
-                assertTrue(questions.get(0).isAnswered == true);
-                assertTrue(questions.get(1).isAnswered == true);
+                assertTrue(questions.get(0).isAnswered);
+                assertTrue(questions.get(1).isAnswered);
             }
         });
     }

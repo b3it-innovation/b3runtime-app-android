@@ -24,4 +24,10 @@
         android:orderInCategory="400"
         android:title="@string/menu_main_toggle_dark_mode"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_draw_lines"
+        android:orderInCategory="500"
+        android:title="@string/menu_main_toggle_lines"
+        app:showAsAction="never" />
 </menu>

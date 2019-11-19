@@ -142,7 +142,9 @@ public class ProfileFragment extends BaseFragment {
         });
 
         viewModel.getUserAccountLiveData().observe(getViewLifecycleOwner(), userAccount -> {
-            if (userAccount != null) drawProfile(view, userAccount);
+            if (userAccount != null) {
+                drawProfile(view, userAccount);
+            }
         });
 
         viewModel.getError().observe(getViewLifecycleOwner(), error -> {
@@ -383,7 +385,7 @@ public class ProfileFragment extends BaseFragment {
                 break;
         }
         //Alert on empty username
-        if ((newValue.equals("") || newValue == null) && (viewType == USERNAME_VIEW
+        if ((newValue == null || newValue.equals("")) && (viewType == USERNAME_VIEW
                 || viewType == FIRSTNAME_VIEW || viewType == LASTNAME_VIEW)) {
             AlertDialogUtil.createEmptyValueDialog(getActivity()).show();
         } else {

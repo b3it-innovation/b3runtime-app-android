@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,7 +28,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
-import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
@@ -40,16 +40,17 @@ import com.b3.development.b3runtime.ui.home.HomeActivity;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.PenaltyFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
-import com.b3.development.b3runtime.utils.AlertDialogUtil;
 import com.b3.development.b3runtime.ui.question.ResultDialogFragment;
+import com.b3.development.b3runtime.utils.AlertDialogUtil;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
 import com.b3.development.b3runtime.utils.Util;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.Locale;
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -124,23 +125,8 @@ public class MapsActivity extends BaseActivity
                         get(AttendeeRepository.class), get(GeofenceManager.class), getApplicationContext()))
                 .get(MapsViewModel.class);
 
-        if(viewModel.getTrackKey() == null || !viewModel.getTrackKey().equals(trackKey)){
-            viewModel.setTrackKey(trackKey);
-            viewModel.fetchAllCheckpoints();
-        }
-
-        if(viewModel.getAttendeeKey() == null || !viewModel.getAttendeeKey().equals(attendeeKey)){
-            viewModel.setAttendeeKey(attendeeKey);
-        }
-
-
-        // initializes attendee data in ViewModel
-        viewModel.initAttendee();
-        viewModel.getCurrentAttendee().observe(this, attendee -> {
-        });
-
         // if the intent is come from HomeActivity remove all checkpoints to redraw them
-        final Boolean doReset = intent.getBooleanExtra("doReset", false);
+        final boolean doReset = intent.getBooleanExtra("doReset", false);
         if (doReset) {
             viewModel.removeAllCheckpoints();
             viewModel.removeAllQuestions();
@@ -154,6 +140,21 @@ public class MapsActivity extends BaseActivity
                 viewModel.setResultKey(prefs.getString("resultKey", ""));
             }
         }
+
+        if (viewModel.getTrackKey() == null || !viewModel.getTrackKey().equals(trackKey)) {
+            viewModel.setTrackKey(trackKey);
+            viewModel.fetchAllCheckpoints();
+        }
+
+        if (viewModel.getAttendeeKey() == null || !viewModel.getAttendeeKey().equals(attendeeKey)) {
+            viewModel.setAttendeeKey(attendeeKey);
+        }
+
+
+        // initializes attendee data in ViewModel
+        viewModel.initAttendee();
+        viewModel.getCurrentAttendee().observe(this, attendee -> {
+        });
 
         //observe for errors and inform user if an error occurs
         viewModel.errors.observe(this, error -> {
@@ -245,8 +246,21 @@ public class MapsActivity extends BaseActivity
             case R.id.action_dark_mode:
                 toggleDarkMode();
                 return true;
+            case R.id.action_draw_lines:
+                toggleTrackLines();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void toggleTrackLines() {
+        if (viewModel.hasTrackLines()) {
+            viewModel.getFinalLine().remove();
+            viewModel.setHasTrackLines(false);
+        } else {
+            mapsRenderer.drawLineBetweenCheckpoints(map, viewModel);
+            viewModel.setHasTrackLines(true);
         }
     }
 
@@ -420,6 +434,9 @@ public class MapsActivity extends BaseActivity
                     checkpoints -> {
                         if (!checkpoints.isEmpty()) {
                             mapsRenderer.resetMap(map);
+                            if (viewModel.hasTrackLines()) {
+                                mapsRenderer.drawLineBetweenCheckpoints(map, viewModel);
+                            }
                             // gets first and last final checkpoint
                             firstCheckpointID = checkpoints.get(0).id;
                             finalCheckpointID = checkpoints.get(checkpoints.size() - 1).id;
@@ -427,23 +444,35 @@ public class MapsActivity extends BaseActivity
                             Log.d(TAG, "Final Checkpoint ID: " + finalCheckpointID);
                             // draw all checkpoints on the map
                             mapsRenderer.drawAllCheckpoints(checkpoints, viewModel, map);
+
+                            viewModel.calcTrackLength();
+                            TextView toolbarText = findViewById(R.id.toolbarTextView);
+                            toolbarText.setText(String.format("Track min: %sm, max: %sm",
+                                    String.format(Locale.ENGLISH, "%.0f", viewModel.getTrackMinLength()),
+                                    String.format(Locale.ENGLISH, "%.0f", viewModel.getTrackMaxLength())));
                         }
                         // save result when allCheckpoints change
                         viewModel.saveResult();
 
                         if (viewModel.getQuestionKeys() == null) {
                             viewModel.setQuestionKeys(viewModel.getQuestionKeysFromCheckpoints());
-                            viewModel.fetchAllQuestions();
-                        } else if(!viewModel.getQuestionKeys().equals(viewModel.getQuestionKeysFromCheckpoints())){
-                            viewModel.setQuestionKeys(viewModel.getQuestionKeysFromCheckpoints());
+                            viewModel.getQuestionCount().observe(this, count -> {
+                                if (count == 0 && viewModel.getQuestionKeys() != null && !viewModel.getQuestionKeys().isEmpty()) {
+                                    viewModel.fetchAllQuestions();
+                                    viewModel.getQuestionCount().removeObservers(this);
+                                }
+                            });
+                        } else if (!viewModel.getQuestionKeys().equals(viewModel.getQuestionKeysFromCheckpoints())) {
                             viewModel.removeAllQuestions();
+                            viewModel.setQuestionKeys(viewModel.getQuestionKeysFromCheckpoints());
+                            viewModel.getQuestionCount().observe(this, count -> {
+                                if (count == 0 && viewModel.getQuestionKeys() != null && !viewModel.getQuestionKeys().isEmpty()) {
+                                    viewModel.fetchAllQuestions();
+                                    viewModel.getQuestionCount().removeObservers(this);
+                                }
+                            });
                         }
                     });
-            viewModel.getQuestionCount().observe(this, count -> {
-                if(count <= 0 && viewModel.getQuestionKeys() != null && !viewModel.getQuestionKeys().isEmpty()){
-                    viewModel.fetchAllQuestions();
-                }
-            });
         }
     }
 
