@@ -25,7 +25,7 @@ public class HomeViewModel extends BaseViewModel {
             if (checkpoints == null || checkpoints.isEmpty()) {
                 return false;
             } else {
-                return Boolean.valueOf(checkpoints.get(checkpoints.size() - 1).completedTime == null);
+                return checkpoints.get(checkpoints.size() - 1).completedTime == null;
             }
         });
     }

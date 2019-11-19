@@ -51,8 +51,4 @@ public class BackendResult implements Comparable<BackendResult> {
         return (int) (this.totalTime - o.getTotalTime());
     }
 
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        return super.equals(obj);
-    }
 }

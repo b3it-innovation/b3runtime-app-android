@@ -39,7 +39,7 @@ public class BackendInteractorImplTest {
     @Rule
     public final TestName testName = new TestName();
 
-    BackendInteractorImpl backendInteractor = null;
+    private BackendInteractorImpl backendInteractor = null;
     private FirebaseDatabase firebaseDatabase = null;
     private DatabaseReference attendeesTestRef = null;
     private DatabaseReference competitionsTestRef = null;
@@ -47,6 +47,7 @@ public class BackendInteractorImplTest {
     private DatabaseReference resultsTestRef = null;
     private DatabaseReference questionsTestRef = null;
     private DatabaseReference userAccountsTestRef = null;
+    private DatabaseReference wholeDBTestRef = null;
 
 
     @Before
@@ -61,8 +62,9 @@ public class BackendInteractorImplTest {
         resultsTestRef = firebaseDatabase.getReference("resultsTest");
         questionsTestRef = firebaseDatabase.getReference("questionsTest");
         userAccountsTestRef = firebaseDatabase.getReference("userAccountsTest");
+        wholeDBTestRef = firebaseDatabase.getReference();
         backendInteractor = new BackendInteractorImpl(questionsTestRef, competitionsTestRef, tracksCheckpointsTestRef,
-                attendeesTestRef, resultsTestRef, userAccountsTestRef);
+                attendeesTestRef, resultsTestRef, userAccountsTestRef, wholeDBTestRef);
     }
 
     @After
@@ -125,7 +127,7 @@ public class BackendInteractorImplTest {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 assertNotNull(dataSnapshot);
                 assertTrue(dataSnapshot.child("attendee").child("id").getValue().equals(backendResult.getAttendee().id));
-                assertTrue(((Long) dataSnapshot.child("totalTime").getValue()).equals(backendResult.getTotalTime()));
+                assertTrue((dataSnapshot.child("totalTime").getValue()).equals(backendResult.getTotalTime()));
                 Map resultMap = ((Map) (dataSnapshot.child("results").child("0").getValue()));
                 assertTrue((resultMap.get("id").equals(checkpoint.id)));
                 // remove saved test data

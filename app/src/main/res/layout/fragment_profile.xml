@@ -41,7 +41,7 @@
             android:layout_marginEnd="10dp"
             android:layout_gravity="center_vertical"
             android:layout_weight="0"
-            android:text="Username: "
+            android:text="@string/username_label"
             android:textSize="12sp" />
 
         <TextView
@@ -56,6 +56,7 @@
 
         <ImageView
             android:id="@+id/editIconUserName"
+            android:contentDescription="@string/edit_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -76,7 +77,7 @@
             android:layout_marginEnd="10dp"
             android:layout_gravity="center_vertical"
             android:layout_weight="0"
-            android:text="First name: "
+            android:text="@string/first_name_label"
             android:textSize="12sp" />
 
         <TextView
@@ -91,6 +92,7 @@
 
         <ImageView
             android:id="@+id/editIconFirstName"
+            android:contentDescription="@string/edit_first_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/pen_edit"
@@ -111,7 +113,7 @@
             android:layout_marginEnd="10dp"
             android:layout_gravity="center_vertical"
             android:layout_weight="0"
-            android:text="Last name: "
+            android:text="@string/last_name_label"
             android:textSize="12sp" />
 
         <TextView
@@ -126,6 +128,7 @@
 
         <ImageView
             android:id="@+id/editIconLastName"
+            android:contentDescription="@string/edit_last_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/pen_edit"
@@ -146,7 +149,7 @@
             android:layout_marginEnd="10dp"
             android:layout_gravity="center_vertical"
             android:layout_weight="0"
-            android:text="Organization: "
+            android:text="@string/organization_label"
             android:textSize="12sp" />
 
         <TextView
@@ -161,6 +164,7 @@
 
         <ImageView
             android:id="@+id/editIconOrganization"
+            android:contentDescription="@string/edit_organization"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/pen_edit"
@@ -187,6 +191,7 @@
         android:layout_marginTop="30dp"
         android:layout_marginRight="10dp"
         android:layout_weight="0"
+        android:visibility="gone"
         android:text="@string/reset_password_button_text" />
 
     <Button

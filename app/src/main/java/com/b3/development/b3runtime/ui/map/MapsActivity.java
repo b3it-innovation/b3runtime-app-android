@@ -122,6 +122,22 @@ public class MapsActivity extends BaseActivity
                         get(AttendeeRepository.class), get(GeofenceManager.class), getApplicationContext()))
                 .get(MapsViewModel.class);
 
+        // if the intent is come from HomeActivity remove all checkpoints to redraw them
+        final boolean doReset = intent.getBooleanExtra("doReset", false);
+        if (doReset) {
+            viewModel.removeAllCheckpoints();
+            viewModel.removeAllQuestions();
+            // reset extra to avoid to trigger reset on screen rotation
+            intent.putExtra("doReset", false);
+        }
+        // if onCreate() is triggered by other cases
+        else {
+            // sets resultKey in viewModel
+            if (viewModel.getResultKey() == null) {
+                viewModel.setResultKey(prefs.getString("resultKey", ""));
+            }
+        }
+
         if (viewModel.getTrackKey() == null || !viewModel.getTrackKey().equals(trackKey)) {
             viewModel.setTrackKey(trackKey);
             viewModel.fetchAllCheckpoints();
@@ -136,22 +152,6 @@ public class MapsActivity extends BaseActivity
         viewModel.initAttendee();
         viewModel.getCurrentAttendee().observe(this, attendee -> {
         });
-
-        // if the intent is come from HomeActivity remove all checkpoints to redraw them
-        final Boolean doReset = intent.getBooleanExtra("doReset", false);
-        if (doReset) {
-            viewModel.removeAllCheckpoints();
-            viewModel.removeAllQuestions();
-            // reset extra to avoid to trigger reset on screen rotation
-            intent.putExtra("doReset", false);
-        }
-        // if onCreate() is triggered by other cases
-        else {
-            // sets resultKey in viewModel
-            if (viewModel.getResultKey() == null) {
-                viewModel.setResultKey(prefs.getString("resultKey", ""));
-            }
-        }
 
         //observe for errors and inform user if an error occurs
         viewModel.errors.observe(this, error -> {
@@ -447,17 +447,23 @@ public class MapsActivity extends BaseActivity
 
                         if (viewModel.getQuestionKeys() == null) {
                             viewModel.setQuestionKeys(viewModel.getQuestionKeysFromCheckpoints());
-                            viewModel.fetchAllQuestions();
+                            viewModel.getQuestionCount().observe(this, count -> {
+                                if (count == 0 && viewModel.getQuestionKeys() != null && !viewModel.getQuestionKeys().isEmpty()) {
+                                    viewModel.fetchAllQuestions();
+                                    viewModel.getQuestionCount().removeObservers(this);
+                                }
+                            });
                         } else if (!viewModel.getQuestionKeys().equals(viewModel.getQuestionKeysFromCheckpoints())) {
-                            viewModel.setQuestionKeys(viewModel.getQuestionKeysFromCheckpoints());
                             viewModel.removeAllQuestions();
+                            viewModel.setQuestionKeys(viewModel.getQuestionKeysFromCheckpoints());
+                            viewModel.getQuestionCount().observe(this, count -> {
+                                if (count == 0 && viewModel.getQuestionKeys() != null && !viewModel.getQuestionKeys().isEmpty()) {
+                                    viewModel.fetchAllQuestions();
+                                    viewModel.getQuestionCount().removeObservers(this);
+                                }
+                            });
                         }
                     });
-            viewModel.getQuestionCount().observe(this, count -> {
-                if (count <= 0 && viewModel.getQuestionKeys() != null && !viewModel.getQuestionKeys().isEmpty()) {
-                    viewModel.fetchAllQuestions();
-                }
-            });
         }
     }
 
