@@ -243,8 +243,21 @@ public class MapsActivity extends BaseActivity
             case R.id.action_dark_mode:
                 toggleDarkMode();
                 return true;
+            case R.id.action_draw_lines:
+                toggleTrackLines();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void toggleTrackLines() {
+        if (viewModel.hasTrackLines()) {
+            viewModel.getFinalLine().remove();
+            viewModel.setHasTrackLines(false);
+        } else {
+            mapsRenderer.drawLineBetweenCheckpoints(map, viewModel);
+            viewModel.setHasTrackLines(true);
         }
     }
 
@@ -418,6 +431,9 @@ public class MapsActivity extends BaseActivity
                     checkpoints -> {
                         if (!checkpoints.isEmpty()) {
                             mapsRenderer.resetMap(map);
+                            if (viewModel.hasTrackLines()) {
+                                mapsRenderer.drawLineBetweenCheckpoints(map, viewModel);
+                            }
                             // gets first and last final checkpoint
                             firstCheckpointID = checkpoints.get(0).id;
                             finalCheckpointID = checkpoints.get(checkpoints.size() - 1).id;

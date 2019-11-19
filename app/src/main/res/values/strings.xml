@@ -51,6 +51,7 @@
     <string name="menu_main_sound_on">Sound on</string>
     <string name="menu_main_toggle_satellite">Toggle satellite view</string>
     <string name="menu_main_toggle_dark_mode">Toggle dark mode</string>
+    <string name="menu_main_toggle_lines">Toggle track lines</string>
     <string name="track_unfinished">Track unfinished</string>
     <string name="continue_track_button_text">Continue track</string>
     <string name="results">Results</string>
@@ -88,5 +89,5 @@
     <string name="profile_image_file_name">avatar.jpg</string>
     <string name="external_storage_image_path">/Pictures/b3runtime</string>
     <string name="image_file_date_format">yyyyMMdd_HHmmss</string>
-
+    
 </resources>
