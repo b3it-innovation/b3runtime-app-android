@@ -12,7 +12,6 @@ import com.b3.development.b3runtime.data.remote.BackendInteractor;
 import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUseraccount;
 import com.b3.development.b3runtime.utils.failure.Failure;
 import com.b3.development.b3runtime.utils.failure.FailureType;
-import com.google.firebase.auth.FirebaseAuth;
 
 public class UserAccountRepositoryImpl implements UserAccountRepository {
 
@@ -81,7 +80,7 @@ public class UserAccountRepositoryImpl implements UserAccountRepository {
                 }
                 Log.d(TAG, "USERACCOUNT RECEIVED FROM BACKEND");
                 UserAccount userAccount = new UserAccount();
-                userAccount.id = FirebaseAuth.getInstance().getUid();
+                userAccount.id = backendUseraccount.getKey();
                 if (backendUseraccount.getUserName() == null) {
                     userAccount.userName = "";
                 } else {
