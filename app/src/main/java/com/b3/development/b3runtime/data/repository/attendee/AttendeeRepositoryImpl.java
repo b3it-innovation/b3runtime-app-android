@@ -64,7 +64,7 @@ public class AttendeeRepositoryImpl implements AttendeeRepository {
     }
 
     // converts Attendee to BackendAttendee except for id
-    public BackendAttendee convert(Attendee attendee) {
+    private BackendAttendee convert(Attendee attendee) {
         BackendAttendee backendAttendee = new BackendAttendee();
         backendAttendee.setName(attendee.name);
         backendAttendee.setUserAccountKey(attendee.userAccountKey);

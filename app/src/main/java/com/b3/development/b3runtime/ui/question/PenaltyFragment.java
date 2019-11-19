@@ -81,7 +81,6 @@ public class PenaltyFragment extends BaseDialogFragment {
         confirm = view.findViewById(R.id.confirmResult);
 
         confirm.setOnClickListener(v -> {
-            //todo implement extra route
             Log.d(TAG, "UPDATE PIN CALLED IN RESPONSE FRAGMENT");
             viewModel.updateCheckpointCompleted();
             viewModel.setResponseOnScreen(false);

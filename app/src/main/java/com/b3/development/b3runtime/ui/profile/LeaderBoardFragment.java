@@ -64,8 +64,8 @@ public class LeaderBoardFragment extends BaseFragment {
             if (results != null && !results.isEmpty()) {
                 trackName.setText(results.get(0).getAttendee().trackName);
                 adapter.setResults(results);
-                viewModel.showLoading(false);
             }
+            viewModel.showLoading(false);
         });
     }
 
