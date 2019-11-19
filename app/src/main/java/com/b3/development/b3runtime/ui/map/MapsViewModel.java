@@ -199,7 +199,7 @@ public class MapsViewModel extends BaseViewModel {
         trackMaxLength = 0;
         trackMinLength = 0;
 
-        for (int checkpointIndex = 0; checkpointIndex < checkpoints.size() - 2; checkpointIndex++) {
+        for (int checkpointIndex = 0; checkpointIndex < checkpoints.size() - 1; checkpointIndex++) {
             if (checkpoints.get(checkpointIndex).penalty) {
                 //if at penalty checkpoint
                 Location currentLoc = new Location("");
