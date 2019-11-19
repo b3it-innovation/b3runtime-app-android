@@ -113,7 +113,7 @@ public class MapsRenderer {
 
     private void setNonCompletedIconOnMarker(final Marker marker) {
         marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.redcheckpointflag));
-        marker.setAnchor(0.2F,0.9F);
+        marker.setAnchor(0.2F, 0.9F);
     }
 
     private void drawGeofenceCircleAroundCheckpoint(final GoogleMap map, final Checkpoint checkpoint) {

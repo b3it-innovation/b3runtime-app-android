@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,7 +28,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseActivity;
-import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
@@ -40,16 +40,17 @@ import com.b3.development.b3runtime.ui.home.HomeActivity;
 import com.b3.development.b3runtime.ui.question.CheckinFragment;
 import com.b3.development.b3runtime.ui.question.PenaltyFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
-import com.b3.development.b3runtime.utils.AlertDialogUtil;
 import com.b3.development.b3runtime.ui.question.ResultDialogFragment;
+import com.b3.development.b3runtime.utils.AlertDialogUtil;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
 import com.b3.development.b3runtime.utils.Util;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.Locale;
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -124,12 +125,12 @@ public class MapsActivity extends BaseActivity
                         get(AttendeeRepository.class), get(GeofenceManager.class), getApplicationContext()))
                 .get(MapsViewModel.class);
 
-        if(viewModel.getTrackKey() == null || !viewModel.getTrackKey().equals(trackKey)){
+        if (viewModel.getTrackKey() == null || !viewModel.getTrackKey().equals(trackKey)) {
             viewModel.setTrackKey(trackKey);
             viewModel.fetchAllCheckpoints();
         }
 
-        if(viewModel.getAttendeeKey() == null || !viewModel.getAttendeeKey().equals(attendeeKey)){
+        if (viewModel.getAttendeeKey() == null || !viewModel.getAttendeeKey().equals(attendeeKey)) {
             viewModel.setAttendeeKey(attendeeKey);
         }
 
@@ -427,6 +428,12 @@ public class MapsActivity extends BaseActivity
                             Log.d(TAG, "Final Checkpoint ID: " + finalCheckpointID);
                             // draw all checkpoints on the map
                             mapsRenderer.drawAllCheckpoints(checkpoints, viewModel, map);
+
+                            viewModel.calcTrackLength();
+                            TextView toolbarText = findViewById(R.id.toolbarTextView);
+                            toolbarText.setText(String.format("Track min: %sm, max: %sm",
+                                    String.format(Locale.ENGLISH, "%.0f", viewModel.getTrackMinLength()),
+                                    String.format(Locale.ENGLISH, "%.0f", viewModel.getTrackMaxLength())));
                         }
                         // save result when allCheckpoints change
                         viewModel.saveResult();
@@ -434,13 +441,13 @@ public class MapsActivity extends BaseActivity
                         if (viewModel.getQuestionKeys() == null) {
                             viewModel.setQuestionKeys(viewModel.getQuestionKeysFromCheckpoints());
                             viewModel.fetchAllQuestions();
-                        } else if(!viewModel.getQuestionKeys().equals(viewModel.getQuestionKeysFromCheckpoints())){
+                        } else if (!viewModel.getQuestionKeys().equals(viewModel.getQuestionKeysFromCheckpoints())) {
                             viewModel.setQuestionKeys(viewModel.getQuestionKeysFromCheckpoints());
                             viewModel.removeAllQuestions();
                         }
                     });
             viewModel.getQuestionCount().observe(this, count -> {
-                if(count <= 0 && viewModel.getQuestionKeys() != null && !viewModel.getQuestionKeys().isEmpty()){
+                if (count <= 0 && viewModel.getQuestionKeys() != null && !viewModel.getQuestionKeys().isEmpty()) {
                     viewModel.fetchAllQuestions();
                 }
             });
