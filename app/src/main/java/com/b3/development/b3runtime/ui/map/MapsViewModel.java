@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.map;
 
 import android.content.Context;
+import android.location.Location;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -38,6 +39,9 @@ public class MapsViewModel extends BaseViewModel {
     private String attendeeKey;
     private String resultKey;
     private Polyline finalLine;
+
+    private float trackMinLength;
+    private float trackMaxLength;
 
     private CheckpointRepository checkpointRepository;
     private QuestionRepository questionRepository;
@@ -156,6 +160,7 @@ public class MapsViewModel extends BaseViewModel {
         updateCheckpointCompleted();
     }
 
+
     //sets all checkpoint to not completed
     public void resetCheckpoints() {
         checkpointRepository.resetCheckpointsCompleted();
@@ -190,6 +195,55 @@ public class MapsViewModel extends BaseViewModel {
             }
         }
         return questionKeys;
+    }
+
+    public void calcTrackLength() {
+        List<Checkpoint> checkpoints = allCheckpoints.getValue();
+        trackMaxLength = 0;
+        trackMinLength = 0;
+
+        for (int checkpointIndex = 0; checkpointIndex < checkpoints.size() - 1; checkpointIndex++) {
+            if (checkpoints.get(checkpointIndex).penalty) {
+                //if at penalty checkpoint
+                Location currentLoc = new Location("");
+                currentLoc.setLatitude(checkpoints.get(checkpointIndex).latitude);
+                currentLoc.setLongitude(checkpoints.get(checkpointIndex).longitude);
+
+                Location nextLoc = new Location("");
+                nextLoc.setLatitude(checkpoints.get(checkpointIndex + 1).latitude);
+                nextLoc.setLongitude(checkpoints.get(checkpointIndex + 1).longitude);
+
+                trackMaxLength += currentLoc.distanceTo(nextLoc);
+            } else if (!checkpoints.get(checkpointIndex + 1).penalty) {
+                //if not at penalty, and next is not penalty
+                Location currentLoc = new Location("");
+                currentLoc.setLatitude(checkpoints.get(checkpointIndex).latitude);
+                currentLoc.setLongitude(checkpoints.get(checkpointIndex).longitude);
+
+                Location nextLoc = new Location("");
+                nextLoc.setLatitude(checkpoints.get(checkpointIndex + 1).latitude);
+                nextLoc.setLongitude(checkpoints.get(checkpointIndex + 1).longitude);
+
+                trackMaxLength += currentLoc.distanceTo(nextLoc);
+                trackMinLength += currentLoc.distanceTo(nextLoc);
+            } else {
+                //if not at penalty but next is penalty
+                Location currentLoc = new Location("");
+                currentLoc.setLatitude(checkpoints.get(checkpointIndex).latitude);
+                currentLoc.setLongitude(checkpoints.get(checkpointIndex).longitude);
+
+                Location nextLoc = new Location("");
+                nextLoc.setLatitude(checkpoints.get(checkpointIndex + 1).latitude);
+                nextLoc.setLongitude(checkpoints.get(checkpointIndex + 1).longitude);
+
+                Location nextNextLoc = new Location("");
+                nextNextLoc.setLatitude(checkpoints.get(checkpointIndex + 2).latitude);
+                nextNextLoc.setLongitude(checkpoints.get(checkpointIndex + 2).longitude);
+
+                trackMaxLength += currentLoc.distanceTo(nextLoc);
+                trackMinLength += currentLoc.distanceTo(nextNextLoc);
+            }
+        }
     }
 
     public void fetchAllCheckpoints() {
@@ -319,6 +373,22 @@ public class MapsViewModel extends BaseViewModel {
     public void setQuestionCount(LiveData<Integer> questionCount) {
         this.questionCount = questionCount;
     }
+  
+    public float getTrackMinLength() {
+        return trackMinLength;
+    }
+
+    public void setTrackMinLength(float trackMinLength) {
+        this.trackMinLength = trackMinLength;
+    }
+
+    public float getTrackMaxLength() {
+        return trackMaxLength;
+    }
+
+    public void setTrackMaxLength(float trackMaxLength) {
+        this.trackMaxLength = trackMaxLength;
+    }
 
     public boolean hasTrackLines() {
         return trackLines;
@@ -335,4 +405,5 @@ public class MapsViewModel extends BaseViewModel {
     public void setFinalLine(Polyline finalLine) {
         this.finalLine = finalLine;
     }
+
 }

@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -48,6 +49,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.Locale;
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -441,6 +444,12 @@ public class MapsActivity extends BaseActivity
                             Log.d(TAG, "Final Checkpoint ID: " + finalCheckpointID);
                             // draw all checkpoints on the map
                             mapsRenderer.drawAllCheckpoints(checkpoints, viewModel, map);
+
+                            viewModel.calcTrackLength();
+                            TextView toolbarText = findViewById(R.id.toolbarTextView);
+                            toolbarText.setText(String.format("Track min: %sm, max: %sm",
+                                    String.format(Locale.ENGLISH, "%.0f", viewModel.getTrackMinLength()),
+                                    String.format(Locale.ENGLISH, "%.0f", viewModel.getTrackMaxLength())));
                         }
                         // save result when allCheckpoints change
                         viewModel.saveResult();
