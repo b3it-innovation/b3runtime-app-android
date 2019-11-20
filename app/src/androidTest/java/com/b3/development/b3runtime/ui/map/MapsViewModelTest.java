@@ -51,7 +51,7 @@ public class MapsViewModelTest {
     @Mock
     Checkpoint nextCheckpoint;
 
-    String trackKey = "abc123";
+    private String trackKey = "abc123";
 
     private MapsViewModel viewModel;
 

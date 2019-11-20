@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.b3.development.b3runtime.data.local.model.useraccount.UserAccount;
 import com.b3.development.b3runtime.data.local.model.useraccount.UserAccountDao;
 import com.b3.development.b3runtime.data.remote.BackendInteractor;
-import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUseraccount;
+import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUserAccount;
 import com.b3.development.b3runtime.utils.failure.Failure;
 import com.b3.development.b3runtime.utils.failure.FailureType;
 
@@ -72,7 +72,7 @@ public class UserAccountRepositoryImpl implements UserAccountRepository {
         backendInteractor.getUserAccountById(new BackendInteractor.UserAccountCallback() {
             //handles response
             @Override
-            public void onUserAccountReceived(BackendUseraccount backendUseraccount) {
+            public void onUserAccountReceived(BackendUserAccount backendUseraccount) {
                 //early return in case of server error
                 if (backendUseraccount == null) {
                     error.postValue(new Failure(FailureType.SERVER));

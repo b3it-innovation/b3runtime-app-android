@@ -37,7 +37,7 @@ import com.b3.development.b3runtime.geofence.LocationService;
 import com.b3.development.b3runtime.sound.Jukebox;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.home.HomeActivity;
-import com.b3.development.b3runtime.ui.question.CheckinFragment;
+import com.b3.development.b3runtime.ui.question.CheckInFragment;
 import com.b3.development.b3runtime.ui.question.PenaltyFragment;
 import com.b3.development.b3runtime.ui.question.QuestionFragment;
 import com.b3.development.b3runtime.ui.question.ResultDialogFragment;
@@ -65,7 +65,7 @@ public class MapsActivity extends BaseActivity
         implements OnMapReadyCallback, FragmentShowHideCallback {
 
     public static final String TAG = MapsActivity.class.getSimpleName();
-    public static final LatLng DEFAULT_LOCATION = new LatLng(59.33, 18.05);
+    private static final LatLng DEFAULT_LOCATION = new LatLng(59.33, 18.05);
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 100;
 
     private MapsViewModel viewModel;
@@ -264,7 +264,7 @@ public class MapsActivity extends BaseActivity
         }
     }
 
-    public void toggleDarkMode() {
+    private void toggleDarkMode() {
         if (viewModel.isDarkMode()) {
             mapsRenderer.changeToNormalMapMode(map, viewModel);
         } else {
@@ -272,7 +272,7 @@ public class MapsActivity extends BaseActivity
         }
     }
 
-    public void toggleSatelliteView() {
+    private void toggleSatelliteView() {
         if (viewModel.isSatelliteView()) {
             mapsRenderer.changeToMapsView(map, viewModel);
         } else {
@@ -368,8 +368,8 @@ public class MapsActivity extends BaseActivity
 
         // Check if first checkpoint is reached
         if (receivedCheckpointID.equals(firstCheckpointID)) {
-            if (getSupportFragmentManager().findFragmentByTag(CheckinFragment.TAG) == null) {
-                CheckinFragment.newInstance().show(getSupportFragmentManager(), CheckinFragment.TAG);
+            if (getSupportFragmentManager().findFragmentByTag(CheckInFragment.TAG) == null) {
+                CheckInFragment.newInstance().show(getSupportFragmentManager(), CheckInFragment.TAG);
             }
         }
         // Check if last checkpoint is reached

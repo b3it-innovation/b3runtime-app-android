@@ -39,7 +39,7 @@ public class MapsRenderer {
     }
 
     // Draw next checkpoint on the map
-    public void drawNextCheckpoint(final Checkpoint nextCheckpoint, final MapsViewModel viewModel, final GoogleMap map) {
+    private void drawNextCheckpoint(final Checkpoint nextCheckpoint, final MapsViewModel viewModel, final GoogleMap map) {
         if (nextCheckpoint == null) {
             return;
         }
@@ -226,7 +226,7 @@ public class MapsRenderer {
         }
         PolylineOptions lines = new PolylineOptions();
         for (Checkpoint c : mapsViewModel.getAllCheckpoints().getValue()) {
-            if (c.penalty == false) {
+            if (!c.penalty) {
                 LatLng latLng = new LatLng(c.latitude, c.longitude);
                 lines.add(latLng);
             }

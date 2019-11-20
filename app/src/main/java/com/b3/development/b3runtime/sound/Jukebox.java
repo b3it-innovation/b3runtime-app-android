@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class Jukebox {
 
-    static final String TAG = Jukebox.class.getSimpleName();
+    public static final String TAG = Jukebox.class.getSimpleName();
 
     private String soundsPrefKey;
     private String musicPrefKey;

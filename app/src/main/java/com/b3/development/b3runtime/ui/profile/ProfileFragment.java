@@ -354,9 +354,9 @@ public class ProfileFragment extends BaseFragment {
                 textView = null;
                 break;
         }
-        String oldValue = "";
+
         if (textView != null) {
-            oldValue = textView.getText().toString();
+            String oldValue = textView.getText().toString();
 
             //create dialog, insert old name as placeholder
             AlertDialogUtil.createTextInputDialogForProfile(this, view, oldValue, viewType).show();
