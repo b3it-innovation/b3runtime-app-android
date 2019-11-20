@@ -20,7 +20,7 @@ public class MockLocationUtil {
     public static void setMockLocation(final Context context, final GoogleMap map) {
         map.setOnMapClickListener(latLng -> {
             updateMockLocation(context, latLng.latitude, latLng.longitude,
-                    context.getResources().getInteger(R.integer.mocklockationAccuracy));
+                    context.getResources().getInteger(R.integer.mockLocationAccuracy));
 
             Toast.makeText(context,
                     "Lat: " + latLng.latitude +

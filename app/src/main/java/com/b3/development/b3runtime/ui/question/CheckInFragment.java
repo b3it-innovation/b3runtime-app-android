@@ -27,28 +27,28 @@ import static com.b3.development.b3runtime.R.color.b3Yellow;
 import static org.koin.java.KoinJavaComponent.get;
 
 /**
- * Contains logic for displaying a {@link CheckinFragment} to inform user if they want start the game
+ * Contains logic for displaying a {@link CheckInFragment} to inform user if they want start the game
  */
-public class CheckinFragment extends BaseDialogFragment {
+public class CheckInFragment extends BaseDialogFragment {
 
-    public static final String TAG = CheckinFragment.class.getSimpleName();
+    public static final String TAG = CheckInFragment.class.getSimpleName();
     private static final int layoutId = R.layout.fragment_result_dialog;
 
     private MapsViewModel viewModel;
 
-    public CheckinFragment() {
+    public CheckInFragment() {
     }
 
     /**
-     * Builds the {@link CheckinFragment}
+     * Builds the {@link CheckInFragment}
      *
      * @return responseFragment
      */
-    public static CheckinFragment newInstance() {
+    public static CheckInFragment newInstance() {
         Bundle arguments = new Bundle();
-        CheckinFragment resultFragment = new CheckinFragment();
-        resultFragment.setArguments(arguments);
-        return resultFragment;
+        CheckInFragment fragmnet = new CheckInFragment();
+        fragmnet.setArguments(arguments);
+        return fragmnet;
     }
 
     @Override

@@ -12,8 +12,8 @@ import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepos
  */
 public class HomeViewModelFactory implements ViewModelProvider.Factory {
 
-    UserAccountRepository userAccountRepository;
-    CheckpointRepository checkpointRepository;
+    private UserAccountRepository userAccountRepository;
+    private CheckpointRepository checkpointRepository;
 
     public HomeViewModelFactory(UserAccountRepository userAccountRepository, CheckpointRepository checkpointRepository) {
         this.userAccountRepository = userAccountRepository;

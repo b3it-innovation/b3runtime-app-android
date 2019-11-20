@@ -13,7 +13,7 @@ import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponse
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
-import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUseraccount;
+import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUserAccount;
 import com.b3.development.b3runtime.utils.failure.FailureType;
 import com.firebase.client.Firebase;
 import com.google.firebase.database.DataSnapshot;
@@ -23,7 +23,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,10 +69,6 @@ public class BackendInteractorImplTest {
       
         backendInteractor = new BackendInteractorImpl(questionsTestRef, competitionsTestRef, tracksCheckpointsTestRef,
                 attendeesTestRef, resultsTestRef, userAccountsTestRef, wholeDBTestRef);
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     @Test
@@ -249,11 +244,11 @@ public class BackendInteractorImplTest {
         backendInteractor.saveUserAccount(key);
         backendInteractor.getUserAccountById(new BackendInteractor.UserAccountCallback() {
             @Override
-            public void onUserAccountReceived(BackendUseraccount backendUseraccount) {
+            public void onUserAccountReceived(BackendUserAccount backendUserAccount) {
                 // must check if it is null because this will be triggered when database is erased
-                if (backendUseraccount != null) {
-                    assertTrue(backendUseraccount.getKey().equals(key));
-                    assertTrue(backendUseraccount.getLastName().equals(""));
+                if (backendUserAccount != null) {
+                    assertTrue(backendUserAccount.getKey().equals(key));
+                    assertTrue(backendUserAccount.getLastName().equals(""));
                     userAccountsTestRef.child(key).setValue(null);
                     Log.d(testName.getMethodName(), "test completed!");
                 }

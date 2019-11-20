@@ -71,9 +71,9 @@ public class CheckpointDaoTest {
             @Override
             public void onChanged(List<Checkpoint> checkpoints) {
                 assertTrue(checkpoints.size() == 3);
-                assertTrue(checkpoints.get(0).order == list.get(0).order);
-                assertTrue(checkpoints.get(1).order == list.get(1).order);
-                assertTrue(checkpoints.get(2).order == list.get(2).order);
+                assertTrue(checkpoints.get(0).order.equals(list.get(0).order));
+                assertTrue(checkpoints.get(1).order.equals(list.get(1).order));
+                assertTrue(checkpoints.get(2).order.equals(list.get(2).order));
             }
         });
     }
@@ -88,7 +88,7 @@ public class CheckpointDaoTest {
             public void onChanged(Checkpoint checkpoint) {
                 assertTrue(checkpoint.id.equals(list.get(0).id));
                 assertTrue(checkpoint.name.equals(list.get(0).name));
-                assertTrue(checkpoint.order == list.get(0).order);
+                assertTrue(checkpoint.order.equals(list.get(0).order));
                 assertTrue(checkpoint.longitude.equals(list.get(0).longitude));
                 assertTrue(checkpoint.latitude.equals(list.get(0).latitude));
             }
@@ -110,7 +110,7 @@ public class CheckpointDaoTest {
             public void onChanged(Checkpoint checkpoint) {
                 assertTrue(checkpoint.id.equals(checkpoint1.id));
                 assertTrue(checkpoint.name.equals(checkpoint1.name));
-                assertTrue(checkpoint.order == checkpoint1.order);
+                assertTrue(checkpoint.order.equals(checkpoint1.order));
                 assertTrue(checkpoint.longitude.equals(checkpoint1.longitude));
                 assertTrue(checkpoint.latitude.equals(checkpoint1.latitude));
             }

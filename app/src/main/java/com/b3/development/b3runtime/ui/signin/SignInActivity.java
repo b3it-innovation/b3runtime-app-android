@@ -46,7 +46,7 @@ public class SignInActivity extends AppCompatActivity {
         };
     }
 
-    public void createSignInIntent() {
+    private void createSignInIntent() {
         //creates login providers
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build(),

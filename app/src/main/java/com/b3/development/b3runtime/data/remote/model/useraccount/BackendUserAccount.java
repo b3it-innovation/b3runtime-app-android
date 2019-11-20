@@ -3,7 +3,7 @@ package com.b3.development.b3runtime.data.remote.model.useraccount;
 /**
  * A model of the response from <code>firebase database</code>
  */
-public class BackendUseraccount {
+public class BackendUserAccount {
 
     private String key;
     private String userName;
@@ -11,10 +11,10 @@ public class BackendUseraccount {
     private String firstName;
     private String lastName;
 
-    public BackendUseraccount() {
+    public BackendUserAccount() {
     }
 
-    public BackendUseraccount(String key) {
+    public BackendUserAccount(String key) {
         this.key = key;
     }
 

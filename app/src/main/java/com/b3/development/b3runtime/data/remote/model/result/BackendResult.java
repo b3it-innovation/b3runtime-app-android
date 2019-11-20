@@ -1,7 +1,5 @@
 package com.b3.development.b3runtime.data.remote.model.result;
 
-import androidx.annotation.Nullable;
-
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 

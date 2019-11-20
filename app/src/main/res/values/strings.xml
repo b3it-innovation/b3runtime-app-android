@@ -89,5 +89,5 @@
     <string name="profile_image_file_name">avatar.jpg</string>
     <string name="external_storage_image_path">/Pictures/b3runtime</string>
     <string name="image_file_date_format">yyyyMMdd_HHmmss</string>
-    
+
 </resources>

@@ -11,7 +11,7 @@ import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponse
 import com.b3.development.b3runtime.data.remote.model.question.BackendAnswerOption;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
-import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUseraccount;
+import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUserAccount;
 import com.b3.development.b3runtime.utils.failure.FailureType;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -123,7 +123,7 @@ public class BackendInteractorImpl implements BackendInteractor {
     }
 
     public void saveUserAccount(String uid) {
-        BackendUseraccount user = new BackendUseraccount();
+        BackendUserAccount user = new BackendUserAccount();
         user.setLastName("");
 
         firebaseDbUserAccounts.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -242,11 +242,11 @@ public class BackendInteractorImpl implements BackendInteractor {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                BackendUseraccount backendUseraccount = dataSnapshot.getValue(BackendUseraccount.class);
-                if(backendUseraccount != null) {
-                    backendUseraccount.setKey(dataSnapshot.getKey());
+                BackendUserAccount backendUserAccount = dataSnapshot.getValue(BackendUserAccount.class);
+                if(backendUserAccount != null) {
+                    backendUserAccount.setKey(dataSnapshot.getKey());
                 }
-                userAccountCallback.onUserAccountReceived(backendUseraccount);
+                userAccountCallback.onUserAccountReceived(backendUserAccount);
             }
 
             @Override

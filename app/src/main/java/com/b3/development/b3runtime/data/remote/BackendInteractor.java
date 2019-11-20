@@ -7,7 +7,7 @@ import com.b3.development.b3runtime.data.remote.model.attendee.BackendAttendee;
 import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
 import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQuestion;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
-import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUseraccount;
+import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUserAccount;
 import com.b3.development.b3runtime.utils.failure.FailureType;
 import com.google.firebase.database.DataSnapshot;
 
@@ -61,7 +61,7 @@ public interface BackendInteractor {
     }
 
     interface UserAccountCallback {
-        void onUserAccountReceived(BackendUseraccount backendUseraccount);
+        void onUserAccountReceived(BackendUserAccount backendUserAccount);
 
         void onError();
     }
