@@ -9,7 +9,9 @@ within their category - area of work, education or challenge.
 ### How it works
 When the app is started, the user is presented with a sign in screen. After creating an account and signing in
 the user is taken to the home screen. From here you can access your profile, where you can change your name,
-profile picture and password. You are also able to sign out with the sign out button, or start playing by clicking choose competition.
+profile picture and other user data and see how you measure up against other people who have run the same track. 
+You are also able to sign out with the sign out button, or start playing by clicking choose competition.
+
 When the user wants to start a competition they get to choose a track and then the app
 shows a map with checkpoints and the first challenge location is marked with a pulsating circle.
 Once the user is within range of the checkpoint a notification is triggered and a question pops up.
