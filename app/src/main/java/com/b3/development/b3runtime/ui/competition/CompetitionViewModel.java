@@ -80,6 +80,10 @@ public class CompetitionViewModel extends BaseViewModel {
         attendeeRepository.insertAttendee(currentAttendee);
     }
 
+    public void deleteAllAttendees() {
+        attendeeRepository.deleteAllAttendees();
+    }
+
     public LiveData<List<BackendCompetition>> getCompetitions() {
         return competitions;
     }

@@ -87,6 +87,7 @@ public class TrackFragment extends BaseFragment {
 
         itemArrayAdapter.setOnItemClickListener(v -> {
             TextView textView = (TextView) v;
+            competitionViewModel.deleteAllAttendees();
             startTrack(textView.getText().toString());
         });
     }

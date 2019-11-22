@@ -3,7 +3,6 @@ package com.b3.development.b3runtime.ui.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,6 +10,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseFragment;
+import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepository;
 import com.b3.development.b3runtime.ui.map.MapsActivity;
@@ -41,7 +41,7 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         homeViewModel = ViewModelProviders.of(getActivity(),
-                new HomeViewModelFactory(get(UserAccountRepository.class), get(CheckpointRepository.class)))
+                new HomeViewModelFactory(get(UserAccountRepository.class), get(CheckpointRepository.class), get(AttendeeRepository.class)))
                 .get(HomeViewModel.class);
 
         view.findViewById(R.id.competition_button)
@@ -51,17 +51,19 @@ public class HomeFragment extends BaseFragment {
         view.findViewById(R.id.sign_out_button)
                 .setOnClickListener(v -> ((HomeActivity) getActivity()).signOut(view));
 
-        view.findViewById(R.id.continue_button).setEnabled(true);
+        view.findViewById(R.id.continue_button);
+        view.findViewById(R.id.continue_button).setEnabled(false);
         view.findViewById(R.id.continue_button)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(getContext(), "You're continued!", Toast.LENGTH_SHORT).show();
                         continueTrack();
                     }
                 });
-        homeViewModel.getTrackUnfinished().observe(getViewLifecycleOwner(), aBool -> {
-            view.findViewById(R.id.continue_button).setEnabled(aBool);
+        homeViewModel.getCanContinue().observe(getViewLifecycleOwner(), pair -> {
+            if (pair.first != null && pair.second != null) {
+                view.findViewById(R.id.continue_button).setEnabled(pair.first && pair.second);
+            }
         });
     }
 
