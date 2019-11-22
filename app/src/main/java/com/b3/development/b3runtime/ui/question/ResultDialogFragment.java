@@ -1,5 +1,6 @@
 package com.b3.development.b3runtime.ui.question;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +20,7 @@ import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointReposit
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
+import com.b3.development.b3runtime.ui.home.HomeActivity;
 import com.b3.development.b3runtime.ui.map.MapsViewModel;
 import com.b3.development.b3runtime.ui.map.MapsViewModelFactory;
 import com.github.abdularis.civ.CircleImageView;
@@ -95,6 +97,8 @@ public class ResultDialogFragment extends BaseDialogFragment {
             viewModel.updateCheckpointCompleted();
             viewModel.saveResult();
             dismiss();
+            Intent goToHomeScreen = new Intent(getActivity(), HomeActivity.class);
+            startActivity(goToHomeScreen);
         });
     }
 }
