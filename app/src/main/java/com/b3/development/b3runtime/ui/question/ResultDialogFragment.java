@@ -94,10 +94,12 @@ public class ResultDialogFragment extends BaseDialogFragment {
         confirm.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
 
         confirm.setOnClickListener(v -> {
-            viewModel.updateCheckpointCompleted();
-            viewModel.saveResult();
             dismiss();
             Intent goToHomeScreen = new Intent(getActivity(), HomeActivity.class);
+            goToHomeScreen.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            goToHomeScreen.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            goToHomeScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            goToHomeScreen.putExtra("EXIT", true);
             startActivity(goToHomeScreen);
         });
     }

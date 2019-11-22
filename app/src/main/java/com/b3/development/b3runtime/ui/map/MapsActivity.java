@@ -374,6 +374,8 @@ public class MapsActivity extends BaseActivity
         }
         // Check if last checkpoint is reached
         else if (receivedCheckpointID.equals(finalCheckpointID)) {
+            viewModel.updateCheckpointCompleted();
+            viewModel.saveResult();
             // Show result
             if (getSupportFragmentManager().findFragmentByTag(ResultDialogFragment.TAG) == null) {
                 ResultDialogFragment.newInstance().show(getSupportFragmentManager(), ResultDialogFragment.TAG);
