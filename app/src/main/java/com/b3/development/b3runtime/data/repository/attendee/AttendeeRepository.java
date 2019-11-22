@@ -15,7 +15,7 @@ public interface AttendeeRepository {
 
     void insertAttendee(Attendee attendee);
 
-    void getSavedAttendee();
+    LiveData<Attendee> getSavedAttendee();
 
     void deleteAllAttendees();
 

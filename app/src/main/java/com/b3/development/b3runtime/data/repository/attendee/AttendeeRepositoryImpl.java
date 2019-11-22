@@ -53,8 +53,8 @@ public class AttendeeRepositoryImpl implements AttendeeRepository {
     }
 
     @Override
-    public void getSavedAttendee() {
-        AsyncTask.execute(() -> attendeeDao.getSavedAttendee());
+    public LiveData<Attendee> getSavedAttendee() {
+        return attendeeDao.getSavedAttendee();
     }
 
     @Override

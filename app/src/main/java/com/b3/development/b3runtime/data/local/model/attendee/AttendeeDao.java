@@ -23,7 +23,7 @@ public interface AttendeeDao {
     LiveData<List<Attendee>> getAll();
 
     @Query("SELECT * FROM Attendee LIMIT 1")
-    Attendee getSavedAttendee();
+    LiveData<Attendee> getSavedAttendee();
 
     @Query("SELECT * FROM Attendee WHERE userAccountKey = :userAccountKey")
     LiveData<Attendee> getAttendeeByUserAccountId(String userAccountKey);
