@@ -15,6 +15,10 @@ public interface AttendeeRepository {
 
     void insertAttendee(Attendee attendee);
 
+    void getSavedAttendee();
+
+    void deleteAllAttendees();
+
     String saveAttendeeAsBackendAttendee(Attendee attendee);
 
 }

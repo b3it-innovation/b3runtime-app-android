@@ -52,6 +52,16 @@ public class AttendeeRepositoryImpl implements AttendeeRepository {
         AsyncTask.execute(() -> attendeeDao.insertAttendee(attendee));
     }
 
+    @Override
+    public void getSavedAttendee() {
+        AsyncTask.execute(() -> attendeeDao.getSavedAttendee());
+    }
+
+    @Override
+    public void deleteAllAttendees() {
+        AsyncTask.execute(() -> attendeeDao.deleteAllAttendees());
+    }
+
     /**
      * save Attendee as BackendAttendee to Firebase
      *

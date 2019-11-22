@@ -3,7 +3,6 @@ package com.b3.development.b3runtime.ui.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,12 +50,11 @@ public class HomeFragment extends BaseFragment {
         view.findViewById(R.id.sign_out_button)
                 .setOnClickListener(v -> ((HomeActivity) getActivity()).signOut(view));
 
-        view.findViewById(R.id.continue_button).setEnabled(true);
+        view.findViewById(R.id.continue_button);
         view.findViewById(R.id.continue_button)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(getContext(), "You're continued!", Toast.LENGTH_SHORT).show();
                         continueTrack();
                     }
                 });

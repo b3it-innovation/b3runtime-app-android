@@ -22,6 +22,9 @@ public interface AttendeeDao {
     @Query("SELECT * FROM Attendee")
     LiveData<List<Attendee>> getAll();
 
+    @Query("SELECT * FROM Attendee LIMIT 1")
+    Attendee getSavedAttendee();
+
     @Query("SELECT * FROM Attendee WHERE userAccountKey = :userAccountKey")
     LiveData<Attendee> getAttendeeByUserAccountId(String userAccountKey);
 
@@ -31,4 +34,6 @@ public interface AttendeeDao {
     @Query("SELECT * FROM Attendee WHERE id = :id")
     LiveData<Attendee> getAttendeeById(String id);
 
+    @Query("DELETE FROM Attendee")
+    void deleteAllAttendees();
 }
