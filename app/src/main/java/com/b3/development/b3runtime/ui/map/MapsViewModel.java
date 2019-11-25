@@ -50,7 +50,7 @@ public class MapsViewModel extends BaseViewModel {
 
     private GeofenceManager geofenceManager;
     private boolean isLatestAnsweredCorrect = false;
-    private boolean isResponseOnScreen = false;
+    private boolean isPenaltyOnScreen = false;
     private Context context;
 
     private Long totalTime;
@@ -163,6 +163,7 @@ public class MapsViewModel extends BaseViewModel {
 
     //sets all checkpoint to not completed
     public void resetCheckpoints() {
+        isLatestAnsweredCorrect = false;
         checkpointRepository.resetCheckpointsCompleted();
     }
 
@@ -326,12 +327,12 @@ public class MapsViewModel extends BaseViewModel {
         isLatestAnsweredCorrect = latestAnsweredCorrect;
     }
 
-    public boolean isResponseOnScreen() {
-        return isResponseOnScreen;
+    public boolean isPenaltyOnScreen() {
+        return isPenaltyOnScreen;
     }
 
-    public void setResponseOnScreen(boolean responseOnScreen) {
-        isResponseOnScreen = responseOnScreen;
+    public void setPenaltyOnScreen(boolean penaltyOnScreen) {
+        isPenaltyOnScreen = penaltyOnScreen;
     }
 
     public String getResultKey() {
@@ -373,7 +374,7 @@ public class MapsViewModel extends BaseViewModel {
     public void setQuestionCount(LiveData<Integer> questionCount) {
         this.questionCount = questionCount;
     }
-  
+
     public float getTrackMinLength() {
         return trackMinLength;
     }

@@ -20,8 +20,14 @@ import androidx.lifecycle.ViewModelProviders;
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseDialogFragment;
 import com.b3.development.b3runtime.data.local.model.question.Question;
+import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
+import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
+import com.b3.development.b3runtime.data.repository.result.ResultRepository;
+import com.b3.development.b3runtime.geofence.GeofenceManager;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
+import com.b3.development.b3runtime.ui.map.MapsViewModel;
+import com.b3.development.b3runtime.ui.map.MapsViewModelFactory;
 
 import static org.koin.java.KoinJavaComponent.get;
 
@@ -33,7 +39,8 @@ public class QuestionFragment extends BaseDialogFragment {
     public static final String TAG = QuestionFragment.class.getSimpleName();
     private static final int layoutId = R.layout.fragment_question_dialog;
 
-    private QuestionViewModel viewModel;
+    private QuestionViewModel questionViewModel;
+    private MapsViewModel mapsViewModel;
     private int selectedOption;
     private TextView questionTextView;
     private RadioGroup answers;
@@ -62,9 +69,13 @@ public class QuestionFragment extends BaseDialogFragment {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, R.style.QuestionStyle);
         //create or connect viewmodel to fragment
-        viewModel = ViewModelProviders.of(this,
+        questionViewModel = ViewModelProviders.of(this,
                 new QuestionViewModelFactory(get(QuestionRepository.class)))
                 .get(QuestionViewModel.class);
+        mapsViewModel = ViewModelProviders.of(getActivity(),
+                new MapsViewModelFactory(get(CheckpointRepository.class), get(QuestionRepository.class), get(ResultRepository.class),
+                        get(AttendeeRepository.class), get(GeofenceManager.class), getActivity().getApplicationContext()))
+                .get(MapsViewModel.class);
     }
 
     @Override
@@ -105,7 +116,7 @@ public class QuestionFragment extends BaseDialogFragment {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "Calling viewModel to validate answer");
-                viewModel.validateAnswer(selectedOption);
+                questionViewModel.validateAnswer(selectedOption);
                 callback.switchFragmentVisible(fragment);
                 //uncheck buttons for next time question is shown
                 buttonA.setChecked(false);
@@ -117,10 +128,20 @@ public class QuestionFragment extends BaseDialogFragment {
         setCancelable(false);
 
         //observe LiveData in ViewModel
-        viewModel.getShowLoading().observe(getViewLifecycleOwner(), QuestionFragment.this::showLoading);
-        viewModel.getQuest().observe(getViewLifecycleOwner(), QuestionFragment.this::handleQuestion);
-        viewModel.getValidated().observe(getViewLifecycleOwner(), QuestionFragment.this::showResponse);
-        viewModel.getQuestion().observe(getViewLifecycleOwner(), QuestionFragment.this::updateQuestion);
+        questionViewModel.getShowLoading().observe(getViewLifecycleOwner(), QuestionFragment.this::showLoading);
+        questionViewModel.getQuest().observe(getViewLifecycleOwner(), QuestionFragment.this::handleQuestion);
+        //questionViewModel.getValidated().observe(getViewLifecycleOwner(), QuestionFragment.this::showResponse);
+        questionViewModel.getValidated().observe(getViewLifecycleOwner(), isCorrect -> {
+            showResponse(isCorrect);
+            if (isCorrect) {
+                Log.d(TAG, "SKIP PIN CALLED IN RESPONSE FRAGMENT");
+                mapsViewModel.updateCheckpointCorrectAnswer();
+            } else {
+                Log.d(TAG, "UPDATE PIN CALLED IN RESPONSE FRAGMENT");
+                mapsViewModel.updateCheckpointCompleted();
+            }
+        });
+        questionViewModel.getQuestion().observe(getViewLifecycleOwner(), QuestionFragment.this::updateQuestion);
     }
 
     private void updateQuestion(Question q) {
@@ -128,7 +149,7 @@ public class QuestionFragment extends BaseDialogFragment {
             return;
         }
         Log.d(TAG, "Update QUESTION called in Q Fragment");
-        viewModel.updateQuestion(q);
+        questionViewModel.updateQuestion(q);
     }
 
     private void showLoading(boolean b) {
@@ -140,8 +161,8 @@ public class QuestionFragment extends BaseDialogFragment {
     private void showResponse(Boolean isCorrect) {
         ResponseFragment.newInstance(isCorrect).show(getActivity().getSupportFragmentManager(), ResponseFragment.TAG);
         //remove observer and recreate MutableLiveData to prevent showing of response more than once
-        viewModel.getValidated().removeObservers(this);
-        viewModel.setValidated(new MutableLiveData<>());
+        questionViewModel.getValidated().removeObservers(this);
+        questionViewModel.setValidated(new MutableLiveData<>());
     }
 
     //changes text in questionfragment to current question
@@ -149,7 +170,7 @@ public class QuestionFragment extends BaseDialogFragment {
         Log.d(TAG, "Question in fragment is null: " + (question == null));
         if (question == null) {
             //reset questions if all question are answered todo: (delete this in release version)
-            viewModel.resetQuestionsIsAnswered();
+            questionViewModel.resetQuestionsIsAnswered();
             return;
         }
         questionTextView.setText(question.question);

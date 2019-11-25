@@ -1,7 +1,6 @@
 package com.b3.development.b3runtime.ui.question;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -82,7 +81,6 @@ public class ResponseFragment extends BaseDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel.setResponseOnScreen(true);
         response = view.findViewById(R.id.textResult);
         response.setHeight((int) (getScreenHeightPixels() * 0.3));
         colorBase = view.findViewById(R.id.imageBackgroundResult);
@@ -91,14 +89,6 @@ public class ResponseFragment extends BaseDialogFragment {
         confirm = view.findViewById(R.id.confirmResult);
         //sets pin to completed and skips to next if correct answer on question
         confirm.setOnClickListener(v -> {
-            if (getArguments().getBoolean(EXTRA_IS_CORRECT)) {
-                Log.d(TAG, "SKIP PIN CALLED IN RESPONSE FRAGMENT");
-                viewModel.updateCheckpointCorrectAnswer();
-            } else {
-                Log.d(TAG, "UPDATE PIN CALLED IN RESPONSE FRAGMENT");
-                viewModel.updateCheckpointCompleted();
-            }
-            viewModel.setResponseOnScreen(false);
             dismiss();
         });
         if (getArguments() != null) {
