@@ -113,7 +113,7 @@ public class AlertDialogUtil {
     }
 
     public static AlertDialog createTextInputDialogForProfile(final ProfileFragment profileFragment,
-                                                              final View view, final String oldValue, int viewType) {
+                                                              final String oldValue, int viewType) {
         AlertDialog.Builder builder = new AlertDialog.Builder(profileFragment.getActivity());
         builder.setTitle("Enter new value");
         final EditText input = new EditText(profileFragment.getActivity());
@@ -127,7 +127,7 @@ public class AlertDialogUtil {
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                profileFragment.updateUserValue(input.getText().toString().trim(), view, viewType, oldValue);
+                profileFragment.updateUserValue(input.getText().toString().trim(), viewType, oldValue);
             }
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());

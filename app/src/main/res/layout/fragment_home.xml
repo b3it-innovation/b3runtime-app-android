@@ -1,74 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/home_fragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.home.HomeActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <ScrollView
+    <data>
+
+        <variable
+            name="activity"
+            type="com.b3.development.b3runtime.ui.home.HomeActivity" />
+
+        <variable
+            name="fragment"
+            type="com.b3.development.b3runtime.ui.home.HomeFragment" />
+
+        <variable
+            name="viewmodel"
+            type="com.b3.development.b3runtime.ui.home.HomeViewModel" />
+    </data>
+
+    <FrameLayout
+        android:id="@+id/home_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/b3Yellow">
+        tools:context=".ui.home.HomeActivity">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:background="@color/b3Yellow">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/home_title"
-                android:textSize="20sp" />
-
-            <ImageView
-                android:id="@+id/imageLogoHome"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="36dp"
-                android:src="@mipmap/ic_launcher_foreground"
-                app:strokeColor="@color/colorAccent"
-                tools:ignore="ContentDescription" />
-
-            <Button
-                android:id="@+id/competition_button"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="30dp"
-                android:text="@string/choose_competition_button_text" />
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/profile_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="15dp"
-                android:text="@string/show_profile_button_text" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/home_title"
+                    android:textSize="20sp" />
 
-            <Button
-                android:id="@+id/continue_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="15dp"
-                android:text="@string/continue_track_button_text"
-                android:clickable="false"/>
+                <ImageView
+                    android:id="@+id/imageLogoHome"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="36dp"
+                    android:src="@mipmap/ic_launcher_foreground"
+                    app:strokeColor="@color/colorAccent"
+                    tools:ignore="ContentDescription" />
 
-            <Button
-                android:id="@+id/sign_out_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="15dp"
-                android:text="@string/sign_out_button_text" />
+                <Button
+                    android:id="@+id/competition_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="30dp"
+                    android:onClick="@{() -> activity.showCompetitionFragment()}"
+                    android:text="@string/choose_competition_button_text" />
 
-        </LinearLayout>
+                <Button
+                    android:id="@+id/profile_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="15dp"
+                    android:onClick="@{() -> activity.showProfileFragment()}"
+                    android:text="@string/show_profile_button_text" />
 
-    </ScrollView>
+                <Button
+                    android:id="@+id/continue_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="15dp"
+                    android:continueTrack="@{viewmodel.canContinue}"
+                    android:enabled="false"
+                    android:onClick="@{()->fragment.continueTrack()}"
+                    android:text="@string/continue_track_button_text" />
 
-</FrameLayout>
+                <Button
+                    android:id="@+id/sign_out_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="15dp"
+                    android:onClick="@{() -> activity.signOut()}"
+                    android:text="@string/sign_out_button_text" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </FrameLayout>
+</layout>
