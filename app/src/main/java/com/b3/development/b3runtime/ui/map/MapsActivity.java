@@ -383,7 +383,6 @@ public class MapsActivity extends BaseActivity
         } else if (viewModel.getNextCheckpoint().penalty) {
             PenaltyFragment.newInstance().show(getSupportFragmentManager(), PenaltyFragment.TAG);
         } else { // Otherwise show new question
-
             showQuestion();
         }
         geofenceIntentHandled = true;

@@ -53,12 +53,12 @@ public class MapsRenderer {
             setNonCompletedIconOnMarker(marker);
         }
 
-        if (viewModel.isResponseOnScreen()) {
+        if (viewModel.isPenaltyOnScreen()) { // skips if PenaltyFragment was on screen to prevent create it again
             return;
-        } else if (viewModel.isLatestAnsweredCorrect()) {
+        } else if (viewModel.isLatestAnsweredCorrect()) { // calls skipCheckpoint if the latest answer was correct
             viewModel.skipCheckpoint();
             viewModel.setLatestAnsweredCorrect(false);
-        } else {
+        } else { // otherwise adds geofence and moves camera to the next checkpoint
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nextCheckpoint.latitude, nextCheckpoint.longitude), 15f));
             // remove all geofences
             viewModel.removeGeofence();

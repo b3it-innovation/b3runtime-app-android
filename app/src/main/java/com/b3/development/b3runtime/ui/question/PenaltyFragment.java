@@ -72,7 +72,7 @@ public class PenaltyFragment extends BaseDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        viewModel.setResponseOnScreen(true);
+        viewModel.setPenaltyOnScreen(true);
         response = view.findViewById(R.id.textResult);
         response.setHeight((int) (getScreenHeightPixels() * 0.3));
         colorBase = view.findViewById(R.id.imageBackgroundResult);
@@ -83,7 +83,7 @@ public class PenaltyFragment extends BaseDialogFragment {
         confirm.setOnClickListener(v -> {
             Log.d(TAG, "UPDATE PIN CALLED IN RESPONSE FRAGMENT");
             viewModel.updateCheckpointCompleted();
-            viewModel.setResponseOnScreen(false);
+            viewModel.setPenaltyOnScreen(false);
             dismiss();
         });
 
