@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
@@ -26,6 +29,7 @@ import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseFragment;
 import com.b3.development.b3runtime.data.local.model.useraccount.UserAccount;
 import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepository;
+import com.b3.development.b3runtime.databinding.FragmentProfileBinding;
 import com.b3.development.b3runtime.utils.AlertDialogUtil;
 import com.b3.development.b3runtime.utils.failure.FailureType;
 import com.bumptech.glide.Glide;
@@ -76,6 +80,7 @@ public class ProfileFragment extends BaseFragment {
     private ImageView profileImageView;
     private String currentPhotoPath;
     private ProfileViewModel viewModel;
+    private String currentUserEmail;
 
     public ProfileFragment() {
 
@@ -97,53 +102,40 @@ public class ProfileFragment extends BaseFragment {
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        viewModel = ViewModelProviders.of(this,
+                new ProfileViewModelFactory(get(UserAccountRepository.class)))
+                .get(ProfileViewModel.class);
+        FragmentProfileBinding binding = DataBindingUtil.inflate(inflater, layoutId, container, false);
+        View view = binding.getRoot();
+        binding.setLifecycleOwner(this);
+        binding.setFragment(this);
+        binding.setViewmodel(viewModel);
+        return view;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         storage = FirebaseStorage.getInstance();
         profilePhotoReference = storage.getReference().child("profile_images");
         firebaseAuth = FirebaseAuth.getInstance();
         currentUser = firebaseAuth.getCurrentUser();
+        currentUserEmail = currentUser.getEmail();
         profileImageFileName = getString(R.string.profile_image_file_name);
-        viewModel = ViewModelProviders.of(this,
-                new ProfileViewModelFactory(get(UserAccountRepository.class)))
-                .get(ProfileViewModel.class);
-
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         profileImageView = view.findViewById(R.id.imageViewProfile);
-        profileImageView.setOnClickListener(v -> {
-            requestWriteExternalStoragePermissions();
-            pickUpImage();
-        });
         showProfileImage(profileImageView);
 
         Button btnResetPassword = view.findViewById(R.id.btn_reset_password);
-        Button btnSeeResults = view.findViewById(R.id.btn_results);
 
         btnResetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // todo sendResetPasswordMail(view);
-            }
-        });
-
-        btnSeeResults.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View f) {
-                showResultsFragment();
-            }
-        });
-
-        view.findViewById(R.id.btn_camera).setOnClickListener(v -> {
-            requestCameraAndWriteExternalStoragePermissions();
-            dispatchTakePictureIntent();
-        });
-
-        viewModel.getUserAccountLiveData().observe(getViewLifecycleOwner(), userAccount -> {
-            if (userAccount != null) {
-                drawProfile(view, userAccount);
             }
         });
 
@@ -162,7 +154,7 @@ public class ProfileFragment extends BaseFragment {
         userName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeUserValue(view, USERNAME_VIEW);
+                changeUserValue(USERNAME_VIEW);
             }
         });
 
@@ -170,7 +162,7 @@ public class ProfileFragment extends BaseFragment {
         firstName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeUserValue(view, FIRSTNAME_VIEW);
+                changeUserValue(FIRSTNAME_VIEW);
             }
         });
 
@@ -178,7 +170,7 @@ public class ProfileFragment extends BaseFragment {
         lastName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeUserValue(view, LASTNAME_VIEW);
+                changeUserValue(LASTNAME_VIEW);
             }
         });
 
@@ -186,12 +178,22 @@ public class ProfileFragment extends BaseFragment {
         organization.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeUserValue(view, ORGANIZATION_VIEW);
+                changeUserValue(ORGANIZATION_VIEW);
             }
         });
     }
 
-    private void showResultsFragment() {
+    public void onProfileImageClick() {
+        requestWriteExternalStoragePermissions();
+        pickUpImage();
+    }
+
+    public void onTakePhotoClick() {
+        requestCameraAndWriteExternalStoragePermissions();
+        dispatchTakePictureIntent();
+    }
+
+    public void showResultsFragment() {
         ResultsFragment resultsFragment = ResultsFragment.newInstance(currentUser.getUid());
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.home_container, resultsFragment, ResultsFragment.TAG);
@@ -313,28 +315,7 @@ public class ProfileFragment extends BaseFragment {
                 .into(imageView);
     }
 
-    private void drawProfile(View view, UserAccount userAccount) {
-
-        String userNameString = userAccount.userName;
-        String organizationString = userAccount.organization;
-        String emailString = currentUser.getEmail();
-        String firstNameString = userAccount.firstName;
-        String lastNameString = userAccount.lastName;
-
-        TextView userName = view.findViewById(R.id.editUserName);
-        TextView firstName = view.findViewById(R.id.editFirstName);
-        TextView lastName = view.findViewById(R.id.editLastName);
-        TextView organization = view.findViewById(R.id.editOrganization);
-        TextView mail = view.findViewById(R.id.textViewMail);
-
-        userName.setText(userNameString);
-        firstName.setText(firstNameString);
-        lastName.setText(lastNameString);
-        organization.setText(organizationString);
-        mail.setText(emailString);
-    }
-
-    private void changeUserValue(View view, int viewType) {
+    public void changeUserValue(int viewType) {
         TextView textView;
         switch (viewType) {
             case USERNAME_VIEW:
@@ -359,11 +340,11 @@ public class ProfileFragment extends BaseFragment {
             String oldValue = textView.getText().toString();
 
             //create dialog, insert old name as placeholder
-            AlertDialogUtil.createTextInputDialogForProfile(this, view, oldValue, viewType).show();
+            AlertDialogUtil.createTextInputDialogForProfile(this, oldValue, viewType).show();
         }
     }
 
-    public void updateUserValue(String newValue, View view, int viewType, String oldValue) {
+    public void updateUserValue(String newValue, int viewType, String oldValue) {
 
         UserAccount userAccount = viewModel.getUserAccountLiveData().getValue();
 
@@ -483,5 +464,9 @@ public class ProfileFragment extends BaseFragment {
                 AlertDialogUtil.createDoNotAskAgainClickedDialog(getActivity()).show();
             }
         }
+    }
+
+    public String getCurrentUserEmail() {
+        return currentUserEmail;
     }
 }

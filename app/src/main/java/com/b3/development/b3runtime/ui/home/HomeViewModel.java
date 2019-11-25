@@ -30,8 +30,8 @@ public class HomeViewModel extends BaseViewModel {
         this.userAccountRepository = userAccountRepository;
         this.checkpointRepository = checkpointRepository;
         this.attendeeRepository = attendeeRepository;
-        allCheckpoints = checkpointRepository.getAllCheckpoints();
-        currentAttendee = attendeeRepository.getSavedAttendee();
+        allCheckpoints = this.checkpointRepository.getAllCheckpoints();
+        currentAttendee = this.attendeeRepository.getSavedAttendee();
         trackUnfinished = Transformations.map(allCheckpoints, checkpoints -> {
             if (checkpoints == null || checkpoints.isEmpty()) {
                 return false;

@@ -1,206 +1,229 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ui.home.HomeActivity">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <ImageView
-        android:id="@+id/imageViewProfile"
-        android:contentDescription="@string/description_profile_image"
-        android:layout_width="145dp"
-        android:layout_height="145dp"
-        android:layout_gravity="center"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginRight="50dp"
-        android:layout_weight="0"
-        android:background="@mipmap/ic_launcher" />
+    <data>
 
-    <Button
-        android:id="@+id/btn_camera"
-        android:layout_width="145dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_weight="0"
-        android:text="@string/take_photo" />
+        <variable
+            name="fragment"
+            type="com.b3.development.b3runtime.ui.profile.ProfileFragment" />
+
+        <variable
+            name="viewmodel"
+            type="com.b3.development.b3runtime.ui.profile.ProfileViewModel" />
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="horizontal"
-        android:padding="10dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="0"
-            android:text="@string/username_label"
-            android:textSize="12sp" />
-
-        <TextView
-            android:id="@+id/editUserName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="0.5"
-            android:hint="@string/profile_username_hint"
-            android:textAlignment="viewStart"
-            android:textSize="24sp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.home.HomeActivity">
 
         <ImageView
-            android:id="@+id/editIconUserName"
-            android:contentDescription="@string/edit_username"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/pen_edit" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
-        android:padding="10dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_gravity="center_vertical"
+            android:id="@+id/imageViewProfile"
+            android:layout_width="145dp"
+            android:layout_height="145dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginRight="50dp"
             android:layout_weight="0"
-            android:text="@string/first_name_label"
-            android:textSize="12sp" />
+            android:background="@mipmap/ic_launcher"
+            android:contentDescription="@string/description_profile_image"
+            android:onClick="@{() -> fragment.onProfileImageClick()}" />
 
-        <TextView
-            android:id="@+id/editFirstName"
-            android:layout_width="0dp"
+        <Button
+            android:id="@+id/btn_camera"
+            android:layout_width="145dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="0.5"
-            android:hint="@string/profile_firstname_hint"
-            android:textAlignment="viewStart"
-            android:textSize="24sp" />
-
-        <ImageView
-            android:id="@+id/editIconFirstName"
-            android:contentDescription="@string/edit_first_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/pen_edit"
-            android:layout_gravity="center_vertical"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
-        android:padding="10dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_gravity="center_vertical"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_weight="0"
-            android:text="@string/last_name_label"
-            android:textSize="12sp" />
+            android:onClick="@{() -> fragment.onTakePhotoClick()}"
+            android:text="@string/take_photo" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="0"
+                android:text="@string/username_label"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/editUserName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="0.5"
+                android:hint="@string/profile_username_hint"
+                android:text="@{viewmodel.userName}"
+                android:textAlignment="viewStart"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:id="@+id/editIconUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+
+                android:contentDescription="@string/edit_username"
+                android:src="@drawable/pen_edit" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="0"
+                android:text="@string/first_name_label"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/editFirstName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="0.5"
+                android:hint="@string/profile_firstname_hint"
+                android:text="@{viewmodel.firstName}"
+                android:textAlignment="viewStart"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:id="@+id/editIconFirstName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/edit_first_name"
+                android:src="@drawable/pen_edit" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="0"
+                android:text="@string/last_name_label"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/editLastName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="0.5"
+                android:hint="@string/profile_lastname_hint"
+                android:text="@{viewmodel.lastName}"
+                android:textAlignment="viewStart"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:id="@+id/editIconLastName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/edit_last_name"
+                android:src="@drawable/pen_edit" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="0"
+                android:text="@string/organization_label"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/editOrganization"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="0.5"
+                android:hint="@string/profile_organization_hint"
+                android:text="@{viewmodel.organization}"
+                android:textAlignment="viewStart"
+                android:textSize="24sp" />
+
+            <ImageView
+                android:id="@+id/editIconOrganization"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="@string/edit_organization"
+                android:src="@drawable/pen_edit" />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/editLastName"
-            android:layout_width="0dp"
+            android:id="@+id/textViewMail"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="0.5"
-            android:hint="@string/profile_lastname_hint"
-            android:textAlignment="viewStart"
-            android:textSize="24sp" />
-
-        <ImageView
-            android:id="@+id/editIconLastName"
-            android:contentDescription="@string/edit_last_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/pen_edit"
-            android:layout_gravity="center_vertical"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
-        android:padding="10dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_gravity="center_vertical"
+            android:layout_margin="10dp"
             android:layout_weight="0"
-            android:text="@string/organization_label"
-            android:textSize="12sp" />
+            android:hint="@string/profile_mail_hint"
+            android:text="@{fragment.currentUserEmail}"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/editOrganization"
-            android:layout_width="0dp"
+        <Button
+            android:id="@+id/btn_reset_password"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="0.5"
-            android:hint="@string/profile_organization_hint"
-            android:textAlignment="viewStart"
-            android:textSize="24sp" />
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0"
+            android:text="@string/reset_password_button_text"
+            android:visibility="gone" />
 
-        <ImageView
-            android:id="@+id/editIconOrganization"
-            android:contentDescription="@string/edit_organization"
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/btn_results"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/pen_edit"
-            android:layout_gravity="center_vertical"/>
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0"
+            android:onClick="@{()->fragment.showResultsFragment()}"
+            android:text="@string/results" />
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/textViewMail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_weight="0"
-        android:hint="@string/profile_mail_hint"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/btn_reset_password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginRight="10dp"
-        android:layout_weight="0"
-        android:visibility="gone"
-        android:text="@string/reset_password_button_text" />
-
-    <Button
-        android:id="@+id/btn_results"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:text="@string/results" />
-
-</LinearLayout>
+</layout>

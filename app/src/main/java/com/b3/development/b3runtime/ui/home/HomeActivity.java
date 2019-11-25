@@ -2,7 +2,6 @@ package com.b3.development.b3runtime.ui.home;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -77,7 +76,7 @@ public class HomeActivity extends AppCompatActivity {
         saveUserAccount();
     }
 
-    public void signOut(View view) {
+    public void signOut() {
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
