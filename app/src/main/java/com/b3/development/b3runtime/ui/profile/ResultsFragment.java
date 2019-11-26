@@ -24,7 +24,6 @@ public class ResultsFragment extends BaseFragment {
     private static final String KEY_USER_ID = "keyUserId";
 
     private ResultsViewModel viewModel;
-    private RecyclerView recyclerView;
 
     //provides the user key to the fragment
     public static ResultsFragment newInstance(String uid) {
@@ -57,7 +56,7 @@ public class ResultsFragment extends BaseFragment {
         viewModel.getShowLoading().observe(getViewLifecycleOwner(), ResultsFragment.this::showLoading);
         viewModel.showLoading(true);
 
-        recyclerView = view.findViewById(R.id.recycle_list_results);
+        RecyclerView recyclerView = view.findViewById(R.id.recycle_list_results);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         ResultsAdapter adapter = new ResultsAdapter();

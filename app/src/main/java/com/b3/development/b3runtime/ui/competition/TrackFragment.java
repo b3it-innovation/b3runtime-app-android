@@ -3,6 +3,7 @@ package com.b3.development.b3runtime.ui.competition;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -68,17 +69,17 @@ public class TrackFragment extends BaseFragment {
         TextView headline = view.findViewById(R.id.textChooseCompetition);
         headline.setText(getResources().getString(R.string.chooseTrack));
 
-        if (competitionViewModel.getChosenCompetitionName() != null) {
-            //populate list with BackendTracks
-            competitionViewModel.getCompetitions().observe(getViewLifecycleOwner(),
-                    c -> {
+        //populate list with BackendTracks
+        competitionViewModel.getCompetitions().observe(getViewLifecycleOwner(),
+                c -> {
+                    if (competitionViewModel.getChosenCompetitionName() != null) {
                         showTracks(competitionViewModel.getChosenCompetitionName());
                         competitionViewModel.showLoading(false);
-                    });
-        }
+                    }
+                });
 
         //create a recyclerview and populate it with ListItems
-        itemArrayAdapter = new ItemArrayAdapter(R.layout.list_item, itemList);
+        itemArrayAdapter = new ItemArrayAdapter();
 
         RecyclerView recyclerView = view.findViewById(R.id.item_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -86,7 +87,8 @@ public class TrackFragment extends BaseFragment {
         recyclerView.setAdapter(itemArrayAdapter);
 
         itemArrayAdapter.setOnItemClickListener(v -> {
-            TextView textView = (TextView) v;
+            LinearLayout linearLayout = (LinearLayout)v;
+            TextView textView = (TextView) linearLayout.getChildAt(0);
             competitionViewModel.deleteAllAttendees();
             startTrack(textView.getText().toString());
         });
@@ -100,7 +102,7 @@ public class TrackFragment extends BaseFragment {
                 itemList.clear();
                 itemList.addAll(bc.getTracks());
                 if (itemArrayAdapter != null) {
-                    itemArrayAdapter.notifyDataSetChanged();
+                    itemArrayAdapter.setListItems(itemList);
                 }
             }
         }

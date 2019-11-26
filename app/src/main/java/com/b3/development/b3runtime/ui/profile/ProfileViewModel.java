@@ -1,6 +1,9 @@
 package com.b3.development.b3runtime.ui.profile;
 
+import android.net.Uri;
+
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.b3.development.b3runtime.base.BaseViewModel;
@@ -20,6 +23,7 @@ public class ProfileViewModel extends BaseViewModel {
     private LiveData<String> userName;
     private LiveData<String> organization;
     private LiveData<Failure> error;
+    private MutableLiveData<Uri> userPhotoUri = new MutableLiveData<>();
     private UserAccountRepository userAccountRepository;
 
     public ProfileViewModel(UserAccountRepository userAccountRepository) {
@@ -27,6 +31,37 @@ public class ProfileViewModel extends BaseViewModel {
         this.userAccountRepository.fetch(uid);
         this.error = userAccountRepository.getError();
         userAccountLiveData = userAccountRepository.getUserAccount(uid);
+        firstName = Transformations.map(userAccountLiveData, userAccount -> {
+            if (userAccount != null) {
+                return userAccount.firstName;
+            } else {
+                return "";
+            }
+        });
+        lastName = Transformations.map(userAccountLiveData, userAccount -> {
+            if (userAccount != null) {
+                return userAccount.lastName;
+            } else {
+                return "";
+            }
+        });
+        userName = Transformations.map(userAccountLiveData, userAccount -> {
+            if (userAccount != null) {
+                return userAccount.userName;
+            } else {
+                return "";
+            }
+        });
+        organization = Transformations.map(userAccountLiveData, userAccount -> {
+            if (userAccount != null) {
+                return userAccount.organization;
+            } else {
+                return "";
+            }
+        });
+    }
+
+    public void setUp() {
         firstName = Transformations.map(userAccountLiveData, userAccount -> userAccount.firstName);
         lastName = Transformations.map(userAccountLiveData, userAccount -> userAccount.lastName);
         userName = Transformations.map(userAccountLiveData, userAccount -> userAccount.userName);
@@ -60,4 +95,9 @@ public class ProfileViewModel extends BaseViewModel {
     public LiveData<String> getOrganization() {
         return organization;
     }
+
+    public MutableLiveData<Uri> getUserPhotoUri() {
+        return userPhotoUri;
+    }
+
 }
