@@ -2,6 +2,7 @@ package com.b3.development.b3runtime.ui.competition;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,8 +29,6 @@ public class CompetitionFragment extends BaseFragment {
     private static final int layoutId = R.layout.fragment_competition;
 
     private CompetitionViewModel competitionViewModel;
-    private RecyclerView recyclerView;
-    private ItemArrayAdapter itemArrayAdapter;
     private List<ListItem> itemList = new ArrayList<>();
 
     public CompetitionFragment() {
@@ -63,25 +62,27 @@ public class CompetitionFragment extends BaseFragment {
         competitionViewModel.getShowLoading().observe(getViewLifecycleOwner(), CompetitionFragment.this::showLoading);
         competitionViewModel.showLoading(true);
 
-        competitionViewModel.getCompetitions().observe(getViewLifecycleOwner(), backendCompetitions -> {
+        //create a recyclerview and populate it with ListItems
+        ItemArrayAdapter itemArrayAdapter = new ItemArrayAdapter();
+        itemArrayAdapter.setListItems(itemList);
+        RecyclerView recyclerView = view.findViewById(R.id.item_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(itemArrayAdapter);
 
+        itemArrayAdapter.setOnItemClickListener(v -> {
+            LinearLayout linearLayout = (LinearLayout)v;
+            TextView textView = (TextView) linearLayout.getChildAt(0);
+            // show chosen competitions tracks
+            competitionViewModel.setChosenCompetitionName(textView.getText().toString());
+            ((HomeActivity) getActivity()).showTrackFragment();
+        });
+
+        competitionViewModel.getCompetitions().observe(getViewLifecycleOwner(), backendCompetitions -> {
             //populate list with BackendCompetitions
             itemList.clear();
             itemList.addAll(backendCompetitions);
-
-            //create a recyclerview and populate it with ListItems
-            itemArrayAdapter = new ItemArrayAdapter(R.layout.list_item, itemList);
-            recyclerView = view.findViewById(R.id.item_list);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            recyclerView.setItemAnimator(new DefaultItemAnimator());
-            recyclerView.setAdapter(itemArrayAdapter);
-
-            itemArrayAdapter.setOnItemClickListener(v -> {
-                TextView textView = (TextView) v;
-                // show chosen competitions tracks
-                competitionViewModel.setChosenCompetitionName(textView.getText().toString());
-                ((HomeActivity) getActivity()).showTrackFragment();
-            });
+            itemArrayAdapter.setListItems(itemList);
             competitionViewModel.showLoading(false);
         });
     }

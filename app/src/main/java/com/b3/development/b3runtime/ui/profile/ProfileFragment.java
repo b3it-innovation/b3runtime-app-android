@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.databinding.BindingAdapter;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -77,7 +78,6 @@ public class ProfileFragment extends BaseFragment {
     private StorageReference profilePhotoReference;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser currentUser;
-    private ImageView profileImageView;
     private String currentPhotoPath;
     private ProfileViewModel viewModel;
     private String currentUserEmail;
@@ -102,19 +102,6 @@ public class ProfileFragment extends BaseFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        viewModel = ViewModelProviders.of(this,
-                new ProfileViewModelFactory(get(UserAccountRepository.class)))
-                .get(ProfileViewModel.class);
-        FragmentProfileBinding binding = DataBindingUtil.inflate(inflater, layoutId, container, false);
-        View view = binding.getRoot();
-        binding.setLifecycleOwner(this);
-        binding.setFragment(this);
-        binding.setViewmodel(viewModel);
-        return view;
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         storage = FirebaseStorage.getInstance();
@@ -126,12 +113,25 @@ public class ProfileFragment extends BaseFragment {
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        viewModel = ViewModelProviders.of(this,
+                new ProfileViewModelFactory(get(UserAccountRepository.class)))
+                .get(ProfileViewModel.class);
+        viewModel.getUserPhotoUri().postValue(currentUser.getPhotoUrl());
+
+        //viewModel.getUserAccountLiveData().observe(getViewLifecycleOwner(), data -> viewModel.setUp()    );
+
+        FragmentProfileBinding binding = DataBindingUtil.inflate(inflater, layoutId, container, false);
+        View view = binding.getRoot();
+        binding.setLifecycleOwner(getViewLifecycleOwner());
+        binding.setFragment(this);
+        binding.setViewmodel(viewModel);
+        return view;
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        profileImageView = view.findViewById(R.id.imageViewProfile);
-        showProfileImage(profileImageView);
-
         Button btnResetPassword = view.findViewById(R.id.btn_reset_password);
-
         btnResetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -147,38 +147,6 @@ public class ProfileFragment extends BaseFragment {
                 AlertDialogUtil.createCustomInfoDialog(getContext(), "Invalid username",
                         "That username is invalid. Username must be between 1-20 " +
                                 "characters and can only contain A-ö and numbers.");
-            }
-        });
-
-        ImageView userName = view.findViewById(R.id.editIconUserName);
-        userName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeUserValue(USERNAME_VIEW);
-            }
-        });
-
-        ImageView firstName = view.findViewById(R.id.editIconFirstName);
-        firstName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeUserValue(FIRSTNAME_VIEW);
-            }
-        });
-
-        ImageView lastName = view.findViewById(R.id.editIconLastName);
-        lastName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeUserValue(LASTNAME_VIEW);
-            }
-        });
-
-        ImageView organization = view.findViewById(R.id.editIconOrganization);
-        organization.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeUserValue(ORGANIZATION_VIEW);
             }
         });
     }
@@ -301,7 +269,7 @@ public class ProfileFragment extends BaseFragment {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            showProfileImage(profileImageView);
+                            viewModel.getUserPhotoUri().postValue(currentUser.getPhotoUrl());
                         } else {
                             Log.e(TAG, task.getException().getMessage());
                         }
@@ -309,26 +277,21 @@ public class ProfileFragment extends BaseFragment {
                 });
     }
 
-    private void showProfileImage(ImageView imageView) {
-        Glide.with(imageView.getContext())
-                .load(currentUser.getPhotoUrl())
-                .into(imageView);
-    }
-
-    public void changeUserValue(int viewType) {
-        TextView textView;
-        switch (viewType) {
-            case USERNAME_VIEW:
-                textView = getView().findViewById(R.id.editUserName);
+    public void changeUserValue(View view) {
+        TextView textView = (TextView) view;
+        int viewType = -1;
+        switch (textView.getId()){
+            case R.id.editUserName:
+                viewType = USERNAME_VIEW;
                 break;
-            case FIRSTNAME_VIEW:
-                textView = getView().findViewById(R.id.editFirstName);
+            case R.id.editFirstName:
+                viewType = FIRSTNAME_VIEW;
                 break;
-            case LASTNAME_VIEW:
-                textView = getView().findViewById(R.id.editLastName);
+            case R.id.editLastName:
+                viewType = LASTNAME_VIEW;
                 break;
-            case ORGANIZATION_VIEW:
-                textView = getView().findViewById(R.id.editOrganization);
+            case R.id.editOrganization:
+                viewType = ORGANIZATION_VIEW;
                 break;
             default:
                 Log.e(TAG, "incompatible viewType sent to changeUserValue");
@@ -468,5 +431,12 @@ public class ProfileFragment extends BaseFragment {
 
     public String getCurrentUserEmail() {
         return currentUserEmail;
+    }
+
+    @BindingAdapter("android:profileImage")
+    public static void showProfileImage(ImageView imageView, Uri uri) {
+        Glide.with(imageView.getContext())
+                .load(uri)
+                .into(imageView);
     }
 }

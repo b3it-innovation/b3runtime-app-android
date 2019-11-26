@@ -51,7 +51,7 @@ public class HomeFragment extends BaseFragment {
 
         FragmentHomeBinding binding = DataBindingUtil.inflate(inflater, layoutId, container, false);
         View view = binding.getRoot();
-        binding.setLifecycleOwner(this);
+        binding.setLifecycleOwner(getViewLifecycleOwner());
         binding.setActivity((HomeActivity) getActivity());
         binding.setFragment(this);
         binding.setViewmodel(homeViewModel);

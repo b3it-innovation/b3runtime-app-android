@@ -5,22 +5,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.b3.development.b3runtime.R;
+import com.b3.development.b3runtime.databinding.ListItemBinding;
 
 import java.util.List;
 
-public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.ViewHolder> {
+public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.ListItemViewHolder> {
 
-    private int listItemLayout;
     private List<ListItem> itemList;
     private View.OnClickListener listener;
 
-
-    public ItemArrayAdapter(int layoutId, List<ListItem> itemList) {
-        listItemLayout = layoutId;
-        this.itemList = itemList;
+    public void setListItems(List<ListItem> listItems) {
+        this.itemList = listItems;
+        notifyDataSetChanged();
     }
 
     // get the size of the list
@@ -32,17 +32,15 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
 
     // specify the row layout file and click for each row
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(listItemLayout, parent, false);
-        return new ViewHolder(view);
+    public ListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        return new ListItemViewHolder(inflater.inflate(R.layout.list_item, parent, false));
     }
 
     // load data in each row element
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int listPosition) {
-        TextView item = holder.item;
-        item.setText(itemList.get(listPosition).getName());
-        holder.item.setOnClickListener(view -> listener.onClick(view));
+    public void onBindViewHolder(final ListItemViewHolder holder, final int listPosition) {
+        holder.bind(itemList.get(listPosition), listener);
     }
 
     public void setOnItemClickListener(View.OnClickListener listener) {
@@ -50,12 +48,19 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.View
     }
 
     // static inner class to initialize the views of rows
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView item;
+    static class ListItemViewHolder extends RecyclerView.ViewHolder {
 
-        public ViewHolder(View itemView) {
+        private ListItemBinding binding;
+
+        public ListItemViewHolder(View itemView) {
             super(itemView);
-            item = itemView.findViewById(R.id.row_item);
+            binding = DataBindingUtil.bind(itemView);
+        }
+
+        public void bind(ListItem listItem, View.OnClickListener listener) {
+            binding.setListItem(listItem);
+            binding.executePendingBindings();
+            itemView.setOnClickListener(listener);
         }
     }
 }
