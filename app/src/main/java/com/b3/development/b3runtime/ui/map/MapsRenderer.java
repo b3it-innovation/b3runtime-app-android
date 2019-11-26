@@ -63,6 +63,7 @@ public class MapsRenderer {
             // remove all geofences
             viewModel.removeGeofence();
             //adds a geofence on the received nextCheckpoint
+            Log.d(TAG, "Adding Geofence to checkpoint ID: " + nextCheckpoint.id);
             viewModel.addGeofence(nextCheckpoint);
             // draw geofence circle around nextCheckpoint
             drawGeofenceCircleAroundCheckpoint(map, nextCheckpoint);

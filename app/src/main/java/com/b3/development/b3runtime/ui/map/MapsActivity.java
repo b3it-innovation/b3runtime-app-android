@@ -364,7 +364,9 @@ public class MapsActivity extends BaseActivity
 
     private void handleGeofenceIntent() {
         // Remove geofence otherwise it is still there and triggers questions on screen rotation
-        viewModel.removeGeofence();
+        if (viewModel.getNextCheckpoint().id.equals(receivedCheckpointID)){
+            viewModel.removeGeofence();
+            }
 
         // Check if first checkpoint is reached
         if (receivedCheckpointID.equals(firstCheckpointID)) {
@@ -383,7 +385,9 @@ public class MapsActivity extends BaseActivity
         } else if (viewModel.getNextCheckpoint().penalty) {
             PenaltyFragment.newInstance().show(getSupportFragmentManager(), PenaltyFragment.TAG);
         } else { // Otherwise show new question
-            showQuestion();
+            if (viewModel.getNextCheckpoint().id.equals(receivedCheckpointID)){
+                showQuestion();
+            }
         }
         geofenceIntentHandled = true;
     }
