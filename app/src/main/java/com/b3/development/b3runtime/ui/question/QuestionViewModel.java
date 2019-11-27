@@ -11,8 +11,8 @@ import com.b3.development.b3runtime.data.local.model.question.Question;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 
 /**
- * A ViewModel for the {@link QuestionFragment}
- * Contains data to be displayed in the {@link QuestionFragment} and handles its lifecycle securely
+ * A ViewModel for the {@link QuestionDialogFragment}
+ * Contains data to be displayed in the {@link QuestionDialogFragment} and handles its lifecycle securely
  */
 public class QuestionViewModel extends BaseViewModel {
 

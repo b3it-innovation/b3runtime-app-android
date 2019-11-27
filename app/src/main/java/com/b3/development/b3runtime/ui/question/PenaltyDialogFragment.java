@@ -1,6 +1,7 @@
 package com.b3.development.b3runtime.ui.question;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,36 +20,37 @@ import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointReposit
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.b3.development.b3runtime.data.repository.result.ResultRepository;
 import com.b3.development.b3runtime.geofence.GeofenceManager;
+import com.b3.development.b3runtime.sound.SoundEvent;
+import com.b3.development.b3runtime.ui.map.MapsActivity;
 import com.b3.development.b3runtime.ui.map.MapsViewModel;
 import com.b3.development.b3runtime.ui.map.MapsViewModelFactory;
 import com.github.abdularis.civ.CircleImageView;
 
-import static com.b3.development.b3runtime.R.color.b3Yellow;
+import static com.b3.development.b3runtime.R.color.b3Blue;
 import static org.koin.java.KoinJavaComponent.get;
 
 /**
- * Contains logic for displaying a {@link CheckInFragment} to inform user if they want start the game
+ * Contains logic for displaying a {@link PenaltyDialogFragment} to inform user of their result
  */
-public class CheckInFragment extends BaseDialogFragment {
+public class PenaltyDialogFragment extends BaseDialogFragment {
 
-    public static final String TAG = CheckInFragment.class.getSimpleName();
+    public static final String TAG = PenaltyDialogFragment.class.getSimpleName();
     private static final int layoutId = R.layout.fragment_result_dialog;
 
     private MapsViewModel viewModel;
+    private TextView response;
+    private ImageView colorBase;
+    private CircleImageView colorLogo;
+    private Button confirm;
 
-    public CheckInFragment() {
+    public PenaltyDialogFragment() {
     }
 
     /**
-     * Builds the {@link CheckInFragment}
-     *
-     * @return responseFragment
+     * Builds the {@link PenaltyDialogFragment}
      */
-    public static CheckInFragment newInstance() {
-        Bundle arguments = new Bundle();
-        CheckInFragment fragmnet = new CheckInFragment();
-        fragmnet.setArguments(arguments);
-        return fragmnet;
+    public static PenaltyDialogFragment newInstance() {
+        return new PenaltyDialogFragment();
     }
 
     @Override
@@ -70,12 +72,7 @@ public class CheckInFragment extends BaseDialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        TextView response;
-        ImageView colorBase;
-        CircleImageView colorLogo;
-        Button confirm;
-
+        viewModel.setPenaltyOnScreen(true);
         response = view.findViewById(R.id.textResult);
         response.setHeight((int) (getScreenHeightPixels() * 0.3));
         colorBase = view.findViewById(R.id.imageBackgroundResult);
@@ -83,16 +80,26 @@ public class CheckInFragment extends BaseDialogFragment {
         setCancelable(false);
         confirm = view.findViewById(R.id.confirmResult);
 
-        response.setText(getString(R.string.start_confirm_text));
-        colorBase.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
-        colorLogo.setImageResource(R.drawable.b3logo_yellow);
-        confirm.setText(getString(R.string.start_text));
-        confirm.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Yellow));
-
         confirm.setOnClickListener(v -> {
+            Log.d(TAG, "UPDATE PIN CALLED IN RESPONSE FRAGMENT");
             viewModel.updateCheckpointCompleted();
+            viewModel.setPenaltyOnScreen(false);
             dismiss();
         });
+
+        showResponse();
+
+        // Play sound effect
+        final MapsActivity mapsActivity = (MapsActivity) getActivity();
+        mapsActivity.getJukebox().playSoundForGameEvent(SoundEvent.AnswerCorrect);
+    }
+
+    //changes look of responsefragment depending if answered correctly
+    private void showResponse() {
+        response.setText(R.string.penaltyText);
+        colorBase.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Blue));
+        colorLogo.setImageResource(R.drawable.b3logo_purple);
+        confirm.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Blue));
     }
 
 }

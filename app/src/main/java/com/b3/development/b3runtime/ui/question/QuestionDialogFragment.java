@@ -34,9 +34,9 @@ import static org.koin.java.KoinJavaComponent.get;
 /**
  * Contains logic for displaying questions and handling the answer
  */
-public class QuestionFragment extends BaseDialogFragment {
+public class QuestionDialogFragment extends BaseDialogFragment {
 
-    public static final String TAG = QuestionFragment.class.getSimpleName();
+    public static final String TAG = QuestionDialogFragment.class.getSimpleName();
     private static final int layoutId = R.layout.fragment_question_dialog;
 
     private QuestionViewModel questionViewModel;
@@ -53,11 +53,11 @@ public class QuestionFragment extends BaseDialogFragment {
 
     private FragmentShowHideCallback callback;
 
-    public QuestionFragment() {
+    public QuestionDialogFragment() {
     }
 
-    public static final QuestionFragment newInstance() {
-        QuestionFragment fragment = new QuestionFragment();
+    public static final QuestionDialogFragment newInstance() {
+        QuestionDialogFragment fragment = new QuestionDialogFragment();
         Bundle arguments = new Bundle();
         fragment.setArguments(arguments);
         fragment.setRetainInstance(true);
@@ -128,9 +128,9 @@ public class QuestionFragment extends BaseDialogFragment {
         setCancelable(false);
 
         //observe LiveData in ViewModel
-        questionViewModel.getShowLoading().observe(getViewLifecycleOwner(), QuestionFragment.this::showLoading);
-        questionViewModel.getQuest().observe(getViewLifecycleOwner(), QuestionFragment.this::handleQuestion);
-        //questionViewModel.getValidated().observe(getViewLifecycleOwner(), QuestionFragment.this::showResponse);
+        questionViewModel.getShowLoading().observe(getViewLifecycleOwner(), QuestionDialogFragment.this::showLoading);
+        questionViewModel.getQuest().observe(getViewLifecycleOwner(), QuestionDialogFragment.this::handleQuestion);
+        //questionViewModel.getValidated().observe(getViewLifecycleOwner(), QuestionDialogFragment.this::showResponse);
         questionViewModel.getValidated().observe(getViewLifecycleOwner(), isCorrect -> {
             showResponse(isCorrect);
             if (isCorrect) {
@@ -141,7 +141,7 @@ public class QuestionFragment extends BaseDialogFragment {
                 mapsViewModel.updateCheckpointCompleted();
             }
         });
-        questionViewModel.getQuestion().observe(getViewLifecycleOwner(), QuestionFragment.this::updateQuestion);
+        questionViewModel.getQuestion().observe(getViewLifecycleOwner(), QuestionDialogFragment.this::updateQuestion);
     }
 
     private void updateQuestion(Question q) {
@@ -159,7 +159,7 @@ public class QuestionFragment extends BaseDialogFragment {
     }
 
     private void showResponse(Boolean isCorrect) {
-        ResponseFragment.newInstance(isCorrect).show(getActivity().getSupportFragmentManager(), ResponseFragment.TAG);
+        ResponseDialogFragment.newInstance(isCorrect).show(getActivity().getSupportFragmentManager(), ResponseDialogFragment.TAG);
         //remove observer and recreate MutableLiveData to prevent showing of response more than once
         questionViewModel.getValidated().removeObservers(this);
         questionViewModel.setValidated(new MutableLiveData<>());

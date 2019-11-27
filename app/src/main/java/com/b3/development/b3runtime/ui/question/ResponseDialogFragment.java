@@ -31,11 +31,11 @@ import static com.b3.development.b3runtime.R.color.b3Yellow;
 import static org.koin.java.KoinJavaComponent.get;
 
 /**
- * Contains logic for displaying a {@link ResponseFragment} to inform user of their result
+ * Contains logic for displaying a {@link ResponseDialogFragment} to inform user of their result
  */
-public class ResponseFragment extends BaseDialogFragment {
+public class ResponseDialogFragment extends BaseDialogFragment {
 
-    public static final String TAG = ResponseFragment.class.getSimpleName();
+    public static final String TAG = ResponseDialogFragment.class.getSimpleName();
     private static final String EXTRA_IS_CORRECT = "extraIsCorrect";
     private static final int layoutId = R.layout.fragment_result_dialog;
 
@@ -45,19 +45,19 @@ public class ResponseFragment extends BaseDialogFragment {
     private CircleImageView colorLogo;
     private Button confirm;
 
-    public ResponseFragment() {
+    public ResponseDialogFragment() {
     }
 
     /**
-     * Builds the {@link ResponseFragment}
+     * Builds the {@link ResponseDialogFragment}
      *
      * @param isCorrect a boolean to decide on which response to show depending whether the
      * @return responseFragment
      */
-    public static ResponseFragment newInstance(boolean isCorrect) {
+    public static ResponseDialogFragment newInstance(boolean isCorrect) {
         Bundle arguments = new Bundle();
-        arguments.putBoolean(ResponseFragment.EXTRA_IS_CORRECT, isCorrect);
-        ResponseFragment responseFragment = new ResponseFragment();
+        arguments.putBoolean(ResponseDialogFragment.EXTRA_IS_CORRECT, isCorrect);
+        ResponseDialogFragment responseFragment = new ResponseDialogFragment();
         responseFragment.setArguments(arguments);
         return responseFragment;
     }

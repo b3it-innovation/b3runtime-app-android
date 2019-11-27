@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 
 /**
- * A factory class for creating {@link QuestionViewModel} for {@link QuestionFragment}
+ * A factory class for creating {@link QuestionViewModel} for {@link QuestionDialogFragment}
  */
 public class QuestionViewModelFactory implements ViewModelProvider.Factory {
 
