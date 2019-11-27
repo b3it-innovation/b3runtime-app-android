@@ -125,9 +125,9 @@ public class TrackFragment extends BaseFragment {
                 intent.putExtra("attendeeKey", attendeeKey);
                 intent.putExtra("firstTimeLoaded", true);
 
-                //clear old track from local db, callback on completion to start new map
-                competitionViewModel.questionRepository.removeAllQuestions();
-                competitionViewModel.checkpointRepository.removeAllCheckpoints(checkpointsRemoved -> startActivity(intent));
+                //clear old track from local db, callback on completion to start new map (chained callback)
+                competitionViewModel.removeAllCheckpoints(checkpointsRemoved ->
+                        competitionViewModel.removeAllQuestions(questionsRemoved -> startActivity(intent)));
             }
         }
     }

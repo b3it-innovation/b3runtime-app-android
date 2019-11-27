@@ -90,6 +90,15 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         AsyncTask.execute(() -> questionDao.removeAllQuestions());
     }
 
+    @Override
+    public void removeAllQuestions(QuestionCallback questionCallback) {
+        AsyncTask.execute(() -> {
+            int result = questionDao.removeAllQuestions();
+            questionCallback.onQuestionsRemoved(result);
+        });
+
+    }
+
     private Question convert(BackendResponseQuestion backendResponseQuestion) {
 
         Question convertedQuestion = new Question();
