@@ -182,4 +182,5 @@ public class CheckpointDaoTest {
         list.add(checkpoint3);
         return list;
     }
+
 }

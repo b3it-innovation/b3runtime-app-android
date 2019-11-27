@@ -179,4 +179,5 @@ public class QuestionFragment extends BaseDialogFragment {
         buttonC.setText(question.optionC);
         buttonD.setText(question.optionD);
     }
+
 }

@@ -260,4 +260,5 @@ public class MapsViewModelTest {
         verify(checkpointRepository, atMostOnce()).updateCheckpoint(any());
         verify(checkpointRepository, atLeastOnce()).updateCheckpoint(any());
     }
+
 }

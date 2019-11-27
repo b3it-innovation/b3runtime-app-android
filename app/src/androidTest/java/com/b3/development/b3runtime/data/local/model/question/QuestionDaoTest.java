@@ -177,7 +177,7 @@ public class QuestionDaoTest {
     }
 
     @Test
-    public void removeAllQuestions(){
+    public void removeAllQuestions() {
         Log.i(TAG, "Testing method: " + name.getMethodName());
         Question question1 = insertOneQuestion("1", false, "Java",
                 "A", "test question");
@@ -194,7 +194,7 @@ public class QuestionDaoTest {
     }
 
     @Test
-    public void getCount(){
+    public void getCount() {
         Log.i(TAG, "Testing method: " + name.getMethodName());
         Question question1 = insertOneQuestion("1", false, "Java",
                 "A", "test question");
@@ -220,4 +220,5 @@ public class QuestionDaoTest {
         questionDao.insertQuestion(q);
         return q;
     }
+
 }

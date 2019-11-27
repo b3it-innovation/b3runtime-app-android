@@ -8,6 +8,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 
 class B3RuntimeApp : Application() {
+
     override fun onCreate() {
         super.onCreate()
         startKoin {

@@ -43,4 +43,5 @@ public class MockLocationUtil {
         LocationServices.getFusedLocationProviderClient(context).setMockMode(true);
         LocationServices.getFusedLocationProviderClient(context).setMockLocation(newLocation);
     }
+
 }

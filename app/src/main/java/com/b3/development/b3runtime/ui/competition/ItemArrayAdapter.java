@@ -3,7 +3,6 @@ package com.b3.development.b3runtime.ui.competition;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +27,6 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.List
     public int getItemCount() {
         return itemList == null ? 0 : itemList.size();
     }
-
 
     // specify the row layout file and click for each row
     @Override
@@ -63,4 +61,5 @@ public class ItemArrayAdapter extends RecyclerView.Adapter<ItemArrayAdapter.List
             itemView.setOnClickListener(listener);
         }
     }
+
 }

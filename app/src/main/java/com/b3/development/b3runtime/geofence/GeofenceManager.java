@@ -10,4 +10,5 @@ public interface GeofenceManager {
     void addGeofence(Geofence geofence);
 
     void removeGeofences();
+
 }

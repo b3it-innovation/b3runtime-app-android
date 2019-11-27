@@ -94,4 +94,5 @@ public class CheckInFragment extends BaseDialogFragment {
             dismiss();
         });
     }
+
 }

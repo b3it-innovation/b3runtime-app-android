@@ -18,6 +18,7 @@ import java.util.Map;
 /**
  * This is a class for sound effect and eventually background music
  * Loading sound files and play them
+ * todo: remove background music function if there is no need
  */
 public class Jukebox {
 
@@ -70,7 +71,6 @@ public class Jukebox {
                 .setAudioAttributes(attr)
                 .setMaxStreams(maxStreams)
                 .build();
-
     }
 
     // Loads sound files
@@ -206,5 +206,6 @@ public class Jukebox {
     public void setMusicEnabled(boolean musicEnabled) {
         this.musicEnabled = musicEnabled;
     }
+
 }
 

@@ -28,5 +28,7 @@
             android:text="@{listItem.name}"
             android:textColor="@color/colorWhite"
             android:textSize="24sp" />
+
     </LinearLayout>
+
 </layout>

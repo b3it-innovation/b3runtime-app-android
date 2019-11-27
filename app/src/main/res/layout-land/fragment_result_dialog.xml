@@ -26,6 +26,7 @@
             android:layout_gravity="center"
             android:src="@drawable/b3logo_yellow"
             app:strokeColor="@color/colorAccent" />
+
     </RelativeLayout>
 
     <TextView

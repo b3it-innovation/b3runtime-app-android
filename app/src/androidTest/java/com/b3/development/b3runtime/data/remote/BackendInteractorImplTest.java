@@ -52,7 +52,6 @@ public class BackendInteractorImplTest {
     private DatabaseReference userAccountsTestRef = null;
     private DatabaseReference wholeDBTestRef = null;
 
-
     @Before
     public void setUp() throws Exception {
         Firebase.setAndroidContext(ApplicationProvider.getApplicationContext()); //initializeFireBase(context);
@@ -378,4 +377,5 @@ public class BackendInteractorImplTest {
         backendResult.setResults(results);
         return backendResult;
     }
+
 }

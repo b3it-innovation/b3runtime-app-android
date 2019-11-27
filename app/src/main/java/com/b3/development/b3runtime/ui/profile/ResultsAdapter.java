@@ -72,4 +72,5 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultVi
             }
         }
     }
+
 }

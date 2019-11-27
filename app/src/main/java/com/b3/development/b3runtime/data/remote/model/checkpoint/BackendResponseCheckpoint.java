@@ -4,6 +4,7 @@ package com.b3.development.b3runtime.data.remote.model.checkpoint;
  * A model of the response from <code>firebase database</code>
  */
 public class BackendResponseCheckpoint {
+
     private String key;
     private String label;
     private Double latitude;
@@ -11,7 +12,6 @@ public class BackendResponseCheckpoint {
     private Long order;
     private String questionKey;
     private Boolean penalty;
-
 
     //getters and setters because Java
     //consider @Lombok

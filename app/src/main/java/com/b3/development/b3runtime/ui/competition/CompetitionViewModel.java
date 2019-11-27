@@ -115,4 +115,5 @@ public class CompetitionViewModel extends BaseViewModel {
     public void setChosenTrackName(String chosenTrackName) {
         this.chosenTrackName = chosenTrackName;
     }
+
 }

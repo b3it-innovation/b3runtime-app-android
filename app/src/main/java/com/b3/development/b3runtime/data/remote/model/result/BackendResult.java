@@ -44,6 +44,7 @@ public class BackendResult implements Comparable<BackendResult> {
         this.totalTime = totalTime;
     }
 
+    // overrides compareTo to sort result with total time
     @Override
     public int compareTo(BackendResult o) {
         return (int) (this.totalTime - o.getTotalTime());

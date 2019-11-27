@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,13 +7,13 @@
 
     <TextView
         android:id="@+id/textQuestion"
-        android:textSize="21sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/b3Yellow"
         android:hint="@string/question"
+        android:scaleType="center"
         android:scrollbars="vertical"
-        android:scaleType="center" />
+        android:textSize="21sp" />
 
     <RadioGroup
         android:id="@+id/radioGroupAnswers"
@@ -25,31 +24,31 @@
 
         <RadioButton
             android:id="@+id/optionA"
-            android:textSize="18sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="optionA" />
+            android:hint="optionA"
+            android:textSize="18sp" />
 
         <RadioButton
             android:id="@+id/optionB"
-            android:textSize="18sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="optionB" />
+            android:hint="optionB"
+            android:textSize="18sp" />
 
         <RadioButton
             android:id="@+id/optionC"
-            android:textSize="18sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="optionC" />
+            android:hint="optionC"
+            android:textSize="18sp" />
 
         <RadioButton
             android:id="@+id/optionD"
-            android:textSize="18sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="optionD" />
+            android:hint="optionD"
+            android:textSize="18sp" />
 
     </RadioGroup>
 
@@ -68,4 +67,5 @@
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
         android:text="@string/confirm" />
+
 </LinearLayout>

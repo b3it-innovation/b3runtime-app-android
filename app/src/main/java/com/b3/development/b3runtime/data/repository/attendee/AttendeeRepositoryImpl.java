@@ -22,7 +22,8 @@ public class AttendeeRepositoryImpl implements AttendeeRepository {
     /**
      * A public constructor for {@link AttendeeRepository} implementation
      *
-     * @param bi a reference to {@link BackendInteractor}
+     * @param bi          a reference to {@link BackendInteractor}
+     * @param attendeeDao a reference to {@link AttendeeDao}
      */
     public AttendeeRepositoryImpl(BackendInteractor bi, AttendeeDao attendeeDao) {
         this.attendeeDao = attendeeDao;

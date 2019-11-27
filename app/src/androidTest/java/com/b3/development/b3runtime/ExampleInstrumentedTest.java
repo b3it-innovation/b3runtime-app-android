@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
+
     @Test
     public void useAppContext() {
         // Context of the app under test.
@@ -24,4 +25,5 @@ public class ExampleInstrumentedTest {
 
         assertEquals("com.b3.development.b3runtime", appContext.getPackageName());
     }
+
 }

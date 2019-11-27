@@ -33,7 +33,6 @@ public class MapsRenderer {
     private ValueAnimator valueAnimator;
     private GroundOverlay currentCircle;
 
-
     public MapsRenderer(final Context context) {
         this.context = context;
     }
@@ -68,7 +67,6 @@ public class MapsRenderer {
             drawGeofenceCircleAroundCheckpoint(map, nextCheckpoint);
         }
     }
-
 
     public void drawAllCheckpoints(final List<Checkpoint> allCheckpoints, final MapsViewModel viewModel, final GoogleMap map) {
         if (allCheckpoints == null || allCheckpoints.isEmpty()) {
@@ -209,16 +207,13 @@ public class MapsRenderer {
 
     public void changeToMapsView(GoogleMap map, MapsViewModel viewModel) {
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        //save state in viewmodel
         viewModel.setSatelliteView(false);
     }
 
     public void changeToSatelliteView(GoogleMap map, MapsViewModel viewModel) {
         map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        //save state in viewmodel
         viewModel.setSatelliteView(true);
     }
-
 
     public void drawLineBetweenCheckpoints(final GoogleMap map, final MapsViewModel mapsViewModel) {
         if (mapsViewModel.getFinalLine() != null) {
@@ -234,4 +229,5 @@ public class MapsRenderer {
         lines.color(Color.RED).width(context.getResources().getInteger(R.integer.track_line_width));
         mapsViewModel.setFinalLine(map.addPolyline(lines));
     }
+
 }

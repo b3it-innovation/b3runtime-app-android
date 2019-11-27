@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
@@ -16,10 +15,6 @@ public class QueryLiveData extends LiveData<DataSnapshot> {
 
     private final Query query;
     private final QueryValueEventListener valueEventListener = new QueryValueEventListener();
-
-    public QueryLiveData(DatabaseReference databaseRef) {
-        this.query = databaseRef;
-    }
 
     public QueryLiveData(Query query) {
         this.query = query;
@@ -48,6 +43,5 @@ public class QueryLiveData extends LiveData<DataSnapshot> {
             Log.e(TAG, "Can't listen to query " + query, databaseError.toException());
         }
     }
-
 
 }

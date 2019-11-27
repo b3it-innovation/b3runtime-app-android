@@ -69,4 +69,5 @@ public class HomeFragment extends BaseFragment {
             button.setEnabled(pair.first && pair.second);
         }
     }
+
 }

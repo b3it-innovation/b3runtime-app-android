@@ -10,7 +10,6 @@ import com.b3.development.b3runtime.base.BaseViewModel;
 import com.b3.development.b3runtime.data.local.model.question.Question;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 
-
 /**
  * A ViewModel for the {@link QuestionFragment}
  * Contains data to be displayed in the {@link QuestionFragment} and handles its lifecycle securely
@@ -48,7 +47,6 @@ public class QuestionViewModel extends BaseViewModel {
             String selectedAnswer = convertSelectedAnswer(selectedOption);
             Log.d(TAG, "selected answer: " + selectedAnswer);
             validated.postValue(correctAnswer.equalsIgnoreCase(selectedAnswer));
-
         }
     }
 
@@ -110,4 +108,5 @@ public class QuestionViewModel extends BaseViewModel {
     public void setShowLoading(MutableLiveData<Boolean> showLoading) {
         this.showLoading = showLoading;
     }
+
 }

@@ -100,5 +100,6 @@ public class ResultRepositoryImpl implements ResultRepository {
         backendResult.setResults(checkpoints);
         return backendResult;
     }
+
 }
 
