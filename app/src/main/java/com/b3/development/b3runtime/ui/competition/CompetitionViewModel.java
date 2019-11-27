@@ -7,11 +7,15 @@ import com.b3.development.b3runtime.base.BaseViewModel;
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
+import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
+import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
+
+import static org.koin.java.KoinJavaComponent.get;
 
 /**
  * A ViewModel for the {@link }
@@ -21,6 +25,8 @@ public class CompetitionViewModel extends BaseViewModel {
 
     private LiveData<List<BackendCompetition>> competitions;
     private CompetitionRepository repository;
+    public CheckpointRepository checkpointRepository = get(CheckpointRepository.class);
+    public QuestionRepository questionRepository = get(QuestionRepository.class);
     private AttendeeRepository attendeeRepository;
     private MutableLiveData<Boolean> showLoading = new MutableLiveData<>();
     private Attendee currentAttendee;
@@ -115,4 +121,5 @@ public class CompetitionViewModel extends BaseViewModel {
     public void setChosenTrackName(String chosenTrackName) {
         this.chosenTrackName = chosenTrackName;
     }
+
 }

@@ -127,9 +127,7 @@ public class MapsActivity extends BaseActivity
 
         // if the intent is come from HomeActivity remove all checkpoints to redraw them
         final boolean doReset = intent.getBooleanExtra("doReset", false);
-        if (doReset) {
-            viewModel.removeAllCheckpoints();
-            viewModel.removeAllQuestions();
+        if (doReset) { //todo: Can we remove this?
             // reset extra to avoid to trigger reset on screen rotation
             intent.putExtra("doReset", false);
         }
@@ -364,29 +362,29 @@ public class MapsActivity extends BaseActivity
 
     private void handleGeofenceIntent() {
         // Remove geofence otherwise it is still there and triggers questions on screen rotation
-        if (viewModel.getNextCheckpoint().id.equals(receivedCheckpointID)){
+        if (viewModel.getNextCheckpoint().id.equals(receivedCheckpointID)) {
             viewModel.removeGeofence();
-            }
 
-        // Check if first checkpoint is reached
-        if (receivedCheckpointID.equals(firstCheckpointID)) {
-            if (getSupportFragmentManager().findFragmentByTag(CheckInFragment.TAG) == null) {
-                CheckInFragment.newInstance().show(getSupportFragmentManager(), CheckInFragment.TAG);
+            // Check if first checkpoint is reached
+            if (receivedCheckpointID.equals(firstCheckpointID)) {
+                if (getSupportFragmentManager().findFragmentByTag(CheckInFragment.TAG) == null) {
+                    CheckInFragment.newInstance().show(getSupportFragmentManager(), CheckInFragment.TAG);
+                }
             }
-        }
-        // Check if last checkpoint is reached
-        else if (receivedCheckpointID.equals(finalCheckpointID)) {
-            viewModel.updateCheckpointCompleted();
-            viewModel.saveResult();
-            // Show result
-            if (getSupportFragmentManager().findFragmentByTag(ResultDialogFragment.TAG) == null) {
-                ResultDialogFragment.newInstance().show(getSupportFragmentManager(), ResultDialogFragment.TAG);
-            }
-        } else if (viewModel.getNextCheckpoint().penalty) {
-            PenaltyFragment.newInstance().show(getSupportFragmentManager(), PenaltyFragment.TAG);
-        } else { // Otherwise show new question
-            if (viewModel.getNextCheckpoint().id.equals(receivedCheckpointID)){
-                showQuestion();
+            // Check if last checkpoint is reached
+            else if (receivedCheckpointID.equals(finalCheckpointID)) {
+                viewModel.updateCheckpointCompleted();
+                viewModel.saveResult();
+                // Show result
+                if (getSupportFragmentManager().findFragmentByTag(ResultDialogFragment.TAG) == null) {
+                    ResultDialogFragment.newInstance().show(getSupportFragmentManager(), ResultDialogFragment.TAG);
+                }
+            } else if (viewModel.getNextCheckpoint().penalty) {
+                PenaltyFragment.newInstance().show(getSupportFragmentManager(), PenaltyFragment.TAG);
+            } else { // Otherwise show new question
+                if (viewModel.getNextCheckpoint().id.equals(receivedCheckpointID)) {
+                    showQuestion();
+                }
             }
         }
         geofenceIntentHandled = true;
@@ -468,7 +466,6 @@ public class MapsActivity extends BaseActivity
                                 }
                             });
                         } else if (!viewModel.getQuestionKeys().equals(viewModel.getQuestionKeysFromCheckpoints())) {
-                            viewModel.removeAllQuestions();
                             viewModel.setQuestionKeys(viewModel.getQuestionKeysFromCheckpoints());
                             viewModel.getQuestionCount().observe(this, count -> {
                                 if (count == 0 && viewModel.getQuestionKeys() != null && !viewModel.getQuestionKeys().isEmpty()) {

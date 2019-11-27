@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseFragment;
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
+import com.b3.development.b3runtime.data.remote.BackendInteractor;
+import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
@@ -120,6 +122,14 @@ public class TrackFragment extends BaseFragment {
                 intent.putExtra("trackKey", listItem.getKey());
                 intent.putExtra("attendeeKey", attendeeKey);
                 intent.putExtra("doReset", true);
+
+                competitionViewModel.checkpointRepository.removeAllCheckpoints();
+                competitionViewModel.questionRepository.removeAllQuestions();
+                try {
+                    Thread.sleep(4000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 startActivity(intent);
             }
         }
