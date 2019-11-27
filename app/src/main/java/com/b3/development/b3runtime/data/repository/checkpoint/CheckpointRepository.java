@@ -16,6 +16,8 @@ public interface CheckpointRepository {
 
     LiveData<Failure> getError();
 
+    void removeAllCheckpoints(CheckpointsCallback checkpointsCallback);
+
     void fetch(String trackKey);
 
     void updateCheckpoint(Checkpoint checkpoint);
@@ -23,4 +25,8 @@ public interface CheckpointRepository {
     void resetCheckpointsCompleted();
 
     void removeAllCheckpoints();
+
+    interface CheckpointsCallback {
+        void onCheckpointsRemoved(int checkpointsRemoved);
+    }
 }

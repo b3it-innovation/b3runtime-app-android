@@ -7,7 +7,9 @@ import com.b3.development.b3runtime.base.BaseViewModel;
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
+import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
+import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -21,6 +23,8 @@ public class CompetitionViewModel extends BaseViewModel {
 
     private LiveData<List<BackendCompetition>> competitions;
     private CompetitionRepository repository;
+    public CheckpointRepository checkpointRepository;
+    public QuestionRepository questionRepository;
     private AttendeeRepository attendeeRepository;
     private MutableLiveData<Boolean> showLoading = new MutableLiveData<>();
     private Attendee currentAttendee;
@@ -29,9 +33,14 @@ public class CompetitionViewModel extends BaseViewModel {
     private String chosenCompetitionName;
     private String chosenTrackName;
 
-    public CompetitionViewModel(CompetitionRepository competitionRepository, AttendeeRepository attendeeRepository) {
+    public CompetitionViewModel(CompetitionRepository competitionRepository,
+                                AttendeeRepository attendeeRepository,
+                                CheckpointRepository checkpointRepository,
+                                QuestionRepository questionRepository) {
         this.repository = competitionRepository;
         this.attendeeRepository = attendeeRepository;
+        this.checkpointRepository = checkpointRepository;
+        this.questionRepository = questionRepository;
         competitions = repository.getCompetitionsLiveData();
         showLoading.setValue(false);
     }
