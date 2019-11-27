@@ -203,7 +203,7 @@
             android:layout_margin="10dp"
             android:layout_weight="0"
             android:hint="@string/profile_mail_hint"
-            android:text="@{fragment.currentUserEmail}"
+            android:text="@{viewmodel.currentUserEmail}"
             android:textAlignment="center"
             android:textSize="24sp"
             android:textStyle="bold" />
