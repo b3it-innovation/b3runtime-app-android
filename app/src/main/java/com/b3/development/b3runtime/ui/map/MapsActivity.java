@@ -37,9 +37,9 @@ import com.b3.development.b3runtime.geofence.LocationService;
 import com.b3.development.b3runtime.sound.Jukebox;
 import com.b3.development.b3runtime.ui.FragmentShowHideCallback;
 import com.b3.development.b3runtime.ui.home.HomeActivity;
-import com.b3.development.b3runtime.ui.question.CheckInFragment;
-import com.b3.development.b3runtime.ui.question.PenaltyFragment;
-import com.b3.development.b3runtime.ui.question.QuestionFragment;
+import com.b3.development.b3runtime.ui.question.CheckInDialogFragment;
+import com.b3.development.b3runtime.ui.question.PenaltyDialogFragment;
+import com.b3.development.b3runtime.ui.question.QuestionDialogFragment;
 import com.b3.development.b3runtime.ui.question.ResultDialogFragment;
 import com.b3.development.b3runtime.utils.AlertDialogUtil;
 import com.b3.development.b3runtime.utils.MockLocationUtil;
@@ -78,7 +78,7 @@ public class MapsActivity extends BaseActivity
     private Jukebox jukebox;
     private String firstCheckpointID;
     private String finalCheckpointID;
-    private QuestionFragment questionFragment;
+    private QuestionDialogFragment questionDialogFragment;
     private boolean geofenceIntentHandled = true;
     private String receivedCheckpointID;
     private SharedPreferences prefs;
@@ -106,9 +106,9 @@ public class MapsActivity extends BaseActivity
         //check if questionfragment is created and retained, if it is then detach from screen
         if (savedInstanceState != null &&
                 savedInstanceState.getBoolean(getResources().getString(R.string.question_fragment_added_key))) {
-            questionFragment =
-                    (QuestionFragment) getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG);
-            getSupportFragmentManager().beginTransaction().detach(questionFragment).commit();
+            questionDialogFragment =
+                    (QuestionDialogFragment) getSupportFragmentManager().findFragmentByTag(QuestionDialogFragment.TAG);
+            getSupportFragmentManager().beginTransaction().detach(questionDialogFragment).commit();
         }
         // when trackKey and attendeeKey is null, get it from shared preference
         if (trackKey == null) {
@@ -314,10 +314,10 @@ public class MapsActivity extends BaseActivity
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        //save state if QuestionFragment is created, to retain it during screen rotation
+        //save state if QuestionDialogFragment is created, to retain it during screen rotation
         savedInstanceState
                 .putBoolean(getResources().getString(R.string.question_fragment_added_key),
-                        getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG) != null);
+                        getSupportFragmentManager().findFragmentByTag(QuestionDialogFragment.TAG) != null);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -364,8 +364,8 @@ public class MapsActivity extends BaseActivity
 
             // Check if first checkpoint is reached
             if (receivedCheckpointID.equals(firstCheckpointID)) {
-                if (getSupportFragmentManager().findFragmentByTag(CheckInFragment.TAG) == null) {
-                    CheckInFragment.newInstance().show(getSupportFragmentManager(), CheckInFragment.TAG);
+                if (getSupportFragmentManager().findFragmentByTag(CheckInDialogFragment.TAG) == null) {
+                    CheckInDialogFragment.newInstance().show(getSupportFragmentManager(), CheckInDialogFragment.TAG);
                 }
             }
             // Check if last checkpoint is reached
@@ -376,7 +376,7 @@ public class MapsActivity extends BaseActivity
                     ResultDialogFragment.newInstance().show(getSupportFragmentManager(), ResultDialogFragment.TAG);
                 }
             } else if (viewModel.getNextCheckpoint().penalty) {
-                PenaltyFragment.newInstance().show(getSupportFragmentManager(), PenaltyFragment.TAG);
+                PenaltyDialogFragment.newInstance().show(getSupportFragmentManager(), PenaltyDialogFragment.TAG);
             } else { // Otherwise show new question
                 showQuestion();
             }
@@ -471,15 +471,15 @@ public class MapsActivity extends BaseActivity
         }
     }
 
-    //calls QuestionFragment to display a question for the user
+    //calls QuestionDialogFragment to display a question for the user
     private void showQuestion() {
-        if (getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG) == null) {
-            questionFragment = QuestionFragment.newInstance();
+        if (getSupportFragmentManager().findFragmentByTag(QuestionDialogFragment.TAG) == null) {
+            questionDialogFragment = QuestionDialogFragment.newInstance();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(questionFragment, QuestionFragment.TAG).show(questionFragment).commit();
+            ft.add(questionDialogFragment, QuestionDialogFragment.TAG).show(questionDialogFragment).commit();
         } else {
-            if (questionFragment != null) {
-                switchFragmentVisible(questionFragment);
+            if (questionDialogFragment != null) {
+                switchFragmentVisible(questionDialogFragment);
             }
         }
     }

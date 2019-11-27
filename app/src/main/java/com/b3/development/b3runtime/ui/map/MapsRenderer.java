@@ -52,7 +52,7 @@ public class MapsRenderer {
             setNonCompletedIconOnMarker(marker);
         }
 
-        if (viewModel.isPenaltyOnScreen()) { // skips if PenaltyFragment was on screen to prevent create it again
+        if (viewModel.isPenaltyOnScreen()) { // skips if PenaltyDialogFragment was on screen to prevent create it again
             return;
         } else if (viewModel.isLatestAnsweredCorrect()) { // calls skipCheckpoint if the latest answer was correct
             viewModel.skipCheckpoint();
