@@ -23,8 +23,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
-        android:scaleType="center"
         android:hint="@string/leader_board_track_name"
+        android:scaleType="center"
         android:textAlignment="center"
         android:textSize="24sp"
         android:textStyle="bold" />

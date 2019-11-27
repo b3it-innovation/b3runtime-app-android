@@ -2,9 +2,6 @@ package com.b3.development.b3runtime.utils;
 
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.DialogInterface;
-
-import androidx.appcompat.app.AlertDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -20,7 +17,7 @@ public final class Util {
     }
 
     // checks if this app is in foreground
-    public static boolean isForeground(final Context context) {
+    public static boolean isProcessForeground(final Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         List<ActivityManager.RunningAppProcessInfo> runningProcesses = manager.getRunningAppProcesses();
         for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
@@ -47,33 +44,17 @@ public final class Util {
         return false;
     }
 
-    public static AlertDialog createDialog(final String title,
-                                           final String message,
-                                           final String positiveButton,
-                                           final DialogInterface.OnClickListener listener,
-                                           final String negativeButton,
-                                           final DialogInterface.OnClickListener negativeButtonListener,
-                                           final Boolean cancelable,
-                                           final Context context) {
-        return new AlertDialog.Builder(context)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(positiveButton, listener)
-                .setNegativeButton(negativeButton, negativeButtonListener)
-                .setCancelable(cancelable)
-                .create();
-    }
-
-    public static String formatLongToTime(Long time){
+    public static String formatLongToTime(Long time) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss", Locale.US);
         return simpleDateFormat.format(time);
     }
 
-    public static long getMinutesFromLong(Long time){
+    public static long getMinutesFromLong(Long time) {
         return (time / THOUSAND) / SIXTY;
     }
 
-    public static long getSecondsFromLong(Long time){
+    public static long getSecondsFromLong(Long time) {
         return (time / THOUSAND) % SIXTY;
     }
+
 }

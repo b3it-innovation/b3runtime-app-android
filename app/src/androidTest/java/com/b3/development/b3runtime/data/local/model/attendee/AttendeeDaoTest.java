@@ -156,5 +156,6 @@ public class AttendeeDaoTest {
         attendeeDao.insertAttendee(attendee);
         return attendee;
     }
+
 }
 

@@ -101,4 +101,5 @@ public class PenaltyFragment extends BaseDialogFragment {
         colorLogo.setImageResource(R.drawable.b3logo_purple);
         confirm.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Blue));
     }
+
 }

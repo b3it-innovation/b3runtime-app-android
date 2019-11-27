@@ -19,7 +19,6 @@ import androidx.core.app.NotificationCompat;
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.ui.map.MapsActivity;
 
-
 public class LocationService extends Service {
 
     private static final String TAG = LocationService.class.getSimpleName();
@@ -50,7 +49,6 @@ public class LocationService extends Service {
         } catch (IllegalArgumentException ex) {
             Log.e(TAG, "gps provider does not exist " + ex.getMessage());
         }
-
     }
 
     @Override
@@ -84,6 +82,7 @@ public class LocationService extends Service {
         }
     }
 
+    // todo: consider to move notification function to another class (NotificationManager or something)
     private Notification getNotification() {
 
         //Create intent to start MapsActivity when clicking notification

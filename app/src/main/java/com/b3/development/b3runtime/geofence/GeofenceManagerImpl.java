@@ -43,4 +43,5 @@ public class GeofenceManagerImpl implements GeofenceManager {
     public void removeGeofences() {
         client.removeGeofences(geofencePendingIntent);
     }
+
 }

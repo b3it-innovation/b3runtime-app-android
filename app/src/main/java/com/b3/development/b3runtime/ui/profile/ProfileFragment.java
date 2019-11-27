@@ -119,8 +119,6 @@ public class ProfileFragment extends BaseFragment {
                 .get(ProfileViewModel.class);
         viewModel.getUserPhotoUri().postValue(currentUser.getPhotoUrl());
 
-        //viewModel.getUserAccountLiveData().observe(getViewLifecycleOwner(), data -> viewModel.setUp()    );
-
         FragmentProfileBinding binding = DataBindingUtil.inflate(inflater, layoutId, container, false);
         View view = binding.getRoot();
         binding.setLifecycleOwner(getViewLifecycleOwner());
@@ -280,7 +278,7 @@ public class ProfileFragment extends BaseFragment {
     public void changeUserValue(View view) {
         TextView textView = (TextView) view;
         int viewType = -1;
-        switch (textView.getId()){
+        switch (textView.getId()) {
             case R.id.editUserName:
                 viewType = USERNAME_VIEW;
                 break;
@@ -301,7 +299,6 @@ public class ProfileFragment extends BaseFragment {
 
         if (textView != null) {
             String oldValue = textView.getText().toString();
-
             //create dialog, insert old name as placeholder
             AlertDialogUtil.createTextInputDialogForProfile(this, oldValue, viewType).show();
         }
@@ -337,6 +334,7 @@ public class ProfileFragment extends BaseFragment {
         }
     }
 
+    // todo: complete this method with check if user is newly logged in
     public void sendResetPasswordMail(View view) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String emailAddress = currentUser.getEmail();
@@ -350,7 +348,6 @@ public class ProfileFragment extends BaseFragment {
                     }
                 });
     }
-
 
     private File createImageFile() throws IOException {
         // Create an image file name
@@ -439,4 +436,5 @@ public class ProfileFragment extends BaseFragment {
                 .load(uri)
                 .into(imageView);
     }
+
 }

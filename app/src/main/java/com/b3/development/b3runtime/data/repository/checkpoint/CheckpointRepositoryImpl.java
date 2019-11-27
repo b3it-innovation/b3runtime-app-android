@@ -31,13 +31,13 @@ public class CheckpointRepositoryImpl implements CheckpointRepository {
     /**
      * A public constructor for {@link CheckpointRepository} implementation
      *
-     * @param pd a reference to the {@link CheckpointDao}
-     * @param bi a reference to {@link BackendInteractor}
+     * @param checkpointDao a reference to the {@link CheckpointDao}
+     * @param bi            a reference to {@link BackendInteractor}
      */
-    public CheckpointRepositoryImpl(CheckpointDao pd, BackendInteractor bi) {
-        this.checkpointDao = pd;
+    public CheckpointRepositoryImpl(CheckpointDao checkpointDao, BackendInteractor bi) {
+        this.checkpointDao = checkpointDao;
         this.backend = bi;
-        allCheckpoints = checkpointDao.getAll();
+        allCheckpoints = this.checkpointDao.getAll();
     }
 
     @Override

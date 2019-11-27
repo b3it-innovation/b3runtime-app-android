@@ -160,7 +160,6 @@ public class MapsViewModel extends BaseViewModel {
         updateCheckpointCompleted();
     }
 
-
     //sets all checkpoint to not completed
     public void resetCheckpoints() {
         isLatestAnsweredCorrect = false;

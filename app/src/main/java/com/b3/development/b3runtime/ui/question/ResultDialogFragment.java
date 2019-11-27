@@ -34,10 +34,9 @@ import static org.koin.java.KoinJavaComponent.get;
 public class ResultDialogFragment extends BaseDialogFragment {
 
     public static final String TAG = ResultDialogFragment.class.getSimpleName();
+    private static final int layoutId = R.layout.fragment_result_dialog;
 
     private MapsViewModel viewModel;
-
-    private static final int layoutId = R.layout.fragment_result_dialog;
     private TextView response;
 
     public ResultDialogFragment() {
@@ -103,4 +102,5 @@ public class ResultDialogFragment extends BaseDialogFragment {
             startActivity(goToHomeScreen);
         });
     }
+
 }

@@ -114,4 +114,5 @@ public class SignInActivity extends AppCompatActivity {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
     }
+
 }

@@ -68,4 +68,5 @@ public class LeaderBoardAdapter extends RecyclerView.Adapter<LeaderBoardAdapter.
             }
         }
     }
+
 }

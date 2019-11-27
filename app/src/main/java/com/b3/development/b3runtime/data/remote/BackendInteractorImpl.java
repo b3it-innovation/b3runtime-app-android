@@ -52,6 +52,8 @@ public class BackendInteractorImpl implements BackendInteractor {
      * @param firebaseDbTracksCheckpoints a reference to the <code>Firebase Database</code>
      * @param firebaseDbAttendees         a reference to the <code>Firebase Database</code>
      * @param firebaseDbResults           a reference to the <code>Firebase Database</code>
+     * @param firebaseDbUserAccounts      a reference to the <code>Firebase Database</code>
+     * @param firebaseDb                  a reference to the <code>Firebase Database</code>
      */
     public BackendInteractorImpl(DatabaseReference firebaseDbQuestions,
                                  DatabaseReference firebaseDbCompetitions,
@@ -243,7 +245,7 @@ public class BackendInteractorImpl implements BackendInteractor {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 BackendUserAccount backendUserAccount = dataSnapshot.getValue(BackendUserAccount.class);
-                if(backendUserAccount != null) {
+                if (backendUserAccount != null) {
                     backendUserAccount.setKey(dataSnapshot.getKey());
                 }
                 userAccountCallback.onUserAccountReceived(backendUserAccount);

@@ -76,7 +76,6 @@ public class ResultsFragment extends BaseFragment {
             adapter.setResults(results);
             viewModel.showLoading(false);
         });
-
     }
 
     private void showLeaderBoardFragment(String trackKey) {

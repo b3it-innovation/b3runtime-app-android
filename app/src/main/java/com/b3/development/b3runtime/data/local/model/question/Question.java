@@ -5,7 +5,6 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-
 /**
  * An <code>@Entity</code> class that defines a table for Questions in the local storage
  */

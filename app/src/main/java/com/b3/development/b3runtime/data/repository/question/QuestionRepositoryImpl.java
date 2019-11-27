@@ -116,4 +116,5 @@ public class QuestionRepositoryImpl implements QuestionRepository {
     public LiveData<Integer> getQuestionCount() {
         return questionDao.getCount();
     }
+
 }

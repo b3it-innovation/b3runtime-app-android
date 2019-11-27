@@ -51,13 +51,11 @@ public class HomeViewModel extends BaseViewModel {
         //observes trackUnfinshed and sameUser, to see if the current user is allowed to use the continue button
         canContinue.addSource(trackUnfinished, aBoolean -> canContinue.setValue(Pair.create(aBoolean, sameUser.getValue())));
         canContinue.addSource(sameUser, aBoolean -> canContinue.setValue(Pair.create(trackUnfinished.getValue(), aBoolean)));
-
     }
 
     public void saveUserAccount(String uid) {
         userAccountRepository.saveUserAccount(uid);
     }
-
 
     public LiveData<Boolean> getTrackUnfinished() {
         return trackUnfinished;
@@ -66,4 +64,5 @@ public class HomeViewModel extends BaseViewModel {
     public MediatorLiveData<Pair<Boolean, Boolean>> getCanContinue() {
         return canContinue;
     }
+
 }

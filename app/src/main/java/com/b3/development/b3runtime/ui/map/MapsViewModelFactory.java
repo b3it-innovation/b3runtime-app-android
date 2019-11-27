@@ -1,6 +1,5 @@
 package com.b3.development.b3runtime.ui.map;
 
-
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -41,4 +40,5 @@ public class MapsViewModelFactory implements ViewModelProvider.Factory {
         return (T) new MapsViewModel(checkpointRepository, questionRepository, resultRepository, attendeeRepository,
                 geofenceManager, context);
     }
+
 }

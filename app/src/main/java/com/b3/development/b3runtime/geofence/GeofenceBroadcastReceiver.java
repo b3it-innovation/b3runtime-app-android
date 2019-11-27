@@ -18,5 +18,6 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         // Enqueues a JobIntentService passing the context and intent as parameters
         GeofenceTransitionsJobIntentService.enqueueWork(context, intent);
     }
+
 }
 

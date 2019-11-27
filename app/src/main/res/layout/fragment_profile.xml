@@ -230,4 +230,5 @@
             android:text="@string/results" />
 
     </LinearLayout>
+
 </layout>

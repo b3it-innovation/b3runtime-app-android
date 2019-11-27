@@ -10,7 +10,6 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.util.Log;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -159,7 +158,7 @@ public class AlertDialogUtil {
                 context);
     }
 
-
+    // todo: consider to break down to small methods
     private static InputFilter[] createInputFilters(int viewType) {
         InputFilter[] filterArray = new InputFilter[2];
         InputFilter filter;
@@ -219,7 +218,6 @@ public class AlertDialogUtil {
                     }
                 };
         }
-
 
         filterArray[1] = filter;
         return filterArray;

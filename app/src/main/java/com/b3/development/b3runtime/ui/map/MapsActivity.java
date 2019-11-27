@@ -83,7 +83,6 @@ public class MapsActivity extends BaseActivity
     private String receivedCheckpointID;
     private SharedPreferences prefs;
 
-
     /**
      * Contains the main logic of the {@link MapsActivity}
      *
@@ -148,7 +147,6 @@ public class MapsActivity extends BaseActivity
             viewModel.setAttendeeKey(attendeeKey);
         }
 
-
         // initializes attendee data in ViewModel
         viewModel.initAttendee();
         viewModel.getCurrentAttendee().observe(this, attendee -> {
@@ -186,7 +184,6 @@ public class MapsActivity extends BaseActivity
         mapsRenderer = new MapsRenderer(getApplicationContext());
 
         jukebox = new Jukebox(getApplicationContext());
-
     }
 
     /**
@@ -317,7 +314,7 @@ public class MapsActivity extends BaseActivity
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        //save state if questionfragment is created, to retain it during screen rotation
+        //save state if QuestionFragment is created, to retain it during screen rotation
         savedInstanceState
                 .putBoolean(getResources().getString(R.string.question_fragment_added_key),
                         getSupportFragmentManager().findFragmentByTag(QuestionFragment.TAG) != null);
@@ -349,7 +346,7 @@ public class MapsActivity extends BaseActivity
                 geofenceIntentHandled = false;
                 receivedCheckpointID = intent.getStringExtra("id");
                 // if the app is not in foreground, do nothing
-                if (!Util.isForeground(getApplicationContext())) {
+                if (!Util.isProcessForeground(getApplicationContext())) {
                     return;
                 }
 
@@ -375,7 +372,6 @@ public class MapsActivity extends BaseActivity
             else if (receivedCheckpointID.equals(finalCheckpointID)) {
                 viewModel.updateCheckpointCompleted();
                 viewModel.saveResult();
-                // Show result
                 if (getSupportFragmentManager().findFragmentByTag(ResultDialogFragment.TAG) == null) {
                     ResultDialogFragment.newInstance().show(getSupportFragmentManager(), ResultDialogFragment.TAG);
                 }
@@ -421,7 +417,6 @@ public class MapsActivity extends BaseActivity
             return;
         } else {
             map.setMyLocationEnabled(true);
-
 
             //start foreground service to allow tracking of location in background
             if (!Util.isMyServiceRunning(LocationService.class, getApplicationContext())) {
@@ -540,4 +535,5 @@ public class MapsActivity extends BaseActivity
     public Jukebox getJukebox() {
         return jukebox;
     }
+
 }

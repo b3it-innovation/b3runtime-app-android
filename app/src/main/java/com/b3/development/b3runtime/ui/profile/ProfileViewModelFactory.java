@@ -23,4 +23,5 @@ public class ProfileViewModelFactory implements ViewModelProvider.Factory {
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         return (T) new ProfileViewModel(userAccountRepository);
     }
+
 }

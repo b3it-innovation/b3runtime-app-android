@@ -71,15 +71,6 @@ public class TrackFragment extends BaseFragment {
         TextView headline = view.findViewById(R.id.textChooseCompetition);
         headline.setText(getResources().getString(R.string.chooseTrack));
 
-        //populate list with BackendTracks
-        competitionViewModel.getCompetitions().observe(getViewLifecycleOwner(),
-                c -> {
-                    if (competitionViewModel.getChosenCompetitionName() != null) {
-                        showTracks(competitionViewModel.getChosenCompetitionName());
-                        competitionViewModel.showLoading(false);
-                    }
-                });
-
         //create a recyclerview and populate it with ListItems
         itemArrayAdapter = new ItemArrayAdapter();
 
@@ -89,11 +80,20 @@ public class TrackFragment extends BaseFragment {
         recyclerView.setAdapter(itemArrayAdapter);
 
         itemArrayAdapter.setOnItemClickListener(v -> {
-            LinearLayout linearLayout = (LinearLayout)v;
+            LinearLayout linearLayout = (LinearLayout) v;
             TextView textView = (TextView) linearLayout.getChildAt(0);
             competitionViewModel.deleteAllAttendees();
             startTrack(textView.getText().toString());
         });
+
+        //populate list with BackendTracks
+        competitionViewModel.getCompetitions().observe(getViewLifecycleOwner(),
+                c -> {
+                    if (competitionViewModel.getChosenCompetitionName() != null) {
+                        showTracks(competitionViewModel.getChosenCompetitionName());
+                        competitionViewModel.showLoading(false);
+                    }
+                });
     }
 
     //populate itemList with tracks from chosen competition
@@ -131,6 +131,5 @@ public class TrackFragment extends BaseFragment {
             }
         }
     }
-
 
 }

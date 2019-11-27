@@ -24,7 +24,8 @@ public class UserAccountRepositoryImpl implements UserAccountRepository {
     /**
      * A public constructor for {@link UserAccountRepository} implementation
      *
-     * @param bi a reference to {@link BackendInteractor}
+     * @param bi             a reference to {@link BackendInteractor}
+     * @param userAccountDao a reference to {@link UserAccountDao}
      */
     public UserAccountRepositoryImpl(BackendInteractor bi, UserAccountDao userAccountDao) {
         this.backendInteractor = bi;
@@ -112,4 +113,5 @@ public class UserAccountRepositoryImpl implements UserAccountRepository {
             }
         }, uid);
     }
+
 }

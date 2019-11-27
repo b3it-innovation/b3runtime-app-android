@@ -29,4 +29,5 @@ public class HomeViewModelFactory implements ViewModelProvider.Factory {
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         return (T) new HomeViewModel(userAccountRepository, checkpointRepository, attendeeRepository);
     }
+
 }

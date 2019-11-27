@@ -34,7 +34,8 @@ import org.koin.dsl.module
  * this has proven to cause errors. Please use as suggested.
  */
 val b3RuntimeModule = module {
-    //    viewModel { MapsViewModel(get(), get()) }
+    // ViewModel injection in Java is not supported yet in Koin-Java 2.0.1 (only supported for Kotlin) at 2019-11-27
+//    viewModel { MapsViewModel(get(), get()) }
 //    viewModel { QuestionViewModel(get()) }
     single { Room.databaseBuilder(androidApplication(), B3RuntimeDatabase::class.java, "b3Runtime_db").build() }
     single { get<B3RuntimeDatabase>().checkpointDao() }

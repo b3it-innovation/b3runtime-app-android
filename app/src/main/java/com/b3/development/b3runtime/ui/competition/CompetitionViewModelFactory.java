@@ -1,6 +1,5 @@
 package com.b3.development.b3runtime.ui.competition;
 
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
@@ -36,4 +35,5 @@ public class CompetitionViewModelFactory implements ViewModelProvider.Factory {
         return (T) new CompetitionViewModel(competitionRepository, attendeeRepository,
                 checkpointRepository, questionRepository);
     }
+
 }

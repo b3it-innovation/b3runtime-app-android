@@ -118,4 +118,5 @@ public class ResponseFragment extends BaseDialogFragment {
             confirm.setBackgroundColor(ContextCompat.getColor(getActivity(), b3Purple));
         }
     }
+
 }

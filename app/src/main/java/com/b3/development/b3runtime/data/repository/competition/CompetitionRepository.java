@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface CompetitionRepository {
 
-
     LiveData<List<BackendCompetition>> getCompetitionsLiveData();
 
     LiveData<Failure> getError();

@@ -73,7 +73,7 @@ public class CompetitionFragment extends BaseFragment {
         recyclerView.setAdapter(itemArrayAdapter);
 
         itemArrayAdapter.setOnItemClickListener(v -> {
-            LinearLayout linearLayout = (LinearLayout)v;
+            LinearLayout linearLayout = (LinearLayout) v;
             TextView textView = (TextView) linearLayout.getChildAt(0);
             // show chosen competitions tracks
             competitionViewModel.setChosenCompetitionName(textView.getText().toString());

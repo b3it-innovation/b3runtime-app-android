@@ -1,6 +1,5 @@
 package com.b3.development.b3runtime.ui.question;
 
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
@@ -23,4 +22,5 @@ public class QuestionViewModelFactory implements ViewModelProvider.Factory {
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         return (T) new QuestionViewModel(repository);
     }
+
 }

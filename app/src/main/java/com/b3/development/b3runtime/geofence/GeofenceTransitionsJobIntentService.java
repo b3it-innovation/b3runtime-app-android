@@ -42,7 +42,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
     protected void onHandleWork(@NonNull Intent intent) {
         Log.d("GEOFENCE", "SERVICE STARTED");
         // Send notification only when the app is in background
-        if (!Util.isForeground(getApplicationContext())) {
+        if (!Util.isProcessForeground(getApplicationContext())) {
             createNotificationChannel();
             sendCheckpointNotification();
         }
@@ -58,6 +58,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
         LocalBroadcastManager.getInstance(this).sendBroadcast(newIntent);
     }
 
+    // todo: consider to move notification function to another class (NotificationManager or something)
     private void sendCheckpointNotification() {
         // Create an explicit intent for an Activity in the app
         Intent intent = new Intent(this, MapsActivity.class);
@@ -86,6 +87,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService {
         notificationManager.notify(1, builder.build());
     }
 
+    // todo: consider to move notification function to another class (NotificationManager or something)
     // Create the NotificationChannel, but only on API 26+ because
     // the NotificationChannel class is new and not in the support library
     private void createNotificationChannel() {

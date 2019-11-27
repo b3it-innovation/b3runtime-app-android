@@ -23,7 +23,6 @@ public class LeaderBoardFragment extends BaseFragment {
 
     private ResultsViewModel viewModel;
 
-    //provides the user key to the fragment
     public static LeaderBoardFragment newInstance(String trackKey) {
         Bundle bundle = new Bundle();
         bundle.putString(KEY_TRACK, trackKey);
