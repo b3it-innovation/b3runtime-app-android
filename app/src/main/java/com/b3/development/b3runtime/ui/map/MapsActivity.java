@@ -126,12 +126,10 @@ public class MapsActivity extends BaseActivity
                 .get(MapsViewModel.class);
 
         // if the intent is come from HomeActivity remove all checkpoints to redraw them
-        final boolean doReset = intent.getBooleanExtra("doReset", false);
-        if (doReset) {
-            viewModel.removeAllCheckpoints();
-            viewModel.removeAllQuestions();
-            // reset extra to avoid to trigger reset on screen rotation
-            intent.putExtra("doReset", false);
+        final boolean firstTimeLoaded = intent.getBooleanExtra("firstTimeLoaded", false);
+        if (firstTimeLoaded) {
+            // If first time, we dont want to get resultkey from shared preferences
+            intent.putExtra("firstTimeLoaded", false);
         }
         // if onCreate() is triggered by other cases
         else {
@@ -364,26 +362,28 @@ public class MapsActivity extends BaseActivity
 
     private void handleGeofenceIntent() {
         // Remove geofence otherwise it is still there and triggers questions on screen rotation
-        viewModel.removeGeofence();
+        if (viewModel.getNextCheckpoint().id.equals(receivedCheckpointID)) {
+            viewModel.removeGeofence();
 
-        // Check if first checkpoint is reached
-        if (receivedCheckpointID.equals(firstCheckpointID)) {
-            if (getSupportFragmentManager().findFragmentByTag(CheckInFragment.TAG) == null) {
-                CheckInFragment.newInstance().show(getSupportFragmentManager(), CheckInFragment.TAG);
+            // Check if first checkpoint is reached
+            if (receivedCheckpointID.equals(firstCheckpointID)) {
+                if (getSupportFragmentManager().findFragmentByTag(CheckInFragment.TAG) == null) {
+                    CheckInFragment.newInstance().show(getSupportFragmentManager(), CheckInFragment.TAG);
+                }
             }
-        }
-        // Check if last checkpoint is reached
-        else if (receivedCheckpointID.equals(finalCheckpointID)) {
-            viewModel.updateCheckpointCompleted();
-            viewModel.saveResult();
-            // Show result
-            if (getSupportFragmentManager().findFragmentByTag(ResultDialogFragment.TAG) == null) {
-                ResultDialogFragment.newInstance().show(getSupportFragmentManager(), ResultDialogFragment.TAG);
+            // Check if last checkpoint is reached
+            else if (receivedCheckpointID.equals(finalCheckpointID)) {
+                viewModel.updateCheckpointCompleted();
+                viewModel.saveResult();
+                // Show result
+                if (getSupportFragmentManager().findFragmentByTag(ResultDialogFragment.TAG) == null) {
+                    ResultDialogFragment.newInstance().show(getSupportFragmentManager(), ResultDialogFragment.TAG);
+                }
+            } else if (viewModel.getNextCheckpoint().penalty) {
+                PenaltyFragment.newInstance().show(getSupportFragmentManager(), PenaltyFragment.TAG);
+            } else { // Otherwise show new question
+                showQuestion();
             }
-        } else if (viewModel.getNextCheckpoint().penalty) {
-            PenaltyFragment.newInstance().show(getSupportFragmentManager(), PenaltyFragment.TAG);
-        } else { // Otherwise show new question
-            showQuestion();
         }
         geofenceIntentHandled = true;
     }
@@ -464,7 +464,6 @@ public class MapsActivity extends BaseActivity
                                 }
                             });
                         } else if (!viewModel.getQuestionKeys().equals(viewModel.getQuestionKeysFromCheckpoints())) {
-                            viewModel.removeAllQuestions();
                             viewModel.setQuestionKeys(viewModel.getQuestionKeysFromCheckpoints());
                             viewModel.getQuestionCount().observe(this, count -> {
                                 if (count == 0 && viewModel.getQuestionKeys() != null && !viewModel.getQuestionKeys().isEmpty()) {
