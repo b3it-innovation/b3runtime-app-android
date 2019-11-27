@@ -20,9 +20,15 @@ public interface QuestionRepository {
 
     void updateQuestion(Question q);
 
+    void removeAllQuestions(QuestionCallback questionCallback);
+
     void resetQuestionIsAnswered();
 
     void removeAllQuestions();
 
     LiveData<Integer> getQuestionCount();
+
+    interface QuestionCallback {
+        void onQuestionsRemoved(int questionsRemoved);
+    }
 }

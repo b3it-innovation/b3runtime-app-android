@@ -23,8 +23,8 @@ public class CompetitionViewModel extends BaseViewModel {
 
     private LiveData<List<BackendCompetition>> competitions;
     private CompetitionRepository repository;
-    public CheckpointRepository checkpointRepository;
-    public QuestionRepository questionRepository;
+    private CheckpointRepository checkpointRepository;
+    private QuestionRepository questionRepository;
     private AttendeeRepository attendeeRepository;
     private MutableLiveData<Boolean> showLoading = new MutableLiveData<>();
     private Attendee currentAttendee;
@@ -125,4 +125,21 @@ public class CompetitionViewModel extends BaseViewModel {
         this.chosenTrackName = chosenTrackName;
     }
 
+    public void removeAllCheckpoints(CheckpointRepository.CheckpointsCallback checkpointsCallback) {
+        checkpointRepository.removeAllCheckpoints(new CheckpointRepository.CheckpointsCallback() {
+            @Override
+            public void onCheckpointsRemoved(int checkpointsRemoved) {
+                checkpointsCallback.onCheckpointsRemoved(checkpointsRemoved);
+            }
+        });
+    }
+
+    public void removeAllQuestions(QuestionRepository.QuestionCallback questionCallback) {
+        questionRepository.removeAllQuestions(new QuestionRepository.QuestionCallback() {
+            @Override
+            public void onQuestionsRemoved(int questionsRemoved) {
+                questionCallback.onQuestionsRemoved(questionsRemoved);
+            }
+        });
+    }
 }
