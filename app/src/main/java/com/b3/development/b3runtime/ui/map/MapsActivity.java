@@ -126,10 +126,10 @@ public class MapsActivity extends BaseActivity
                 .get(MapsViewModel.class);
 
         // if the intent is come from HomeActivity remove all checkpoints to redraw them
-        final boolean doReset = intent.getBooleanExtra("doReset", false);
-        if (doReset) { //todo: Can we remove this?
-            // reset extra to avoid to trigger reset on screen rotation
-            intent.putExtra("doReset", false);
+        final boolean firstTimeLoaded = intent.getBooleanExtra("firstTimeLoaded", false);
+        if (firstTimeLoaded) {
+            // If first time, we dont want to get resultkey from shared preferences
+            intent.putExtra("firstTimeLoaded", false);
         }
         // if onCreate() is triggered by other cases
         else {

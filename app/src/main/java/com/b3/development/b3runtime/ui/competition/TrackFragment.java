@@ -15,11 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseFragment;
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
-import com.b3.development.b3runtime.data.remote.BackendInteractor;
-import com.b3.development.b3runtime.data.remote.model.checkpoint.BackendResponseCheckpoint;
 import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
+import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
+import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.b3.development.b3runtime.ui.map.MapsActivity;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class TrackFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         //create or connect viewmodel to activity
         competitionViewModel = ViewModelProviders.of(getActivity(),
-                new CompetitionViewModelFactory(get(CompetitionRepository.class), get(AttendeeRepository.class)))
+                new CompetitionViewModelFactory(get(CompetitionRepository.class), get(AttendeeRepository.class), get(CheckpointRepository.class), get(QuestionRepository.class)))
                 .get(CompetitionViewModel.class);
     }
 
@@ -121,16 +121,11 @@ public class TrackFragment extends BaseFragment {
                 competitionViewModel.insertAttendee(attendee);
                 intent.putExtra("trackKey", listItem.getKey());
                 intent.putExtra("attendeeKey", attendeeKey);
-                intent.putExtra("doReset", true);
+                intent.putExtra("firstTimeLoaded", true);
 
-                competitionViewModel.checkpointRepository.removeAllCheckpoints();
+                //clear old track from local db, callback on completion to start new map
                 competitionViewModel.questionRepository.removeAllQuestions();
-                try {
-                    Thread.sleep(4000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                startActivity(intent);
+                competitionViewModel.checkpointRepository.removeAllCheckpoints(checkpointsRemoved -> startActivity(intent));
             }
         }
     }

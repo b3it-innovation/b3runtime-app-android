@@ -14,7 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseFragment;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
+import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
+import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
 import com.b3.development.b3runtime.ui.home.HomeActivity;
 
 import java.util.ArrayList;
@@ -47,7 +49,7 @@ public class CompetitionFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         //create or connect viewmodel to activity
         competitionViewModel = ViewModelProviders.of(getActivity(),
-                new CompetitionViewModelFactory(get(CompetitionRepository.class), get(AttendeeRepository.class)))
+                new CompetitionViewModelFactory(get(CompetitionRepository.class), get(AttendeeRepository.class), get(CheckpointRepository.class), get(QuestionRepository.class)))
                 .get(CompetitionViewModel.class);
     }
 
