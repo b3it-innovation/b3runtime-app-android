@@ -34,15 +34,9 @@ import com.b3.development.b3runtime.databinding.FragmentProfileBinding;
 import com.b3.development.b3runtime.utils.AlertDialogUtil;
 import com.b3.development.b3runtime.utils.failure.FailureType;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.File;
@@ -72,15 +66,8 @@ public class ProfileFragment extends BaseFragment {
     public static final int LASTNAME_VIEW = 3;
     public static final int ORGANIZATION_VIEW = 4;
 
-    private String profileImageFileName;
-
-    private FirebaseStorage storage;
-    private StorageReference profilePhotoReference;
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser currentUser;
     private String currentPhotoPath;
     private ProfileViewModel viewModel;
-    private String currentUserEmail;
 
     public ProfileFragment() {
 
@@ -102,22 +89,10 @@ public class ProfileFragment extends BaseFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        storage = FirebaseStorage.getInstance();
-        profilePhotoReference = storage.getReference().child("profile_images");
-        firebaseAuth = FirebaseAuth.getInstance();
-        currentUser = firebaseAuth.getCurrentUser();
-        currentUserEmail = currentUser.getEmail();
-        profileImageFileName = getString(R.string.profile_image_file_name);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         viewModel = ViewModelProviders.of(this,
                 new ProfileViewModelFactory(get(UserAccountRepository.class)))
                 .get(ProfileViewModel.class);
-        viewModel.getUserPhotoUri().postValue(currentUser.getPhotoUrl());
 
         FragmentProfileBinding binding = DataBindingUtil.inflate(inflater, layoutId, container, false);
         View view = binding.getRoot();
@@ -160,7 +135,7 @@ public class ProfileFragment extends BaseFragment {
     }
 
     public void showResultsFragment() {
-        ResultsFragment resultsFragment = ResultsFragment.newInstance(currentUser.getUid());
+        ResultsFragment resultsFragment = ResultsFragment.newInstance(viewModel.getCurrentUser().getUid());
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.home_container, resultsFragment, ResultsFragment.TAG);
         ft.addToBackStack(ResultsFragment.TAG);
@@ -216,7 +191,7 @@ public class ProfileFragment extends BaseFragment {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
-                uploadProfileImage(result.getUri());
+                viewModel.uploadProfileImage(result.getUri());
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Log.d(TAG, result.getError().getMessage());
             }
@@ -228,51 +203,6 @@ public class ProfileFragment extends BaseFragment {
                     .setAspectRatio(1, 1)
                     .start(getContext(), this);
         }
-    }
-
-    private void uploadProfileImage(Uri imageUri) {
-        StorageReference photoRef =
-                profilePhotoReference.child(currentUser.getUid() + "/" + profileImageFileName);
-        UploadTask uploadTask = photoRef.putFile(imageUri);
-        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-            @Override
-            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                if (!task.isSuccessful()) {
-                    throw task.getException();
-                }
-                // Continue with the task to get the download URL
-                return photoRef.getDownloadUrl();
-            }
-        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-            @Override
-            public void onComplete(@NonNull Task<Uri> task) {
-                if (task.isSuccessful()) {
-                    Uri downloadUri = task.getResult();
-                    updateProfileImage(downloadUri);
-                } else {
-                    // todo: Handle failures
-                    Log.d(TAG, task.getException().getMessage());
-                }
-            }
-        });
-    }
-
-    private void updateProfileImage(Uri uri) {
-        // update user profile image in Firebase Authentication
-        UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
-                .setPhotoUri(uri)
-                .build();
-        currentUser.updateProfile(profileChangeRequest)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            viewModel.getUserPhotoUri().postValue(currentUser.getPhotoUrl());
-                        } else {
-                            Log.e(TAG, task.getException().getMessage());
-                        }
-                    }
-                });
     }
 
     public void changeUserValue(View view) {
@@ -337,7 +267,7 @@ public class ProfileFragment extends BaseFragment {
     // todo: complete this method with check if user is newly logged in
     public void sendResetPasswordMail(View view) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        String emailAddress = currentUser.getEmail();
+        String emailAddress = viewModel.getCurrentUser().getEmail();
         auth.sendPasswordResetEmail(emailAddress)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -424,10 +354,6 @@ public class ProfileFragment extends BaseFragment {
                 AlertDialogUtil.createDoNotAskAgainClickedDialog(getActivity()).show();
             }
         }
-    }
-
-    public String getCurrentUserEmail() {
-        return currentUserEmail;
     }
 
     @BindingAdapter("android:profileImage")
