@@ -14,11 +14,13 @@ import com.b3.development.b3runtime.data.repository.question.QuestionRepository
 import com.b3.development.b3runtime.data.repository.question.QuestionRepositoryImpl
 import com.b3.development.b3runtime.data.repository.result.ResultRepository
 import com.b3.development.b3runtime.data.repository.result.ResultRepositoryImpl
+import com.b3.development.b3runtime.data.repository.track.TrackRepository
+import com.b3.development.b3runtime.data.repository.track.TrackRepositoryImpl
 import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepository
 import com.b3.development.b3runtime.data.repository.useraccount.UserAccountRepositoryImpl
 import com.b3.development.b3runtime.geofence.GeofenceManager
 import com.b3.development.b3runtime.geofence.GeofenceManagerImpl
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.StringQualifier
@@ -44,21 +46,21 @@ val b3RuntimeModule = module {
     single { get<B3RuntimeDatabase>().userAccountDao() }
     single {
         BackendInteractorImpl(get(StringQualifier("questions")), get(StringQualifier("competitions")),
-                get(StringQualifier("tracks_checkpoints")), get(StringQualifier("attendees")),
-                get(StringQualifier("results")), get(StringQualifier("user_accounts")), get(StringQualifier("whole_db"))) as BackendInteractor
+                get(StringQualifier("tracks")), get(StringQualifier("attendees")),
+                get(StringQualifier("results")), get(StringQualifier("user_accounts"))) as BackendInteractor
     }
-    single(StringQualifier("questions")) { FirebaseDatabase.getInstance().getReference("questions") }
-    single(StringQualifier("competitions")) { FirebaseDatabase.getInstance().getReference("competitions") }
-    single(StringQualifier("tracks_checkpoints")) { FirebaseDatabase.getInstance().getReference("tracks_checkpoints") }
-    single(StringQualifier("attendees")) { FirebaseDatabase.getInstance().getReference("attendees") }
-    single(StringQualifier("results")) { FirebaseDatabase.getInstance().getReference("results") }
-    single(StringQualifier("user_accounts")) { FirebaseDatabase.getInstance().getReference("user_accounts") }
-    single(StringQualifier("whole_db")) { FirebaseDatabase.getInstance().getReference() }
+    single(StringQualifier("questions")) { FirebaseFirestore.getInstance().collection("questions") }
+    single(StringQualifier("competitions")) { FirebaseFirestore.getInstance().collection("competitions") }
+    single(StringQualifier("tracks")) { FirebaseFirestore.getInstance().collection("tracks") }
+    single(StringQualifier("attendees")) { FirebaseFirestore.getInstance().collection("attendees") }
+    single(StringQualifier("results")) { FirebaseFirestore.getInstance().collection("results") }
+    single(StringQualifier("user_accounts")) { FirebaseFirestore.getInstance().collection("user_accounts") }
     single { CheckpointRepositoryImpl(get(), get()) as CheckpointRepository }
     single { QuestionRepositoryImpl(get(), get()) as QuestionRepository }
     single { CompetitionRepositoryImpl(get()) as CompetitionRepository }
     single { AttendeeRepositoryImpl(get(), get()) as AttendeeRepository }
     single { ResultRepositoryImpl(get()) as ResultRepository }
     single { UserAccountRepositoryImpl(get(), get()) as UserAccountRepository }
+    single { TrackRepositoryImpl(get()) as TrackRepository }
     single { GeofenceManagerImpl(androidContext()) as GeofenceManager }
 }

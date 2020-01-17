@@ -8,6 +8,9 @@ public class BackendCategory {
     private String key;
     private String name;
 
+    public BackendCategory() {
+    }
+
     public String getKey() {
         return key;
     }

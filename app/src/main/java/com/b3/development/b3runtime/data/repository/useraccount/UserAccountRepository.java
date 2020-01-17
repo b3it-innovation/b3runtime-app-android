@@ -3,6 +3,7 @@ package com.b3.development.b3runtime.data.repository.useraccount;
 import androidx.lifecycle.LiveData;
 
 import com.b3.development.b3runtime.data.local.model.useraccount.UserAccount;
+import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUserAccount;
 import com.b3.development.b3runtime.utils.failure.Failure;
 
 public interface UserAccountRepository {
@@ -16,5 +17,7 @@ public interface UserAccountRepository {
     void updateUserAccount(UserAccount userAccount, String oldValue);
 
     void fetch(String uid);
+
+    LiveData<BackendUserAccount> getUserAccountByUserName(String newValue);
 
 }

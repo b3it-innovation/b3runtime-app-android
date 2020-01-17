@@ -11,6 +11,9 @@ public class BackendAttendee {
     private String competitionKey;
     private String trackKey;
 
+    public BackendAttendee() {
+    }
+
     public String getKey() {
         return key;
     }

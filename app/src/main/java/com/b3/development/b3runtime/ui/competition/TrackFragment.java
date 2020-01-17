@@ -16,11 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.b3.development.b3runtime.R;
 import com.b3.development.b3runtime.base.BaseFragment;
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
-import com.b3.development.b3runtime.data.remote.model.competition.BackendCompetition;
+import com.b3.development.b3runtime.data.remote.model.track.BackendTrack;
 import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
+import com.b3.development.b3runtime.data.repository.track.TrackRepository;
 import com.b3.development.b3runtime.ui.map.MapsActivity;
 
 import java.util.ArrayList;
@@ -40,9 +41,10 @@ public class TrackFragment extends BaseFragment {
     public TrackFragment() {
     }
 
-    public static final TrackFragment newInstance() {
+    public static final TrackFragment newInstance(List<String> keys) {
         TrackFragment fragment = new TrackFragment();
         Bundle arguments = new Bundle();
+        arguments.putStringArrayList("keys", (ArrayList<String>) keys);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -52,8 +54,10 @@ public class TrackFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         //create or connect viewmodel to activity
         competitionViewModel = ViewModelProviders.of(getActivity(),
-                new CompetitionViewModelFactory(get(CompetitionRepository.class), get(AttendeeRepository.class), get(CheckpointRepository.class), get(QuestionRepository.class)))
+                new CompetitionViewModelFactory(get(CompetitionRepository.class), get(TrackRepository.class),
+                        get(AttendeeRepository.class), get(CheckpointRepository.class), get(QuestionRepository.class)))
                 .get(CompetitionViewModel.class);
+        competitionViewModel.fetchTracksByKeys(getArguments().getStringArrayList("keys"));
     }
 
     @Override
@@ -87,26 +91,21 @@ public class TrackFragment extends BaseFragment {
         });
 
         //populate list with BackendTracks
-        competitionViewModel.getCompetitions().observe(getViewLifecycleOwner(),
-                c -> {
-                    if (competitionViewModel.getChosenCompetitionName() != null) {
-                        showTracks(competitionViewModel.getChosenCompetitionName());
+        competitionViewModel.getTracks().observe(getViewLifecycleOwner(),
+                tracks -> {
+                    if (competitionViewModel.getChosenCompetition() != null) {
+                        showTracks();
                         competitionViewModel.showLoading(false);
                     }
                 });
     }
 
     //populate itemList with tracks from chosen competition
-    private void showTracks(String competitionName) {
-        for (BackendCompetition bc : competitionViewModel.getCompetitions().getValue()) {
-            if (bc.getName().equalsIgnoreCase(competitionName)) {
-                competitionViewModel.setCompetitionKey(bc.getKey());
-                itemList.clear();
-                itemList.addAll(bc.getTracks());
-                if (itemArrayAdapter != null) {
-                    itemArrayAdapter.setListItems(itemList);
-                }
-            }
+    private void showTracks() {
+        itemList.clear();
+        itemList.addAll(competitionViewModel.getTracks().getValue());
+        if (itemArrayAdapter != null) {
+            itemArrayAdapter.setListItems(itemList);
         }
     }
 
@@ -115,8 +114,7 @@ public class TrackFragment extends BaseFragment {
         Intent intent = new Intent(getActivity(), MapsActivity.class);
         for (ListItem listItem : itemList) {
             if (listItem.getName().equalsIgnoreCase(trackName)) {
-                competitionViewModel.setTrackKey(listItem.getKey());
-                competitionViewModel.setChosenTrackName(listItem.getName());
+                competitionViewModel.setChosenTrack((BackendTrack)listItem);
                 Attendee attendee = competitionViewModel.createAttendee();
                 String attendeeKey = competitionViewModel.saveBackendAttendee(attendee);
                 attendee.id = attendeeKey;

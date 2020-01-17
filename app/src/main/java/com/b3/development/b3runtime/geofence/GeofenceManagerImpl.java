@@ -36,7 +36,7 @@ public class GeofenceManagerImpl implements GeofenceManager {
 
         client.addGeofences(builder.build(), geofencePendingIntent)
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Succeeded to add geofence to the Google map"))
-                .addOnFailureListener(e -> Log.e(TAG, "Failed to add geofence to the Google map"));
+                .addOnFailureListener(e -> Log.e(TAG, "Failed to add geofence to the Google map", e));
     }
 
     @Override
