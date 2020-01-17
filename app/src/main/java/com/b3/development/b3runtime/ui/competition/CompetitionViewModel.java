@@ -61,6 +61,7 @@ public class CompetitionViewModel extends BaseViewModel {
     public Attendee createAttendee() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         currentAttendee = new Attendee();
+        // TODO: get userName from UserAccount database instead
         currentAttendee.name = user.getDisplayName();
         currentAttendee.competitionKey = chosenCompetition.getKey();
         currentAttendee.trackKey = chosenTrack.getKey();
