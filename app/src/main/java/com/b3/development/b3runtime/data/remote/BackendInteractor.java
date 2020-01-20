@@ -9,7 +9,7 @@ import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQu
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
 import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUserAccount;
 import com.b3.development.b3runtime.utils.failure.FailureType;
-import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 
@@ -22,19 +22,19 @@ public interface BackendInteractor {
 
     void getCheckpoints(CheckpointsCallback checkpointsCallback, String trackKey);
 
-    void getResultsByUserAccount(ResultCallback resultCallback, String userAccountKey);
-
     void getQuestions(QuestionsCallback questionCallback, List<String> keys);
 
     void getUserAccountById(UserAccountCallback userAccountCallback, String userAccountKey);
 
-    void getAttendeesByUserAccount(AttendeeCallback attendeeCallback, String userAccountKey);
+    LiveData<QuerySnapshot> getActiveCompetitionsLiveData();
 
-    LiveData<DataSnapshot> getActiveCompetitionsLiveData();
+    LiveData<QuerySnapshot> getTracksByKeys(List<String> keys);
 
-    LiveData<DataSnapshot> getTop5ResultLiveDataByTrack(String trackKey);
+    LiveData<QuerySnapshot> getTop5ResultLiveDataByTrack(String trackKey);
 
-    LiveData<DataSnapshot> getResultsLiveDataByUserAccount(String userAccountKey);
+    LiveData<QuerySnapshot> getResultsLiveDataByUserAccount(String userAccountKey);
+
+    LiveData<QuerySnapshot> getUserAccountLiveDataByUserName(String userName);
 
     String saveAttendee(BackendAttendee attendee);
 
@@ -49,7 +49,7 @@ public interface BackendInteractor {
     }
 
     interface QuestionsCallback {
-        void onQuestionsReceived(BackendResponseQuestion question);
+        void onQuestionsReceived(List<BackendResponseQuestion> question);
 
         void onError();
     }

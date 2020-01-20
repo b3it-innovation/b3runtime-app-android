@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -70,7 +71,6 @@ public class ProfileFragment extends BaseFragment {
     private ProfileViewModel viewModel;
 
     public ProfileFragment() {
-
     }
 
     /**
@@ -238,29 +238,50 @@ public class ProfileFragment extends BaseFragment {
 
         UserAccount userAccount = viewModel.getUserAccountLiveData().getValue();
 
-        switch (viewType) {
-            case USERNAME_VIEW:
-                userAccount.userName = newValue;
-                break;
-            case FIRSTNAME_VIEW:
-                userAccount.firstName = newValue;
-                break;
-            case LASTNAME_VIEW:
-                userAccount.lastName = newValue;
-                break;
-            case ORGANIZATION_VIEW:
-                userAccount.organization = newValue;
-                break;
-            default:
-                Log.e(TAG, "incompatible viewType sent to updateUserValue");
-                break;
-        }
         //Alert on empty username
         if ((newValue == null || newValue.equals("")) && (viewType == USERNAME_VIEW
                 || viewType == FIRSTNAME_VIEW || viewType == LASTNAME_VIEW)) {
             AlertDialogUtil.createEmptyValueDialog(getActivity()).show();
-        } else {
-            viewModel.updateUserAccount(userAccount, oldValue);
+            return;
+        }
+
+        switch (viewType) {
+            case USERNAME_VIEW:
+                if (!userAccount.userName.equals(newValue)) {
+                    userAccount.userName = newValue;
+                    viewModel.checkUserNameExists(newValue);
+                    viewModel.getUserNameExists().observe(getViewLifecycleOwner(), (exists) -> {
+                        if (!exists) {
+                            viewModel.updateUserAccount(userAccount, oldValue);
+                            viewModel.getUserNameExists().removeObservers(getViewLifecycleOwner());
+                            viewModel.resetUserNameExists();
+                        } else {
+                            Toast.makeText(getContext(), "The User Name is already used", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                break;
+            case FIRSTNAME_VIEW:
+                if (!userAccount.firstName.equals(newValue)) {
+                    userAccount.firstName = newValue;
+                    viewModel.updateUserAccount(userAccount, oldValue);
+                }
+                break;
+            case LASTNAME_VIEW:
+                if (!userAccount.lastName.equals(newValue)) {
+                    userAccount.lastName = newValue;
+                    viewModel.updateUserAccount(userAccount, oldValue);
+                }
+                break;
+            case ORGANIZATION_VIEW:
+                if (!userAccount.organization.equals(newValue)) {
+                    userAccount.organization = newValue;
+                    viewModel.updateUserAccount(userAccount, oldValue);
+                }
+                break;
+            default:
+                Log.e(TAG, "incompatible viewType sent to updateUserValue");
+                break;
         }
     }
 

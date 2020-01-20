@@ -13,6 +13,9 @@ public class BackendResponseCheckpoint {
     private String questionKey;
     private Boolean penalty;
 
+    public BackendResponseCheckpoint() {
+    }
+
     //getters and setters because Java
     //consider @Lombok
     public String getKey() {

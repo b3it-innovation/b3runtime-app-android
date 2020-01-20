@@ -7,7 +7,8 @@ import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
 import com.b3.development.b3runtime.data.remote.BackendInteractor;
 import com.b3.development.b3runtime.data.remote.model.result.BackendResult;
-import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,21 +38,6 @@ public class ResultRepositoryImpl implements ResultRepository {
     }
 
     @Override
-    public void getResultsByUser(BackendInteractor.ResultCallback callback, String key) {
-        backend.getResultsByUserAccount(new BackendInteractor.ResultCallback() {
-            @Override
-            public void onResultsReceived(List<BackendResult> results) {
-                callback.onResultsReceived(results);
-            }
-
-            @Override
-            public void onError() {
-                callback.onError();
-            }
-        }, key);
-    }
-
-    @Override
     public LiveData<List<BackendResult>> getTop5ResultsLiveData(String trackKey) {
         return Transformations.map(backend.getTop5ResultLiveDataByTrack(trackKey), snapShot -> {
             List list = convertDataSnapshotToBackendResults(snapShot);
@@ -66,14 +52,12 @@ public class ResultRepositoryImpl implements ResultRepository {
                 snapShot -> convertDataSnapshotToBackendResults(snapShot));
     }
 
-    private List<BackendResult> convertDataSnapshotToBackendResults(DataSnapshot dataSnapshot) {
+    private List<BackendResult> convertDataSnapshotToBackendResults(QuerySnapshot querySnapshot) {
         List<BackendResult> resultList = new ArrayList<>();
-        if (dataSnapshot != null) {
-            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                BackendResult result = snapshot.getValue(BackendResult.class);
-                result.setKey(dataSnapshot.getKey());
-                resultList.add(result);
-            }
+        for (QueryDocumentSnapshot document : querySnapshot) {
+            BackendResult result = document.toObject(BackendResult.class);
+            result.setKey(document.getId());
+            resultList.add(result);
         }
         return resultList;
     }

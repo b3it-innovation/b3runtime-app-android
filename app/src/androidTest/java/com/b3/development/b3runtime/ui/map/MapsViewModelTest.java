@@ -207,25 +207,9 @@ public class MapsViewModelTest {
     }
 
     @Test
-    public void init() {
-        Log.d(TAG, "running init() test");
-
-        //Not running init from here, since verify counts the one being run when
-        // the viewmodels constructor is being run from setUp()
-        verify(checkpointRepository, atMostOnce()).fetch(trackKey);
-        verify(checkpointRepository, atLeastOnce()).fetch(trackKey);
-
-        verify(checkpointRepository, atMostOnce()).getAllCheckpoints();
-        verify(checkpointRepository, atLeastOnce()).getAllCheckpoints();
-
-        verify(checkpointRepository, atMostOnce()).getError();
-        verify(checkpointRepository, atLeastOnce()).getError();
-    }
-
-    @Test
     public void initAttendee() {
         Log.d(TAG, "running initAttendee() test");
-        String attendeeKey = "key";
+        String attendeeKey = null;
         viewModel.initAttendee();
         verify(attendeeRepository, atLeastOnce()).getAttendeeById(attendeeKey);
         verify(attendeeRepository, atMostOnce()).getAttendeeById(attendeeKey);

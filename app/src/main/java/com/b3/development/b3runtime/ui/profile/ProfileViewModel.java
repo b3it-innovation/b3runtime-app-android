@@ -34,6 +34,7 @@ public class ProfileViewModel extends BaseViewModel {
     private LiveData<String> organization;
     private LiveData<Failure> error;
     private MutableLiveData<Uri> userPhotoUri = new MutableLiveData<>();
+    private LiveData<Boolean> userNameExists;
     private UserAccountRepository userAccountRepository;
 
     private FirebaseAuth firebaseAuth;
@@ -169,6 +170,10 @@ public class ProfileViewModel extends BaseViewModel {
         return userPhotoUri;
     }
 
+    public LiveData<Boolean> getUserNameExists() {
+        return userNameExists;
+    }
+
     public FirebaseUser getCurrentUser() {
         return currentUser;
     }
@@ -185,4 +190,15 @@ public class ProfileViewModel extends BaseViewModel {
         this.currentUserEmail = currentUserEmail;
     }
 
+    public void checkUserNameExists(String userName) {
+        userNameExists = Transformations.map(userAccountRepository.getUserAccountByUserName(userName),
+                userAccount -> {
+                    Log.d(TAG, "");
+                    return userAccount != null;
+                });
+    }
+
+    public void resetUserNameExists() {
+        userNameExists = null;
+    }
 }

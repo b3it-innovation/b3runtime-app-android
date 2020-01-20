@@ -64,10 +64,10 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'com.google.firebase:firebase-auth:19.1.0'
-    implementation 'com.google.firebase:firebase-core:17.2.1'
+    implementation 'com.google.firebase:firebase-auth:19.2.0'
+    implementation 'com.google.firebase:firebase-core:17.2.2'
     implementation 'com.google.firebase:firebase-database:19.2.0'
-    implementation 'com.google.firebase:firebase-firestore:21.3.0'
+    implementation 'com.google.firebase:firebase-firestore:21.3.1'
     implementation 'com.google.firebase:firebase-storage:19.1.0'
     implementation "org.koin:koin-android:2.0.1"
     implementation "org.koin:koin-androidx-viewmodel:2.0.1"
@@ -78,7 +78,7 @@ dependencies {
     // Optional -- Robolectric environment
     testImplementation 'androidx.test:core:1.2.0'
     // Optional -- Mockito framework
-    testImplementation 'org.mockito:mockito-core:3.1.0'
+    testImplementation 'org.mockito:mockito-core:3.2.4'
 
     // AndroidJUnitRunner and JUnit Rules
     androidTestImplementation 'androidx.test:runner:1.2.0'
@@ -90,7 +90,7 @@ dependencies {
     // To use androidx.arch.core.executor.testing.InstantTaskExecutorRule
     androidTestImplementation 'android.arch.core:core-testing:1.1.1'
     //Mockito framework
-    androidTestImplementation "org.mockito:mockito-android:3.1.0"
+    androidTestImplementation "org.mockito:mockito-android:3.2.4"
     // Core library
     androidTestImplementation 'androidx.test:core:1.2.0'
 

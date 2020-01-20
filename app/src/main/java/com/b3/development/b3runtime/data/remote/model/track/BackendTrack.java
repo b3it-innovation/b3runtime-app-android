@@ -1,6 +1,5 @@
 package com.b3.development.b3runtime.data.remote.model.track;
 
-import com.b3.development.b3runtime.data.remote.model.category.BackendCategory;
 import com.b3.development.b3runtime.ui.competition.ListItem;
 
 /**
@@ -10,7 +9,10 @@ public class BackendTrack implements ListItem {
 
     private String key;
     private String name;
-    private BackendCategory category;
+    private String category;
+
+    public BackendTrack() {
+    }
 
     public String getKey() {
         return key;
@@ -28,11 +30,11 @@ public class BackendTrack implements ListItem {
         this.name = name;
     }
 
-    public BackendCategory getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(BackendCategory category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 

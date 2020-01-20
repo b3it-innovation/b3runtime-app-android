@@ -18,6 +18,7 @@ import com.b3.development.b3runtime.data.repository.attendee.AttendeeRepository;
 import com.b3.development.b3runtime.data.repository.checkpoint.CheckpointRepository;
 import com.b3.development.b3runtime.data.repository.competition.CompetitionRepository;
 import com.b3.development.b3runtime.data.repository.question.QuestionRepository;
+import com.b3.development.b3runtime.data.repository.track.TrackRepository;
 import com.b3.development.b3runtime.ui.home.HomeActivity;
 
 import java.util.ArrayList;
@@ -48,7 +49,8 @@ public class CompetitionFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         //create or connect viewmodel to activity
         competitionViewModel = ViewModelProviders.of(getActivity(),
-                new CompetitionViewModelFactory(get(CompetitionRepository.class), get(AttendeeRepository.class), get(CheckpointRepository.class), get(QuestionRepository.class)))
+                new CompetitionViewModelFactory(get(CompetitionRepository.class), get(TrackRepository.class),
+                        get(AttendeeRepository.class), get(CheckpointRepository.class), get(QuestionRepository.class)))
                 .get(CompetitionViewModel.class);
     }
 
@@ -75,9 +77,10 @@ public class CompetitionFragment extends BaseFragment {
         itemArrayAdapter.setOnItemClickListener(v -> {
             LinearLayout linearLayout = (LinearLayout) v;
             TextView textView = (TextView) linearLayout.getChildAt(0);
+            String chosenName = textView.getText().toString();
             // show chosen competitions tracks
-            competitionViewModel.setChosenCompetitionName(textView.getText().toString());
-            ((HomeActivity) getActivity()).showTrackFragment();
+            competitionViewModel.setChosenCompetition(chosenName);
+            ((HomeActivity) getActivity()).showTrackFragment(competitionViewModel.getTrackKeysByCompetitionName(chosenName));
         });
 
         competitionViewModel.getCompetitions().observe(getViewLifecycleOwner(), backendCompetitions -> {

@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
 import com.b3.development.b3runtime.data.local.model.useraccount.UserAccount;
 import com.b3.development.b3runtime.data.local.model.useraccount.UserAccountDao;
@@ -12,6 +13,8 @@ import com.b3.development.b3runtime.data.remote.BackendInteractor;
 import com.b3.development.b3runtime.data.remote.model.useraccount.BackendUserAccount;
 import com.b3.development.b3runtime.utils.failure.Failure;
 import com.b3.development.b3runtime.utils.failure.FailureType;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class UserAccountRepositoryImpl implements UserAccountRepository {
 
@@ -40,6 +43,12 @@ public class UserAccountRepositoryImpl implements UserAccountRepository {
     @Override
     public LiveData<UserAccount> getUserAccount(String id) {
         return userAccountDao.getUserAccountById(id);
+    }
+
+    @Override
+    public LiveData<BackendUserAccount> getUserAccountByUserName(String userName) {
+        return Transformations.map(backendInteractor.getUserAccountLiveDataByUserName(userName),
+                snapshot -> convertDataSnapshotToBackendUserAccount(snapshot));
     }
 
     /**
@@ -112,6 +121,15 @@ public class UserAccountRepositoryImpl implements UserAccountRepository {
                 error.postValue(new Failure(FailureType.NETWORK));
             }
         }, uid);
+    }
+
+    private BackendUserAccount convertDataSnapshotToBackendUserAccount(QuerySnapshot querySnapshot) {
+        BackendUserAccount userAccount = null;
+        for (QueryDocumentSnapshot document : querySnapshot) {
+            userAccount = document.toObject(BackendUserAccount.class);
+            userAccount.setKey(document.getId());
+        }
+        return userAccount;
     }
 
 }

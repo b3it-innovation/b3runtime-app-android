@@ -7,6 +7,9 @@ public class BackendAnswerOption {
     private String c;
     private String d;
 
+    public BackendAnswerOption() {
+    }
+
     public String getA() {
         return a;
     }

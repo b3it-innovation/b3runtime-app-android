@@ -1,6 +1,5 @@
 package com.b3.development.b3runtime.data.remote.model.competition;
 
-import com.b3.development.b3runtime.data.remote.model.track.BackendTrack;
 import com.b3.development.b3runtime.ui.competition.ListItem;
 
 import java.util.List;
@@ -14,7 +13,10 @@ public class BackendCompetition implements ListItem {
     private String name;
     private Long date;
     private Boolean active;
-    private List<BackendTrack> tracks;
+    private List<String> trackKeys;
+
+    public BackendCompetition() {
+    }
 
     public String getKey() {
         return key;
@@ -48,12 +50,12 @@ public class BackendCompetition implements ListItem {
         this.active = active;
     }
 
-    public List<BackendTrack> getTracks() {
-        return tracks;
+    public List<String> getTrackKeys() {
+        return trackKeys;
     }
 
-    public void setTracks(List<BackendTrack> tracks) {
-        this.tracks = tracks;
+    public void setTrackKeys(List<String> trackKeys) {
+        this.trackKeys = trackKeys;
     }
 
     @Override

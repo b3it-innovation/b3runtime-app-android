@@ -24,6 +24,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.List;
+
 import static org.koin.java.KoinJavaComponent.get;
 
 public class HomeActivity extends AppCompatActivity {
@@ -101,8 +103,8 @@ public class HomeActivity extends AppCompatActivity {
         ft.commit();
     }
 
-    public void showTrackFragment() {
-        TrackFragment trackFragment = TrackFragment.newInstance();
+    public void showTrackFragment(List<String> trackKeys) {
+        TrackFragment trackFragment = TrackFragment.newInstance(trackKeys);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.home_container, trackFragment, TrackFragment.TAG);
         ft.addToBackStack(TrackFragment.TAG);

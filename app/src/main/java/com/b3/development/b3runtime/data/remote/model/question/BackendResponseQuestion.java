@@ -9,6 +9,9 @@ public class BackendResponseQuestion {
     private String text;
     private String title;
 
+    public BackendResponseQuestion() {
+    }
+
     //getters and setters because Java
     //consider @Lombok
     public String getKey() {

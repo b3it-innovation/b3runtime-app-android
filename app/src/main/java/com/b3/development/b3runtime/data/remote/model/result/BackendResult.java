@@ -2,7 +2,9 @@ package com.b3.development.b3runtime.data.remote.model.result;
 
 import com.b3.development.b3runtime.data.local.model.attendee.Attendee;
 import com.b3.development.b3runtime.data.local.model.checkpoint.Checkpoint;
+import com.google.firebase.firestore.ServerTimestamp;
 
+import java.util.Date;
 import java.util.List;
 
 public class BackendResult implements Comparable<BackendResult> {
@@ -11,6 +13,11 @@ public class BackendResult implements Comparable<BackendResult> {
     private Attendee attendee;
     private List<Checkpoint> results;
     private Long totalTime;
+    @ServerTimestamp
+    private Date lastUpdatedDate;
+
+    public BackendResult() {
+    }
 
     public String getKey() {
         return key;
@@ -42,6 +49,10 @@ public class BackendResult implements Comparable<BackendResult> {
 
     public void setTotalTime(Long totalTime) {
         this.totalTime = totalTime;
+    }
+
+    public Date getLastUpdatedDate() {
+        return lastUpdatedDate;
     }
 
     // overrides compareTo to sort result with total time

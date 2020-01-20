@@ -371,7 +371,6 @@ public class MapsActivity extends BaseActivity
             // Check if last checkpoint is reached
             else if (receivedCheckpointID.equals(finalCheckpointID)) {
                 viewModel.updateCheckpointCompleted();
-                viewModel.saveResult();
                 if (getSupportFragmentManager().findFragmentByTag(ResultDialogFragment.TAG) == null) {
                     ResultDialogFragment.newInstance().show(getSupportFragmentManager(), ResultDialogFragment.TAG);
                 }
@@ -446,9 +445,9 @@ public class MapsActivity extends BaseActivity
                             toolbarText.setText(String.format("Track min: %sm, max: %sm",
                                     String.format(Locale.ENGLISH, "%.0f", viewModel.getTrackMinLength()),
                                     String.format(Locale.ENGLISH, "%.0f", viewModel.getTrackMaxLength())));
+                            // save result when allCheckpoints change
+                            viewModel.saveResult();
                         }
-                        // save result when allCheckpoints change
-                        viewModel.saveResult();
 
                         if (viewModel.getQuestionKeys() == null) {
                             viewModel.setQuestionKeys(viewModel.getQuestionKeysFromCheckpoints());

@@ -13,6 +13,7 @@ import com.b3.development.b3runtime.data.remote.model.question.BackendResponseQu
 import com.b3.development.b3runtime.utils.failure.Failure;
 import com.b3.development.b3runtime.utils.failure.FailureType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,17 +59,16 @@ public class QuestionRepositoryImpl implements QuestionRepository {
         backendInteractor.getQuestions(new BackendInteractor.QuestionsCallback() {
             //handles response
             @Override
-            public void onQuestionsReceived(BackendResponseQuestion backendResponseQuestion) {
+            public void onQuestionsReceived(List<BackendResponseQuestion> backendResponseQuestions) {
                 //early return in case of server error
-                if (backendResponseQuestion == null) {
+                if (backendResponseQuestions == null) {
                     error.postValue(new Failure(FailureType.SERVER));
                     return;
                 }
-
                 Log.d(TAG, "QUESTION RECEIVED FROM BACKEND");
-                Question question = convert(backendResponseQuestion);
+                List<Question> questions = convert(backendResponseQuestions);
                 //writes in local database asynchronously
-                AsyncTask.execute(() -> questionDao.insertQuestion(question));
+                AsyncTask.execute(() -> questionDao.insertQuestions(questions));
                 Log.d(TAG, "QUESTION CONVERTED... WRITING IN DATABASE ASYNC STARTS");
             }
 
@@ -99,21 +99,23 @@ public class QuestionRepositoryImpl implements QuestionRepository {
 
     }
 
-    private Question convert(BackendResponseQuestion backendResponseQuestion) {
-
-        Question convertedQuestion = new Question();
-        convertedQuestion.id = backendResponseQuestion.getKey();
-        convertedQuestion.categoryKey = backendResponseQuestion.getCategoryKey();
-        convertedQuestion.correctAnswer = backendResponseQuestion.getCorrectAnswer();
-        convertedQuestion.question = backendResponseQuestion.getText();
-        convertedQuestion.optionA = backendResponseQuestion.getOptions().getA();
-        convertedQuestion.optionB = backendResponseQuestion.getOptions().getB();
-        convertedQuestion.optionC = backendResponseQuestion.getOptions().getC();
-        convertedQuestion.optionD = backendResponseQuestion.getOptions().getD();
-        convertedQuestion.isAnswered = false;
-        //convertedQuestion.order = i;
-
-        return convertedQuestion;
+    private List<Question> convert(List<BackendResponseQuestion> backendResponseQuestions) {
+        List<Question> list = new ArrayList<>();
+        for(BackendResponseQuestion backendResponseQuestion :backendResponseQuestions){
+            Question convertedQuestion = new Question();
+            convertedQuestion.id = backendResponseQuestion.getKey();
+            convertedQuestion.categoryKey = backendResponseQuestion.getCategoryKey();
+            convertedQuestion.correctAnswer = backendResponseQuestion.getCorrectAnswer();
+            convertedQuestion.question = backendResponseQuestion.getText();
+            convertedQuestion.optionA = backendResponseQuestion.getOptions().getA();
+            convertedQuestion.optionB = backendResponseQuestion.getOptions().getB();
+            convertedQuestion.optionC = backendResponseQuestion.getOptions().getC();
+            convertedQuestion.optionD = backendResponseQuestion.getOptions().getD();
+            convertedQuestion.isAnswered = false;
+            //convertedQuestion.order = i;
+            list.add(convertedQuestion);
+        }
+        return list;
     }
 
     @Override
